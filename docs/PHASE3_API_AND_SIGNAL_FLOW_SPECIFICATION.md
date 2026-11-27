@@ -117,7 +117,7 @@ Contract:
 ### 4.2 Parameter registry and runtime — IF-02
 
 ```cpp
-enum class ParameterScope : std::uint8_t { Global, Layer, Voice };
+enum class ParameterScope : std::uint8_t { Global, Layer, Voice, Performance, Sequencer };
 enum class UpdateClass : std::uint8_t { AudioRate, ControlRate, SpawnSampled, Stepped, Structural };
 
 struct ParameterDescriptor {
@@ -140,7 +140,7 @@ public:
 ```
 
 Contract:
-- Registry descriptors are immutable after initialization.
+- Registry descriptors are immutable after initialization. The candidate scope set is Global, Layer, Voice, Performance and Sequencer, aligned with the proposed canonical-ID scope vocabulary in `PARAMETER_ID_SPECIFICATION.md`; adding a new scope requires an explicit schema/API revision.
 - Stable string IDs are canonical. Numeric host IDs are adapter mappings and may never be recycled after release; the final scheme remains Q-T12.
 - Unknown IDs are ignored safely and surfaced through non-RT diagnostics.
 - Parameter changes carry a stable ID or pre-resolved registry index plus scope and value. The concrete representation must avoid string lookup in the innermost DSP loop.
