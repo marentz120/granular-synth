@@ -107,7 +107,7 @@ Product-management design direction for Phase 4/5: preset-specific mapping overr
 R1 uses generic flexible controls only. A dedicated named-controller template is deferred beyond R1.
 
 - **Flexible (R1, required by GS-MID-008/GS-UI-007):** generic MIDI Learn against *any* class-compliant MIDI controller. This is what actually satisfies DEC-016 for R1 — it requires no assumption about which hardware the performer owns.
-- **Dedicated (proposed for later, not R1):** a named-controller template (e.g., a specific control surface's physical layout pre-mapped to the 8-knob engine section and macros) would improve out-of-box experience but requires committing to a specific controller (Q-P12, OPEN) and is not necessary to satisfy DEC-016. **R1 decision:** dedicated templates are not required; the flexible MIDI Learn/manual mapping system is the supported baseline.
+- **Dedicated (proposed for later, not R1):** a named-controller template (e.g., a specific control surface's physical layout pre-mapped to the 8-knob engine section and macros) would improve out-of-box experience but is not necessary to satisfy DEC-016. **R1 decision:** dedicated templates are not required; the flexible MIDI Learn/manual mapping system is the supported baseline.
 
 Q-P12 is answered by DEC-021: the generic MIDI Learn/manual mapping system is the R1 baseline; named-controller templates are deferred.
 
