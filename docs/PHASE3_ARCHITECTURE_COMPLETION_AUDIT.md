@@ -21,7 +21,7 @@ The repository already contains a substantial **candidate** architecture in `DSP
 2. Audio/plugin component and bus design is not host-validated, especially AU live input (Q-P06 / DEC-020 / Q-P09).
 3. Stable parameter IDs, host exposure, parameter grouping and migration rules are not frozen (Q-T12).
 4. Sample and recording-buffer lifecycle, including embedded plugin-state serialization, is incomplete (Q-T04…Q-T05, Q-T15…Q-T16, DEC-025).
-5. Freeze behavior and its interaction with recording, transport, voices, modulation and effects is undefined (GS-SMG-021 / DEC-020).
+5. Freeze product behavior is now approved as Source Snapshot (DEC-042); capture duration, memory budget, crossfade and RT implementation remain engineering work.
 6. Real-time ownership, object retirement, command-queue capacity and overload behavior need a complete bounded model.
 7. CPU, memory, latency and grain-budget values are not measured. The current memory figures are explicitly raw-payload arithmetic, not measured RSS or an approved budget.
 8. The R1 architecture has not been traced to all 124 R1 requirements (100% module/interface coverage is a roadmap exit criterion).
@@ -167,7 +167,7 @@ The current `DSP_ARCHITECTURE.md` has useful outlines, but the following design 
 
 Freeze availability is approved, but semantics are deliberately open. It is not safe to implement Freeze as a guessed “hold sample” or “stop playback” operation.
 
-The architecture specification must define, separately:
+The architecture implementation must preserve, separately:
 1. What each layer Freeze captures and at what signal boundary.
 2. Whether global Freeze is exactly the atomic equivalent of enabling all four layer Freeze controls.
 3. What happens to incoming live audio and recording writes while frozen.
@@ -205,7 +205,7 @@ Any proposal must be checked against the live-performance workflow and controlle
 4. Freeze parameter schema and stable host ID strategy before any public automation IDs exist.
 5. Specify sample, recording and plugin-state lifecycle, implementing DEC-025 without changing its policy.
 6. Define threading, queue capacities, ownership and overload behavior.
-7. Define Freeze semantics and update the product decision log.
+7. Implement the approved Freeze semantics (DEC-042) in the architecture specification and validation plan; do not reopen the product behavior without an owner decision.
 8. Define resource accounting and deterministic overload policy; separately plan the benchmark needed to set numeric budgets.
 9. Complete requirement-to-architecture traceability and independent review.
 10. Submit Phase 3 completion PR for owner review. Do not begin production implementation until Phase 3 is approved and Phase 4/5 gates are satisfied.
