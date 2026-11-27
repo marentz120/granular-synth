@@ -1,0 +1,223 @@
+# Phase 3 Architecture Completion Audit
+
+**Version:** 0.1  
+**Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
+**Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
+**Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
+
+---
+
+## 1. Executive assessment
+
+Phase 2 establishes a coherent R1 product baseline: four layers; Granular and Sampler engines; Standalone, AU and VST3; central sequencer; live input, recording and Freeze controls; generic MIDI-controller operation; and approved R1 release tiers.
+
+The repository already contains a substantial **candidate** architecture in `DSP_ARCHITECTURE.md`, but it is not yet an approved, implementation-ready architecture. The document itself labels the framework and most technical choices as proposals. Several important interfaces are underspecified, some Phase 2 decisions have not been propagated into the architecture document, and several exit criteria require measured evidence that does not yet exist.
+
+**Conclusion:** Phase 3 should proceed as an architecture decision and specification phase, not as implementation. The existing architecture is a useful starting proposal, not an approved design.
+
+### Phase 3 exit blockers
+
+1. Framework, supported macOS baseline and binary architecture are not approved (Q-T01…Q-T03).
+2. Audio/plugin component and bus design is not host-validated, especially AU live input (Q-P06 / DEC-020 / Q-P09).
+3. Stable parameter IDs, host exposure, parameter grouping and migration rules are not frozen (Q-T12).
+4. Sample and recording-buffer lifecycle, including embedded plugin-state serialization, is incomplete (Q-T04…Q-T05, Q-T15…Q-T16, DEC-025).
+5. Freeze behavior and its interaction with recording, transport, voices, modulation and effects is undefined (GS-SMG-021 / DEC-020).
+6. Real-time ownership, object retirement, command-queue capacity and overload behavior need a complete bounded model.
+7. CPU, memory, latency and grain-budget values are not measured. The current memory figures are explicitly raw-payload arithmetic, not measured RSS or an approved budget.
+8. The R1 architecture has not been traced to all 124 R1 requirements (100% module/interface coverage is a roadmap exit criterion).
+
+---
+
+## 2. Baseline that architecture must preserve
+
+The following are approved product constraints, not open architecture choices:
+
+- Exactly four independent layers, each selecting Granular or Sampler (DEC-017/018).
+- R1 targets macOS Standalone, AU and VST3; CLAP is optional, not R1 (DEC-026).
+- One central sequencer and one shared transport domain for all four layers (DEC-019 and product specification).
+- Live input per layer in Standalone and plugin contexts; per-layer and global Freeze; per-layer recording and stereo master-mix recording (DEC-020).
+- Essential Standalone live operations, including sequencer editing, must be accessible from a generic MIDI controller (DEC-016/021).
+- Unsaved recording buffers are embedded in plugin state; existing library samples remain external references with relink/collect support (DEC-025).
+- Granular target: at least six minutes of stereo audio per layer at 48 kHz, subject to safe measured feasibility (DEC-028).
+- R1 grain-size range is 0.1–5000 ms (DEC-035); ten macros per patch (DEC-036); MPE per-note pitch bend is ±48 semitones range (DEC-038).
+- No arbitrary product-level cap on pattern-library size, chain length or performance-set entries; technical limits must be explicit, safe and measured.
+- R1 effects: Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator and Compressor (DEC-023).
+
+Architecture must not silently change these decisions. In particular, technical resource ceilings must not be confused with product-level library/pattern limits.
+
+---
+
+## 3. Existing architecture assessment
+
+### 3.1 Strong foundations to retain as candidates
+
+- A framework-independent DSP/core library and a shared engine across Standalone/AU/VST3.
+- No allocation, deallocation, blocking locks, file I/O or logging on the audio thread.
+- Off-thread sample decoding and structural object construction.
+- Bounded command handoff to the audio thread and deferred destruction away from RT.
+- Immutable sample data and explicit sample-handle lifetime.
+- A headless deterministic renderer and testable DSP modules.
+- Parameter smoothing classes and separation of UI snapshots from live DSP objects.
+- One central transport/sequencer across four layers.
+
+These are sound architectural directions, but the concrete algorithms, queue bounds, ownership rules and host APIs still need specification and validation.
+
+### 3.2 Required corrections and reconciliation
+
+| Location | Finding | Required action |
+|---|---|---|
+| `DSP_ARCHITECTURE.md` §12 | State says “sample references + optional embedded audio (Q-P08)”. | Replace with DEC-025 policy: unsaved recording buffers are embedded in plugin state; library samples are references with relink/collect. Define serialization mechanics separately. |
+| `DSP_ARCHITECTURE.md` §15, risk R-03 | Says “embed opt-in” and recommends reference + collect by default. | Rewrite risk around mandatory unsaved-recording embedding, large-state behavior, host save/restore constraints, interruption and recovery. |
+| `DSP_ARCHITECTURE.md` §16, Q-P08 | Repeats the superseded “Reference + collect; embed opt-in” recommendation. | Mark product policy resolved by DEC-025 and specify the remaining engineering questions only. |
+| `DSP_ARCHITECTURE.md` §3 | Candidate tree lists Slice, Tape and Spectral engine modules without tier qualifiers. | Label Granular and Sampler as R1; Slice/Tape as later-tier extension points and Spectral as L3. Do not imply R1 implementation scope. |
+| `DSP_ARCHITECTURE.md` §9.3 | Says 10 macros, “scalable to 20”. | Remove the implication that 20 is in R1; DEC-036 fixes ten macros in R1. |
+| `DSP_ARCHITECTURE.md` §12 | Suggests MIDI out “where format/host support it” and standalone MIDI clock in/out. | Reconcile with R1: MIDI clock input is required in Standalone; MIDI clock/feedback/sequencer MIDI output are not R1 commitments. |
+| `DSP_ARCHITECTURE.md` §5.6 | Proposes AU `aumu` + `aumf` variants and VST3 input bus. | Treat as options only. Validate real host insertion/routing/automation behavior before selecting the component set. |
+| `DSP_ARCHITECTURE.md` §5.3 | Memory table is raw sample payload arithmetic only. | Keep explicit estimate label; do not promote these figures to a memory budget. Add measured RSS and non-audio overhead later. |
+
+### 3.3 Requirements needing explicit architectural interpretation
+
+- `GS-ARC-002` specifies 1–20 voices per layer and `GS-ARC-003` specifies up to 128 grains per voice, while the product specification rejects arbitrary product-level caps. Document these as explicit R1 engine/voice behavior constraints (where applicable), distinct from the measured global grain budget and safe system limits.
+- Four layers at six minutes stereo float32/48 kHz represent approximately 553 MB of raw audio payload if all four buffers are resident. This excludes live-recording buffers, analysis products, copies, FX/voice state, allocator overhead and UI data. The system needs a transparent admission/eviction/replacement policy and safe behavior when memory is insufficient.
+- The current design says “identical” Standalone/plugin render and also allows host-specific I/O and transport. Define the deterministic equivalence boundary precisely: same engine state, input samples, MIDI/events, sample rate and render mode; document intentional host/device differences.
+- Define whether all four stereo layer outputs are mandatory or optional per host, and what happens when a host cannot expose the requested bus topology.
+- Define the exact master and per-layer recording tap points, including pre/post FX and mute/solo behavior, without changing the approved product scope.
+
+---
+
+## 4. Technical decision register — Q-T01…Q-T17
+
+The following is an audit recommendation, not an approval. “Proposed” means the current candidate should be evaluated; “defer” means a later gate is more appropriate. All final decisions must be recorded in `DECISIONS_LOG.md`.
+
+| ID | Topic | Current repository state | Audit recommendation / required evidence |
+|---|---|---|---|
+| Q-T01 | Language/framework | C++20 + JUCE 8 proposed | Compare a minimal AU/VST3/Standalone build, deployment targets, developer workflow and full JUCE commercial/Starter obligations. Select only after licence review Q-L04. |
+| Q-T02 | Core independence | Framework-free core proposed | Retain as the default architecture: no JUCE types in DSP/state domain APIs. Verify with a headless build boundary. |
+| Q-T03 | macOS minimum / architectures | macOS 12+ Universal 2 proposed | Verify current JUCE/SDK/host support and required Intel coverage. Record minimum OS, arm64/x86_64 build and test matrix explicitly. |
+| Q-T04 | Sample-rate handling | Source-rate playback with compensated increments proposed | Validate interpolation and aliasing across 44.1–192 kHz, source-rate mismatch, reverse playback and extreme pitch. Do not decide from memory estimates alone. |
+| Q-T05 | Long-sample strategy | RAM for granular; streaming for 60-minute Sampler L2 proposed | For R1, define resident-sample policy, allocation failure, simultaneous sample replacement and peak memory. Streaming remains a later-tier option unless R1 evidence requires it. |
+| Q-T06 | Grain windows | Versioned table bank + per-grain snapshot proposed | Specify table generation, precision, interpolation, version lifetime and click-free window changes; verify against window-sum and discontinuity tests. |
+| Q-T07 | Global grain budget | Measurement required; value open | Define a deterministic global scheduler/admission policy first. Numeric budget requires an authorized benchmark spike on the reference machine; no number may be guessed. |
+| Q-T08 | Multithreaded rendering | Architect for it; enable after R1 profiling proposed | Keep R1 single audio-thread rendering initially unless measurements prove infeasible. Define partition boundaries so later workgroup rendering does not alter DSP semantics. |
+| Q-T09 | RT-safety tooling | Allocation hook + RTSan proposed | Verify toolchain availability and CI stability; use allocation/lock/I/O guards as minimum evidence even if RTSan cannot run in all CI environments. |
+| Q-T10 | Spectral latency reporting | Open | Spectral is L3. Defer the product-facing latency policy to the Spectral architecture gate; R1 Granular/Sampler must remain zero-added-latency unless a verified dependency says otherwise. |
+| Q-T11 | Phase-vocoder window/overlap | Hann 4× baseline proposed | Spectral is L3; defer final algorithm decision to its own design gate. Preserve the current proposal as non-binding research only. |
+| Q-T12 | Parameter IDs/host exposure | Stable string IDs, expose all proposed; irreversible after release | Freeze before implementation. Define canonical string IDs, numeric host-ID mapping, reserved ranges, grouping, units/curves/defaults, automatable vs structural state, duplicate handling and migration guarantees. Generate and test a complete R1 registry inventory. |
+| Q-T13 | Modulation control rate | 16–32 samples in architecture; 16 proposed in Q list | Choose one R1 control-rate policy or a documented hybrid. Validate audio-rate destinations, fast modulation, aliasing/zipper behavior and CPU cost. |
+| Q-T14 | Granular interpolation | Cubic Hermite default proposed | Compare linear, Hermite and windowed-sinc under pitch/rate stress, CPU and aliasing metrics. DEC-027 favors quality but does not itself select an algorithm. |
+| Q-T15 | Preset/state format | JSON + external/embedded WAV proposed | Specify versioned manifest, binary audio chunk representation, checksums, atomic save, crash recovery, migration and host-state size behavior. Must implement DEC-025 exactly. |
+| Q-T16 | Audio decoding | AudioToolbox primary; portable fallback proposed | Verify required WAV/AIFF/FLAC variants, malformed files, metadata, channel layouts and licence obligations. Avoid unnecessary decoder duplication. |
+| Q-T17 | Sample rates / buffers / latency | 44.1–192 kHz; 16–4096 frames; variable blocks proposed | Verify actual supported host callback patterns and all supported sample rates. Specify minimum/maximum, variable block behavior, zero-added latency and failure handling; do not claim unsupported combinations. |
+
+### 4.1 Related questions outside Q-T01…Q-T17
+
+- **Q-P06 / DEC-020:** AU/VST3 live input. Must settle the exact plugin component(s), input bus arrangement, MIDI behavior, host routing and whether AU needs separate instrument/music-effect components.
+- **Q-P09:** target host matrix. The current proposal names Logic Pro, Ableton Live, Bitwig and Reaper; establish exact versions and which host/format combinations are release-blocking.
+- **Q-P10:** reference machine. The proposed base M1 target needs an actual machine/OS/host specification and reproducible profiling setup.
+- **Q-P08 / DEC-025:** product policy is resolved; serialization size, host state callbacks, chunking, cancellation, missing-file and restore behavior are not.
+- **Q-L04/Q-L05:** JUCE and third-party licence reviews are prerequisites to framework/dependency commitment.
+- **Q-P03:** commercial/distribution model remains a later Phase 6/8 gate, but framework licence cost must be considered now.
+
+---
+
+## 5. Architecture domains that need complete specifications
+
+The current `DSP_ARCHITECTURE.md` has useful outlines, but the following design contracts are missing or too implicit for implementation.
+
+### 5.1 Host and application boundary
+- Standalone audio/MIDI device lifecycle and device loss/reconnect.
+- AU component type(s), VST3 class/component model, bus names/configurations, channel layouts and optional/required bus negotiation.
+- MIDI event delivery, MPE, Program Change and host transport capabilities per format.
+- Host parameter identity, automation gestures, parameter flush, state save/restore and plugin lifecycle callbacks.
+- Ableton Link integration boundary and arbitration between host transport, internal clock and external MIDI Clock.
+
+### 5.2 Parameter and state model
+- Canonical parameter schema and stable ID-generation rules.
+- Mapping from string IDs to AU/VST3 numeric IDs, including collision prevention and reserved IDs.
+- Parameter metadata: range, units, normalized mapping, taper, default, smoothing class, automatable/modulatable/host-visible flags and version.
+- Structural vs continuous changes; safe-point semantics; host automation and modulation precedence.
+- Patch, layer, multi, pattern, performance set, controller mapping and global settings ownership.
+- Versioned serialization, schema migrations, sample references, embedded unsaved recordings and atomic save/restore.
+
+### 5.3 Real-time execution and ownership
+- Exact thread inventory, ownership and permitted operations.
+- Queue topology, SPSC producer/consumer assumptions, capacities, overflow policy and back-pressure.
+- Immutable runtime snapshots and safe reclamation (including audio-thread last-reference prevention).
+- Bounded work per callback, worst-case event count, sequencer scheduling and deterministic overload policy.
+- Parameter and structural-command ordering at block boundaries.
+- Device/host stop, reset, sample-rate change and buffer-size change behavior.
+
+### 5.4 Audio/DSP signal flow
+- Normative signal-flow diagram for voice, layer, FX, layer outputs, dry live input and master.
+- Exact per-layer and master recording tap points.
+- Freeze capture boundary and interaction with recording, live input, sample playback, grain scheduling, voice state, modulation, FX tails, sequencer and transport.
+- Channel mapping for mono/stereo live input and multi-channel device/host buses.
+- Sampler and granular interpolation, loop boundary and sample-swap behavior.
+
+### 5.5 Resource management
+- Memory categories and accounting: resident sample payloads, recording buffers, analysis data, grain/voice pools, FX delay lines, state serialization staging and UI waveforms.
+- Safe memory admission/rejection and replacement behavior.
+- Global grain budget policy, voice/grain overload policy and sequencer event capacity.
+- CPU measurement methodology, reference patch set and quality degradation ordering.
+- Latency accounting and host reporting.
+
+---
+
+## 6. Freeze is a required Phase 3 product/architecture contract
+
+Freeze availability is approved, but semantics are deliberately open. It is not safe to implement Freeze as a guessed “hold sample” or “stop playback” operation.
+
+The architecture specification must define, separately:
+1. What each layer Freeze captures and at what signal boundary.
+2. Whether global Freeze is exactly the atomic equivalent of enabling all four layer Freeze controls.
+3. What happens to incoming live audio and recording writes while frozen.
+4. Whether existing grains/voices continue, stop, loop, or are replaced; whether new notes can be triggered.
+5. Whether modulation, sequencer events, MIDI and transport continue.
+6. Whether layer FX and effect tails continue processing.
+7. How thaw/release transitions avoid clicks and how long the captured state remains valid.
+8. What happens if memory is exhausted or the source/device disappears during Freeze.
+9. How Freeze is exposed to MIDI/controller mappings and saved/restored in state.
+
+Any proposal must be checked against the live-performance workflow and controller-only operation. The exact product behavior should be recorded as a decision before implementation.
+
+---
+
+## 7. Required Phase 3 deliverables
+
+| Deliverable | Required content | Exit evidence |
+|---|---|---|
+| `DSP_ARCHITECTURE.md` v1.0 | Approved module boundaries, signal flow, RT model, resource policies, host integration, sample/state lifecycle and explicit deferrals | No contradictory Phase 2 decisions; all architecture decisions cross-referenced |
+| `PARAMETER_ID_SPECIFICATION.md` v1.0 | Stable IDs, host numeric mapping, metadata schema, grouping, automation semantics and migration policy | Full R1 parameter inventory generated; uniqueness and stability tests specified |
+| `THREADING_AND_OWNERSHIP_SPECIFICATION.md` v1.0 | Threads, queues, capacities, ownership, reclamation, RT prohibitions and overload behavior | Every cross-thread object has a defined owner and bounded transfer/reclamation path |
+| `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` v1.0 | Loading, recording, sample handles, embedded unsaved buffers, external references, save/restore and recovery | DEC-025 fully reflected; failure cases and size handling specified |
+| `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` v1.0 | Standalone/AU/VST3 components, input/output buses, MIDI, host capabilities and fallback behavior | Host/format matrix and unresolved compatibility evidence explicit |
+| `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 | Capture boundary, freeze/thaw state machine, interactions and failure behavior | Product behavior approved and mapped to GS-SMG-021 acceptance |
+| `PHASE3_ARCHITECTURE_TRACEABILITY.md` | Every R1 requirement → module/interface → validation evidence | 100% of 124 R1 rows mapped; no orphan requirements |
+| Updated `OPEN_QUESTIONS.md` and `DECISIONS_LOG.md` | Final status of Q-T01…Q-T17 and related decisions | Each question Approved, Rejected or explicitly deferred with a phase and rationale |
+
+---
+
+## 8. Recommended work sequence
+
+1. Reconcile architecture document against Phase 2 decisions (DEC-022…DEC-041) and remove stale policy statements.
+2. Decide framework and platform target after current SDK/host/licence verification.
+3. Specify plugin components, buses and live-input strategy; validate with the selected host matrix.
+4. Freeze parameter schema and stable host ID strategy before any public automation IDs exist.
+5. Specify sample, recording and plugin-state lifecycle, implementing DEC-025 without changing its policy.
+6. Define threading, queue capacities, ownership and overload behavior.
+7. Define Freeze semantics and update the product decision log.
+8. Define resource accounting and deterministic overload policy; separately plan the benchmark needed to set numeric budgets.
+9. Complete requirement-to-architecture traceability and independent review.
+10. Submit Phase 3 completion PR for owner review. Do not begin production implementation until Phase 3 is approved and Phase 4/5 gates are satisfied.
+
+---
+
+## 9. Explicitly outside this audit
+
+- No production DSP, plugin shell, UI, sample decoder or benchmark code is authorized.
+- No numeric CPU, RAM, latency, grain-budget or recording-duration ceiling is approved by this audit.
+- No framework, minimum macOS version, AU component type or bus topology is approved.
+- No proprietary GR-MEGA firmware, source, presets, artwork or undocumented file format may be copied or reverse-engineered.
+- Host compatibility, legal review and distribution remain separate evidence/gates; this audit does not certify them.
+
+**Audit outcome:** Phase 3 is correctly started, but not complete. The repository needs the deliverables in §7 before the architecture can be considered implementation-ready.
