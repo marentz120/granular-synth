@@ -163,22 +163,21 @@ The current `DSP_ARCHITECTURE.md` has useful outlines, but the following design 
 
 ---
 
-## 6. Freeze is a required Phase 3 product/architecture contract
+## 6. Freeze product behavior is approved; engineering details remain
 
-Freeze availability is approved, but semantics are deliberately open. It is not safe to implement Freeze as a guessed “hold sample” or “stop playback” operation.
+The owner approved Source Snapshot Freeze as DEC-042 on 2026-11-27. Product semantics are not open and must not be reopened as an architecture choice. The implementation architecture and validation plan must preserve the approved contract in `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 and acceptance criteria AC-AUD-005, AC-AUD-015…026:
 
-The architecture implementation must preserve, separately:
-1. What each layer Freeze captures and at what signal boundary.
-2. Whether global Freeze is exactly the atomic equivalent of enabling all four layer Freeze controls.
-3. What happens to incoming live audio and recording writes while frozen.
-4. Whether existing grains/voices continue, stop, loop, or are replaced; whether new notes can be triggered.
-5. Whether modulation, sequencer events, MIDI and transport continue.
-6. Whether layer FX and effect tails continue processing.
-7. How thaw/release transitions avoid clicks and how long the captured state remains valid.
-8. What happens if memory is exhausted or the source/device disappears during Freeze.
-9. How Freeze is exposed to MIDI/controller mappings and saved/restored in state.
+1. Capture the current valid source region, respecting crop/loop bounds and excluding uncommitted frames; prepare the immutable snapshot off the audio thread.
+2. Existing grains/voices continue; new MIDI notes and sequencer events use the snapshot.
+3. Transport, envelopes, LFOs, modulation, MIDI, sequencer and layer FX/tails continue.
+4. Independent recording continues at its defined tap; it does not mutate the frozen snapshot.
+5. Thaw crossfades to the previous live/rolling source.
+6. Global Freeze transitions all four layers at one logical boundary; partial failure is visible.
+7. Immutable library samples report “already static” or disable redundant capture.
+8. Missing/disconnected source or memory exhaustion fails safely, preserving the prior valid source and reporting status.
+9. Freeze state and snapshot persist under DEC-025; All Sound Off does not thaw.
 
-Any proposal must be checked against the live-performance workflow and controller-only operation. The exact product behavior should be recorded as a decision before implementation.
+Still open as engineering work: exact recording tap definition, snapshot memory accounting/admission, capture preparation/copy strategy, bounded transition work, crossfade duration, object retirement and host-state serialization limits. These do not reopen the approved product behavior.
 
 ---
 
