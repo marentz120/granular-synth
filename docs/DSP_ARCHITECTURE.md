@@ -411,9 +411,9 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 
 - **Parameter registry (§9):** the registry should be able to flag a parameter as "performance-critical" / grouped for fast controller mapping, independent of its automatable/modulatable flags. This is a registry *capability*, not a decision about which parameters get flagged — that is Phase 4/5 work.
 - **MIDI Learn (GS-MID-003) → structural state:** global and per-preset controller mappings are structural data (like a patch), not audio-thread state — they follow the existing Command-object / Structural-smoothing-class path (§4.2, §9.2), not a new communication mechanism.
-- **Controller feedback (where supported):** sending MIDI back to a controller (motorized faders, LED rings) is Message/UI-thread work (§4.1); it must never block or be read by the audio thread. No new RT constraint is introduced.
-- **Standalone MIDI I/O:** DEC-016 reinforces the existing "Standalone extras" row above (MIDI device selection, MIDI clock in/out) — bidirectional MIDI (for feedback) must be included in that standalone device-handling scope, which was previously input-only in intent.
-- **Sequencer (Q-P05) and plugin live input (Q-P06):** DEC-015 raises the practical importance of both, but neither is decided here — see OPEN_QUESTIONS.md and docs/LIVE_PERFORMANCE_SPECIFICATION.md for the (non-binding) reassessment.
+- **Controller feedback:** not required in R1 (DEC-021). If added in a later release, sending MIDI back to a controller is Message/UI-thread work (§4.1), never audio-thread work.
+- **Standalone MIDI I/O:** R1 requires MIDI input for controller operation and external MIDI Clock. MIDI feedback/output to controller LEDs or motorized faders is deferred and is not a R1 dependency.
+- **Sequencer and plug-in live input:** product scope is approved by DEC-019/DEC-020. Detailed scheduling, AU/VST3 component and bus integration, threading and host validation remain Phase 3 architecture work.
 
 ---
 
