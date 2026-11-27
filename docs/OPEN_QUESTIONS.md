@@ -1,24 +1,24 @@
 # Open Questions
 
 ## Owner decisions
-- [ ] Confirm first-release relationship to GR-MEGA: close functional parity, inspired-by with workflow improvements, or reference baseline followed by differentiated capabilities.
-- [ ] Confirm delivery formats: standalone, AU, VST3 (all proposed).
-- [ ] Confirm layer model: four fixed layers, more layers, or configurable layer count.
-- [ ] Confirm first-release engines: all reference engines, granular-first, or granular plus spectral initially.
-- [ ] Approve framework recommendation after comparison (JUCE/C++ is a candidate, not a decision).
-- [ ] Confirm minimum supported macOS version and Apple Silicon / Intel support expectations.
-- [ ] Confirm intended performance focus: studio sound design, live performance, or both.
+- [ ] Relationship to GR-MEGA: close functional parity, inspired-by with workflow improvements, or reference baseline followed by differentiated capabilities.
+- [ ] Confirm formats: standalone, AU and VST3 (currently proposed).
+- [ ] Layer model: four fixed layers, more layers, or configurable.
+- [ ] First-release engines: all reference engines, granular-first, or granular plus spectral.
+- [ ] Approve framework after comparison; JUCE/C++ is only a candidate.
+- [ ] Minimum supported macOS version and Apple Silicon/Intel expectations.
+- [ ] Main use case: studio sound design, live performance, or both.
 
-## Research questions
-- [ ] Obtain and inspect the exact GR-MEGA User Manual 1.8.d PDF; record actual page numbers and section references.
-- [ ] Determine which manual features are core instrument behavior versus firmware-version-specific.
-- [ ] Verify all numeric engine limits directly against the reference manual.
-- [ ] Identify performance workflows and MIDI/automation expectations.
-- [ ] Assess legal and product differentiation boundaries for a commercial software instrument.
+## Research
+- [ ] Inspect exact GR-MEGA User Manual 1.8.d and record page/section references.
+- [ ] Identify manual and firmware version differences.
+- [ ] Verify numeric limits directly against the manual.
+- [ ] Map performance, MIDI and automation workflows.
+- [ ] Assess legal and product-differentiation boundaries.
 
-## Technical questions
-- [ ] Define target sample rates, buffer sizes and latency expectations.
-- [ ] Define measurable CPU and memory budgets after establishing a baseline machine.
-- [ ] Determine sample formats, maximum asset size and streaming requirements.
-- [ ] Define preset/project portability and embedded-versus-linked sample behavior.
-- [ ] Define plug-in host compatibility matrix and distribution/signing requirements.
+## Technical
+- [ ] Target sample rates, buffer sizes and latency.
+- [ ] Measurable CPU/memory budgets and baseline hardware.
+- [ ] Supported sample formats, max asset size and streaming needs.
+- [ ] Preset/project portability; embedded versus linked samples.
+- [ ] Plug-in host compatibility and signing/distribution requirements.
