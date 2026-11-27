@@ -69,6 +69,11 @@ struct ProcessBlock {
     const struct BlockContext* context; // borrowed; valid only during process()
 };
 
+struct RenderCapacity {
+    FrameCount maxFramesPerBlock;       // prepared off RT from the host/device maximum
+    std::uint64_t lifecycleGeneration;  // invalidates stale prepared render resources
+};
+
 struct TimedEvent {
     SampleOffset offset;
     std::uint32_t stableOrder;
@@ -690,6 +695,7 @@ The following supporting symbols are also candidate design vocabulary used by th
 | Supporting symbol | Operation / role | Status or constraint |
 |---|---|---|
 | BuildMatrix | packageUniversal2 | Build-system concept only; architecture/deployment remains Q-T03 open. |
+| RenderCapacity | maxFramesPerBlock / lifecycleGeneration | Immutable per prepared render-resource generation; actual ProcessBlock::frames must not exceed it. No numeric maximum is selected. |
 | VoicePoolConfig | polyphonyLimit | Carries the approved per-layer voice limit; no pool capacity beyond product scope is implied. |
 | GrainPoolConfig | perVoiceLimit | Carries the approved per-voice grain ceiling; global budget remains AR-02 open. |
 | GrainRate / GrainParameters / GrainPosition | grainsPerSecond / sizeMilliseconds / normalizedDouble | Value types for existing R1 parameter ranges; no host parameter IDs are assigned. |
