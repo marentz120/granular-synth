@@ -1,6 +1,6 @@
 # Phase 3 R1 API Symbol Traceability
 
-**Version:** 0.1 — 2026-11-27  
+**Version:** 0.2 — 2026-11-27  
 **Status:** Proposed class/API-symbol traceability; no implementation, ABI or public API approval.  
 **Baseline:** docs/GRANULAR_SYNTH_REQUIREMENTS.md R1-tier rows, DEC-041, docs/R1_ACCEPTANCE_CRITERIA.md, and candidate symbols in docs/PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md §14.  
 **Branch baseline:** Phase 3 architecture branch; this document is documentation-only.
@@ -74,20 +74,20 @@ The mapping preserves the current 12 IF contracts. The IF column is copied from 
 | GS-SMG-007 | ISampleEditService::crop/softCut/normalize; IUndoHistory::apply | IF-01, IF-05, IF-06, IF-07, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-SMG-008 | IRecordingController::start/processCapture/stop; IRecorder::processCapture | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-008 | — |
 | GS-SMG-009 | ILayerProcessor::processInput; ISampleAsset::channelData | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-009 | — |
-| GS-SMG-010 | IRecordingPlayhead::position; IRecorder::processCapture | IF-01, IF-05, IF-06, IF-07, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
-| GS-SMG-011 | IRecordingBufferPolicy::reserve/initialize; IMemoryAdmission::reserve | IF-01, IF-05, IF-06, IF-07, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
+| GS-SMG-010 | IRecordingPlayhead::position; IRecorder::processCapture | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-008 | — |
+| GS-SMG-011 | IRecordingBufferPolicy::reserve/initialize; IMemoryAdmission::reserve | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-008 | — |
 | GS-SMG-012 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; ILayerProcessor::processInput | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-003, AC-AUD-004 | — |
 | GS-SMG-017 | ISampleExportService::exportWav | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-010 | — |
 | GS-SMG-019 | IMemoryAdmission::reserve; ISampleStore::prepareAsset | IF-01, IF-05, IF-06, IF-07, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | DEC-028: יעד שש דקות סטריאו ל-layer כפוף להיתכנות בטוחה; לא בוצע Benchmark. |
 | GS-SMG-020 | IRecorder::processCapture; RecordTap; IMasterMixer::mixLayers | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-006, AC-AUD-007 | — |
 | GS-SMG-021 | IFreezeController::requestLayerFreeze/requestGlobalFreeze/requestThaw | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-005 | DEC-042 מאושרת; מדיניות Global Freeze במקרה של הכנה חלקית עדיין דורשת החלטת בעלים. |
 | GS-MOD-001 | ILfo::advance; LfoConfig::rate/waveform/phase | IF-02, IF-03, IF-04, IF-09 | AC-MOD-001, AC-MOD-002 | — |
-| GS-MOD-002 | ILfo::phaseMode/advance; LfoConfig::defaultPhaseMode | IF-02, IF-03, IF-04, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | DEC-024 מאושרת: Mono כברירת מחדל ו-Poly אופציונלי לכל LFO. |
+| GS-MOD-002 | ILfo::phaseMode/advance; LfoConfig::defaultPhaseMode | IF-02, IF-03, IF-04, IF-09 | AC-MOD-002 | DEC-024 מאושרת: Mono כברירת מחדל ו-Poly אופציונלי לכל LFO. |
 | GS-MOD-003 | IModulationMatrix::addRow/evaluate | IF-02, IF-03, IF-04, IF-09 | AC-MOD-003 | — |
 | GS-MOD-004 | IModulationSourceRegistry::read; IRandomStream::nextForNote | IF-02, IF-03, IF-04, IF-09 | AC-MOD-004, AC-MOD-008, AC-MOD-009, AC-MOD-010 | — |
-| GS-MOD-005 | IModulationMatrix::evaluate; IParameterRegistry::find | IF-02, IF-03, IF-04, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
+| GS-MOD-005 | IModulationMatrix::evaluate; IParameterRegistry::find | IF-02, IF-03, IF-04, IF-09 | AC-MOD-004 | — |
 | GS-MOD-006 | IModulationAssignmentService::assign; ILfo::bindDestination | IF-02, IF-03, IF-04, IF-09 | AC-MOD-005 | — |
-| GS-MOD-007 | IModulationMatrix::copyRow/pasteRow/deleteRow | IF-02, IF-03, IF-04, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
+| GS-MOD-007 | IModulationMatrix::copyRow/pasteRow/deleteRow | IF-02, IF-03, IF-04, IF-09 | AC-MOD-003 | — |
 | GS-MOD-008 | IMacroBank::value/resolveDestinations; IParameterRegistry::find | IF-02, IF-03, IF-04, IF-09 | AC-MOD-006 | DEC-036 מאושרת: עשרה macros לכל Patch. |
 | GS-MOD-009 | IModulationMonitor::snapshot; IUiSnapshotSource::tryReadLatest | IF-02, IF-03, IF-04, IF-09 | AC-MOD-007 | — |
 | GS-SEQ-001 | ISequencer::eventsForBlock; ISequencerPattern::eventAtStep | IF-03, IF-08, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
@@ -117,7 +117,7 @@ The mapping preserves the current 12 IF contracts. The IF column is copied from 
 | GS-PRS-005 | ISampleCollector::collect; ISampleRelinker::resolveByHash | IF-02, IF-05, IF-11 | AC-PRS-005, AC-PRS-006 | — |
 | GS-PRS-006 | IStateService::captureSnapshot/serialize/prepareRestore; StateSnapshot | IF-02, IF-05, IF-11 | AC-PRS-007 | DEC-025 מאושרת: הקלטות לא שמורות מוטמעות; דגימות ספרייה נשארות references חיצוניים עם relink/collect. |
 | GS-PRS-007 | IUndoHistory::apply/undo/redo | IF-02, IF-05, IF-11 | AC-PRS-009 | — |
-| GS-PRS-008 | IClipboardService::copy/pastePatch/pasteLayer/pasteMatrixRow/pasteFxSlot | IF-02, IF-05, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
+| GS-PRS-008 | IClipboardService::copy/pastePatch/pasteLayer/pasteMatrixRow/pasteFxSlot | IF-02, IF-05, IF-11 | AC-PRS-009 | — |
 | GS-PRS-009 | IPresetCommentStore::set/get | IF-02, IF-05, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-UI-001 | IWaveformViewModel::snapshot; IUiSnapshotSource::tryReadLatest | IF-02, IF-04, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-UI-002 | IEngineControlMap::resolveEightKnobBank; IControllerMap::bind | IF-02, IF-04, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
@@ -140,11 +140,11 @@ The mapping preserves the current 12 IF contracts. The IF column is copied from 
 | GS-NFR-012 | IStateService::inspectAndMigrate; ISampleRelinker::resolveByHash | IF-01…IF-12 | AC-SMP-008, AC-PRS-010 | — |
 | GS-NFR-013 | ReleasePackagingManifest::minimumMacOS/signAndNotarize | IF-01…IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | Q-T03 פתוח; minimum macOS, signing/notarization policy טרם נקבעו. |
 
-**Inventory check:** 124 unique R1 requirement IDs from the canonical Phase 3 traceability table; 47 IDs have an explicit acceptance reference in the current audit (including cross-domain release gates); 77 do not. No acceptance IDs were invented to fill the remaining gaps.
+**Inventory check:** 124 unique R1 requirement IDs; 49 have a direct AC-table reference and four additional IDs have a cross-domain release-gate link (53 total); 71 have neither. AC trace shorthand is expanded before counting. No acceptance IDs were invented to fill the remaining gaps.
 
 ## 3. Acceptance-criteria coverage gap retained explicitly
 
-The 77 R1 IDs without an explicit acceptance reference are:
+The **71 R1 IDs without a direct AC-table reference or a separate cross-domain release-gate link** are:
 
 - GS-PLT-002
 - GS-PLT-003
@@ -195,12 +195,7 @@ The 77 R1 IDs without an explicit acceptance reference are:
 - GS-SMG-005
 - GS-SMG-006
 - GS-SMG-007
-- GS-SMG-010
-- GS-SMG-011
 - GS-SMG-019
-- GS-MOD-002
-- GS-MOD-005
-- GS-MOD-007
 - GS-SEQ-001
 - GS-SEQ-002
 - GS-SEQ-003
@@ -209,7 +204,6 @@ The 77 R1 IDs without an explicit acceptance reference are:
 - GS-SEQ-009
 - GS-SEQ-011
 - GS-SEQ-012
-- GS-PRS-008
 - GS-PRS-009
 - GS-UI-001
 - GS-UI-002
@@ -224,7 +218,9 @@ The 77 R1 IDs without an explicit acceptance reference are:
 - GS-NFR-011
 - GS-NFR-013
 
-These rows are not treated as untestable or waived. Phase 5 must add a requirement-specific acceptance/test ID or document a precise rationale linking the requirement to an existing cross-cutting criterion. The current 47/124 versus 77/124 trace-link count is preserved; a candidate API symbol does not substitute for an acceptance criterion, and neither is evidence of a passing test.
+These rows are not treated as untestable or waived. Phase 5 must add a requirement-specific acceptance/test link or document a precise rationale linking the requirement to an existing cross-cutting criterion. The current count is 49 unique R1 IDs referenced by explicit AC table rows, plus four additional IDs covered by the cross-domain release gates in `R1_ACCEPTANCE_CRITERIA.md` §7 (`GS-PLT-004`, `GS-NFR-002`, `GS-NFR-006`, `GS-NFR-007`). Thus 53/124 have an acceptance/release-gate link and 71/124 remain without one. A candidate API symbol is not acceptance coverage, and neither is evidence of a passing test. Shorthand references in the AC tables are expanded to their full requirement IDs for this count.
+
+See `PHASE5_TEST_DESIGN_BACKLOG.md` for the requirement-level Phase 5 planning backlog.
 
 ## 4. Cross-cutting consistency checks
 
@@ -250,4 +246,4 @@ These rows are not treated as untestable or waived. Phase 5 must add a requireme
 
 ## 6. Exit meaning
 
-This document closes only the candidate symbol assignment subtask for the 124 R1 rows. It does not close API design, method signature review, host adapter validation, test design, implementation readiness, acceptance coverage, CI, DSP implementation or release readiness. The next useful work is to turn the 77 missing acceptance links into a Phase 5 test-design backlog without inventing product behavior, then review the AU/VST3 callback and bus contracts against official host constraints once the relevant SDK/format choices are approved.
+This document closes only the candidate symbol assignment subtask for the 124 R1 rows. It does not close API design, method signature review, host adapter validation, test design, implementation readiness, acceptance coverage, CI, DSP implementation or release readiness. The next useful work is to complete the 71-row Phase 5 test-design backlog without inventing product behavior, then review the AU/VST3 callback and bus contracts against official host constraints once the relevant SDK/format choices are approved.
