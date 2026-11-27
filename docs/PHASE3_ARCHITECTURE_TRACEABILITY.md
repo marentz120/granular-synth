@@ -1,6 +1,6 @@
 # Phase 3 R1 Architecture Traceability
 
-**Version:** 0.1 — Phase 3 proposal  
+**Version:** 0.2 — Phase 3 proposal  
 **Status:** Initial 124-row mapping against `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0. This is an architecture coverage proposal, not evidence that the modules are implemented or tested.  
 **Baseline:** DEC-041 and `R1_RELEASE_SCOPE_MATRIX.md`.
 
@@ -10,6 +10,8 @@ Each approved R1 requirement is assigned to:
 - a primary architecture owner/module;
 - a cross-module interface where applicable;
 - an observable validation family.
+
+The domain-level mapping below is refined by `PHASE3_INTERFACE_CONTRACTS.md`, which defines 12 cross-domain interface contracts, ownership, timing, failure behavior and minimum validation obligations. That refinement is still a proposal and does not constitute passing test evidence.
 
 The table maps all 124 R1 rows from the approved inventory. A mapping is not an acceptance test pass. Numeric performance criteria remain Phase 5/7 work.
 
@@ -73,7 +75,13 @@ The R1 mapping includes the R1 portion of split-tier requirements:
 | Plugin state | Host ↔ state/sample | Versioned snapshot, embedded unsaved recordings, external sample references, recovery |
 | Audio buses | Host/device ↔ layer/master mixer | Explicit channel layout, active/inactive bus behavior and fallback semantics |
 
-## 5. Unmapped/uncertain status
+## 5. Interface-level refinement
+
+See `PHASE3_INTERFACE_CONTRACTS.md` for IF-01…IF-12. It defines the cross-domain contract obligations for host processing, parameter registry, structural commands, UI snapshots, sample assets, recording, Freeze, transport, MIDI, audio routing, plugin state and deterministic rendering. The area-to-interface index in that document refines the broad interface column above.
+
+The 124 requirement rows are still grouped by area in this document; they have not yet each been expanded into a dedicated class/API mapping row. This remains an explicit refinement task before implementation approval.
+
+## 6. Unmapped/uncertain status
 
 - No R1 requirement is intentionally left unmapped in this initial pass.
 - The mapping is by domain and module boundary, not yet by individual class/API. Class-level design belongs in the architecture specification.
@@ -81,4 +89,4 @@ The R1 mapping includes the R1 portion of split-tier requirements:
 - Numeric acceptance criteria, host-specific validation, measured budgets and test implementations remain Phase 5/7 deliverables.
 - The 124 count is reconciled to the approved R1 inventory; this table does not reclassify tiers.
 
-**Audit result:** 124/124 approved R1 requirements have a proposed architecture owner. Implementation readiness remains blocked by the open decisions and interface contracts listed above.
+**Audit result:** 124/124 approved R1 requirements have a proposed architecture owner, and the cross-domain contract set IF-01…IF-12 is now documented. This is not yet per-requirement class/API traceability and does not show that tests pass. Implementation readiness remains blocked by open technical decisions, host evidence, signal-flow details and measured resource limits.
