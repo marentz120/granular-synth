@@ -401,7 +401,7 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 | Latency | 0 for granular/sampler/tape; spectral latency reported when it processes live input (Q-T10) |
 | Sample rate / block size | Fully variable; all time constants in seconds; `prepare()` rebuilds rate-dependent tables off the RT path |
 | Offline render | Deterministic; uses same code paths; respects host "realtime vs offline" flag only for quality-tier boosts (optional) |
-| Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI clock in/out, Ableton Link integration, file-based projects |
+| Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI Clock input, Ableton Link integration, file-based projects |
 
 ---
 
