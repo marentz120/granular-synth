@@ -1,6 +1,6 @@
 # Phase 3 API and Signal-Flow Specification
 
-**Version:** 0.1 — concrete architecture proposal  
+**Version:** 0.2 — consolidated signal-flow defaults  
 **Status:** Proposed for owner/architecture review. This document does not approve a framework, public C++ ABI, plugin topology, numeric queue capacity, DSP implementation or benchmark work.  
 **Baseline:** Phase 2 merged baseline; DEC-015…DEC-042; IF-01…IF-12.  
 **Companion documents:** `PHASE3_INTERFACE_CONTRACTS.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`.
@@ -376,7 +376,7 @@ Contract:
 - Layer output and master output must be deterministic and must not alias unsafely.
 - FX tails continue through Freeze; All Sound Off silences voices/effect tails without thawing source.
 - Live-input routing and dry monitoring path must be explicit. Mono live input is centered and available to both sides of stereo layer processing (DEC-040); explicit LL/RR duplication is not the default.
-- Exact recording taps and mute/solo capture semantics remain open pending §8.
+- Recommended recording tap and mute/solo semantics are consolidated in §7, §8 and §13; they remain proposed pending host and UX validation.
 
 ### 4.11 State snapshot and serializer — IF-11
 
