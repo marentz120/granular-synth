@@ -29,7 +29,7 @@ Exact device API, aggregate-device support, hot-swap behavior and macOS minimum 
 
 - Live input can be assigned to each layer independently.
 - Each layer has input level plus wet/dry controls for live-input processing (GS-SMG-012).
-- Live input is available as a source to the layer's engine and its FX send path, subject to the final signal-flow definition.
+- Live input feeds the layer engine/FX path and also follows the parallel dry path summed before the master required by GS-ARC-007. Per-layer wet/dry controls and gain staging must preserve this approved routing.
 - Input monitoring behavior must be explicit: monitor through the selected layer processing path; no hidden direct-monitor loopback is assumed.
 - Input channel mapping supports mono and stereo sources where available.
 - Mono live input is centered and available to both sides of stereo layer processing; explicit LL/RR duplication is not the default (DEC-040).
@@ -79,7 +79,7 @@ Not R1 by current tiering:
 - Product output model includes stereo master and four stereo layer outputs.
 - In Standalone, user can route these outputs to available device channels where supported.
 - In plugin builds, exact output bus exposure and host compatibility are Phase 3 decisions.
-- Recording the stereo master mix captures the post-layer-mix stereo output at the defined master tap point; precise signal tap must be finalized in the signal-flow architecture.
+- Recording the stereo master mix captures the post-layer-mix stereo output at the defined master tap point, including the parallel dry live-input path required by GS-ARC-007; host/Standalone tap equivalence is a Phase 3 validation item.
 - Per-layer capture records that layer's signal at a consistent documented tap point, independent of other layers' mix level unless the product spec explicitly says otherwise.
 - No master-bus EQ/FX is R1; GS-FX-008 remains L3.
 
