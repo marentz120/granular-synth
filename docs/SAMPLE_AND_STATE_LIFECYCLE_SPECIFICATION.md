@@ -1,6 +1,6 @@
 # Sample and State Lifecycle Specification
 
-**Version:** 0.4 — Freeze source-retention contract added  
+**Version:** 0.5 — host render-capacity and scratch admission added  
 **Status:** Proposed; requires architecture and owner approval. No implementation is authorized.  
 **Authority:** DEC-025/028/040, GS-SMG-001…021, GS-PRS-005/006, Q-T04/Q-T05/Q-T15/Q-T16.
 
@@ -90,6 +90,27 @@ Use a non-RT reservation lifecycle:
 The reservation ledger must distinguish committed bytes from reserved-but-not-yet-materialized bytes and must avoid double-counting shared immutable library assets referenced by multiple layers. It must also distinguish logical ownership from physical copies: a shared handle is not a second sample payload, while a Freeze copy or serialization staging buffer is.
 
 No numeric headroom, warning threshold, maximum concurrent replacement count or fallback-slot count is set here. These require measured workload evidence and a bounded concurrency model before implementation.
+
+### 5.2 Render-time block capacity and transient scratch admission
+
+Render-time scratch is a separate ledger category from resident samples and recordings. It is sized once per prepared host/device configuration from the negotiated maximum block, not from the actual callback length.
+
+- AU capacity is `maximumFramesToRender`, established before render-resource allocation.
+- VST3 capacity is `ProcessSetup::maxSamplesPerBlock`, established while inactive.
+- Standalone capacity is the configured device callback maximum.
+- Let `B` be prepared capacity and `N` the actual callback frame count. Require `N <= B`; no render callback may grow, shrink, allocate or free scratch.
+- A call above `B` is a bounded adapter/configuration failure. Do not index beyond prepared storage or attempt an in-callback resize; exact host error/status mapping remains adapter-specific.
+- VST3 zero-bus parameter flush is not an audio render and must not access render scratch or advance audio/transport.
+
+For float32 scratch, the payload estimate is `B × 4 × C` bytes, where `C` is the number of channels actually materialized in engine-owned scratch. If all five stereo output buses (master + four layer stems) were copied to scratch, that component would be `40 × B` bytes. One additional stereo input staging copy would add `8 × B` bytes. These are conditional arithmetic examples, not a requirement to copy host buffers.
+
+Host input/output buffers are borrowed for the callback and are not engine-owned scratch. Count only actual internal working planes, staging copies, alignment/guard space and algorithm-specific workspaces. A read-only live-input view may be shared/fanned out to multiple layer processors without duplicating its audio payload. Physical input bus count/channel layout is negotiated by the adapter; the one-stereo-input host test configuration is not a product-level cap (DEC-020).
+
+Use checked wide byte arithmetic (candidate `uint64_t`) and validate that each allocation size fits `size_t` before allocation. `float32` sample width and a 32-bit `FrameCount` do not imply a 32-bit process. The current macOS architecture investigation concerns x86_64/arm64; Q-T03 remains open and no 32-bit macOS target is approved or implied. Long recording/frame totals and serialized byte lengths remain 64-bit.
+
+All scratch is prepared/reserved off the render thread and belongs to a lifecycle generation keyed by sample rate, maximum frames, input/output bus arrangement and any format that changes buffer shape. Reconfiguration follows the AU/VST3/Standalone lifecycle in the Plugin Component and Bus Specification. Publish only a complete prepared generation; retain the old generation until no callback can reference it, then retire it off-thread.
+
+See `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md` for equations, conditional examples and planned validation cases. Numeric headroom, block-size range, maximum input channels and memory budgets remain open; no benchmark or runtime measurement was performed.
 
 ## 6. Recording lifecycle
 
