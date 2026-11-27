@@ -408,11 +408,13 @@ public:
 
 Contract:
 - Unsaved recording buffers are embedded in plugin state; library samples remain external references with relink/collect support (DEC-025).
-- State capture must obtain immutable/committed snapshots without asking the audio thread to block.
-- Restore decodes and prepares assets off-thread; the active runtime is replaced only through IF-03 safe-point publication.
-- Missing external samples do not invalidate unrelated patch/sequencer state.
-- Corrupt or unsupported chunks produce explicit recovery status.
-- No silent omission of unsaved audio is permitted. State size/chunking and host limits require explicit failure or a validated bounded policy; exact encoding remains open.
+- State capture must obtain immutable/committed snapshots without asking the audio thread to block. The capture descriptor records a state generation and each recording's source generation/committed-frame range; mutable rolling-ring data requires a bounded retention lease or pre-reserved immutable staging copy.
+- DEC-025 recording payloads form one save transaction: the manifest cannot claim completion unless every required unsaved recording and Freeze chunk is present and verified. Chunk metadata includes lengths, format, rate, channels, frame range, generation and checksum.
+- Host callbacks follow their format-specific synchronous/asynchronous contract; no save path waits for disk I/O, audio-thread acknowledgement or global audio quiescence. If a consistent bounded snapshot cannot be supplied within the host contract, return explicit failure rather than omit audio.
+- Restore validates manifest/chunk bounds and checksums before large allocations, performs memory admission and prepares the candidate runtime off-thread; it is published as one validated safe-point transaction. Failed preparation/publication leaves the previous active runtime intact.
+- Missing external samples do not invalidate unrelated patch/sequencer state; preserve unresolved asset identity and expose relink status.
+- Corrupt or unsupported embedded chunks produce explicit recovery status; never silently replace missing recording data with silence.
+- Save finalization is atomic or recoverable after interruption. No silent omission of unsaved audio is permitted. State size/chunking and host limits require explicit failure or a validated bounded policy; exact encoding remains open.
 
 ### 4.12 Deterministic render harness — IF-12
 
