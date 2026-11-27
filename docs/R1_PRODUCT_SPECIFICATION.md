@@ -130,5 +130,9 @@ The following product decisions extend the approved baseline under the owner's e
 - DEC-034: multiple layers assigned to the same MIDI channel all receive matching incoming events.
 - DEC-035: R1 grain size range is 0.1–5000 ms.
 - DEC-036: ten macros per patch are R1; twenty are not required in R1.
+- DEC-037: Sampler Env Pile-up defaults OFF; user may enable per layer.
+- DEC-038: MPE per-note pitch-bend range is 48 semitones.
+- DEC-039: MIDI Clock Start resets transport, Continue resumes, Stop halts; clock loss after two expected beat intervals stops progression; SPP is ignored in R1.
+- DEC-040: mono live input is centered; explicit LL/RR duplication is not the default.
 
 *End of R1_PRODUCT_SPECIFICATION.md*
