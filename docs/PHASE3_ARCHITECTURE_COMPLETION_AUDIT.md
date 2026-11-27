@@ -1,6 +1,6 @@
 # Phase 3 Architecture Completion Audit
 
-**Version:** 0.1  
+**Version:** 0.2  
 **Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
 **Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
 **Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
@@ -225,7 +225,7 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 
 ## API and signal-flow refinement (2026-11-27)
 
-`PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` adds candidate service boundaries and typed interface sketches for IF-01…IF-12, plus render ordering, signal-flow topology, recording-tap alternatives and validation obligations. It does not approve framework, ABI, numeric capacities, plugin topology or implementation. Recording tap selection, dry-input routing, mute/solo capture semantics, layer output tap and exact voice processing order remain open pending owner review and host evidence.
+`PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` adds candidate service boundaries and typed interface sketches for IF-01…IF-12, plus render ordering, signal-flow topology, recording-tap alternatives and validation obligations. It does not approve framework, ABI, numeric capacities, plugin topology or implementation. The recommended recording/routing semantics are now documented consistently across the API, Lifecycle, DSP and Plugin Bus specifications; they remain proposals pending host and UX validation.
 
 
 ## Recommended signal-flow defaults added (2026-11-27)
