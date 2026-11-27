@@ -44,6 +44,10 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 | DEC-033 | Program Change recalls an explicitly assigned item in the active performance bank; unmapped program numbers are ignored and never recall arbitrary library items | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). The library remains unbounded; performance-bank slot mapping is a recall index, not a storage cap. |
 | DEC-034 | If multiple layers are assigned to the same MIDI receive channel, all matching layers receive the incoming event | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). This avoids hidden focus/priority behavior; channel assignment UI and MPE zone implementation remain later-phase details. |
 
+
+| DEC-035 | R1 granular grain-size range is 0.1–5000 ms | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27), resolving Q-M01. This chooses the documented lower bound candidate and preserves the existing 5-second upper bound; parameter scaling/taper is Phase 3. |
+| DEC-036 | R1 includes ten macros per patch; twenty macros are not required in R1 | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27), resolving Q-M06 and MAC-07. Any expansion beyond ten requires a later scope decision. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
