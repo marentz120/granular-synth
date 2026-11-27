@@ -13,16 +13,23 @@ The primary benchmark is Tasty Chips GR-MEGA. Study its documented capabilities 
 - MIDI control and automation where appropriate.
 - A genuine live-performance tool, fully controller-operable for essential operations, not merely a plugin wrapper (DEC-016; see docs/LIVE_PERFORMANCE_SPECIFICATION.md).
 
-## Proposed targets
-macOS standalone, AU and VST3. These remain subject to technical validation and owner confirmation.
+## Delivery targets
+macOS Standalone, AU and VST3 are the intended R1 delivery targets. AU/VST3 format and component details remain subject to Phase 3 validation; this is not a framework or implementation approval.
 
-## Use case (decided)
-Both studio sound design and live performance are primary — **DEC-015, Approved 2026-11-27** (owner decision on PR #2). This does not by itself decide layer count, engine scope, sequencer tier, or plugin live input (see "Not yet decided" below).
+## Primary use cases (decided)
+Both studio sound design and live performance are primary — **DEC-015, Approved 2026-11-27**. Standalone is a complete performance instrument, not merely a plug-in wrapper.
 
-## Not yet decided
-- Exact GR-MEGA parity versus inspired-by/differentiated product.
-- First-release engines and capabilities.
-- Layer, voice and grain limits.
-- Framework, supported macOS versions and CPU architectures.
+## Approved R1 product scope
+- Four independent Granular layers.
+- Granular and Sampler engines; Granular Slice deferred, Tape later (L2), Spectral later (L3).
+- Live input per layer, Freeze per layer/globally, per-layer recording and stereo master-mix recording.
+- Full central step sequencer, Patterns/Chains/Performance Sets, performance controls and generic MIDI-controller editing/operation.
+- See docs/R1_PRODUCT_SPECIFICATION.md and DECISIONS_LOG.md DEC-017…DEC-021.
+
+## Still open
+- Framework, supported macOS versions, CPU architectures and measured resource budgets.
+- Exact AU/VST3 component/bus implementation and host validation.
+- Detailed UI/UX and controller-mapping workflows.
+- Legal, naming, distribution, licensing and factory-content decisions.
 
 See docs/OPEN_QUESTIONS.md and docs/DECISIONS_LOG.md.
