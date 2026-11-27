@@ -347,7 +347,11 @@ public:
 
 Contract:
 - Host event memory is borrowed only during the process callback; device events are copied into bounded owned records before later use.
-- Stable ordering is by sample offset, then explicit source/order tie-break.
+- Events use validated block-relative offsets in `[0, frames)`; the adapter preserves host timestamps and source-local order. Out-of-block events are rejected or retained by the adapter contract, never silently retimed.
+- The merged event view is ordered by sample offset and a deterministic explicit tie-break. The tie-break must not depend on pointer identity, producer race or container iteration order.
+- Where an event/parameter class promises sample-accurate behavior, the renderer splits the block at event offsets and applies the event at the exact sample boundary. Block/control-rate classes declare that limitation explicitly.
+- Host automation, MIDI mapping, sequencer parameter locks and UI writes are separate writers; precedence is parameter-class-specific and remains open until a writer-precedence matrix is approved. Queue arrival order is not a precedence policy.
+- Modulation is evaluated as a contribution to the parameter base value; DEC-031 shared per-layer macro bases and per-voice modulation remain distinct.
 - If multiple layers share a MIDI channel, all matching layers receive the event (DEC-034).
 - MPE per-note pitch bend range is 48 semitones (DEC-038); zone negotiation remains a host/device integration detail.
 - Program Change selects only an explicitly assigned item in the active performance bank; unmapped values are ignored (DEC-033).
