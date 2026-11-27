@@ -16,7 +16,7 @@
 ## Tier discipline
 
 - **Approved product decisions:** DEC-015…DEC-040 define the product behavior; DEC-041 approves all release-tier placements. These decisions are binding and are not reopened by this matrix.
-- **Existing R1 rows:** Requirements labelled R1 in GRANULAR_SYNTH_REQUIREMENTS.md remain the current scope baseline unless explicitly marked proposed/unapproved in the source documents.
+- **Approved tiers versus technical proposals:** DEC-041 approves each requirement's release tier. Any numeric value or implementation detail explicitly tied to Q-Txx remains a proposal until its Phase 3/5 technical gate.
 - **Approved Phase 2 product decisions:** Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16, Q-M01, Q-M05, Q-M06, Q-M11 and Q-M12 are resolved by DEC-022…DEC-037; MIDI and mono-input behavior are further settled by DEC-038…DEC-040. Technical serialization, host-state implementation, parameter models and measured resource limits remain later-phase gates.
 - **Technical proposals:** Q-T01…Q-T17 are not approved architecture decisions. Numeric performance limits, formats, component/bus layout and serialization are not settled by this matrix.
 - **Benchmark parity is not scope authority:** a feature in GR_MEGA_FEATURE_MAP.md is not R1 unless it is explicitly represented in the GRANULAR SYNTH requirements or approved decisions.
@@ -35,5 +35,5 @@
 - [ ] Every GS requirement row has one explicit tier and traceable source; no "Pending" tier remains.
 - [ ] Approved product decisions and remaining technical/evidence questions are visibly separated.
 - [ ] Requirement totals reconcile with the source inventory.
-- [ ] No row contradicts DEC-015…DEC-037 or R1_PRODUCT_SPECIFICATION.md.
+- [ ] No row contradicts DEC-015…DEC-041 or R1_PRODUCT_SPECIFICATION.md.
 - [ ] Owner reviews and approves the Phase 2 PR; merge remains an owner gate.
