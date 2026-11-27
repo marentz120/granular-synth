@@ -36,7 +36,7 @@
 | RT workers | Do not enable in R1 absent measured need | Q-T08 |
 | Sample data | Immutable decoded float32 buffers; off-thread decode/analysis and safe swap | Q-T04/Q-T05/Q-T16 |
 | Plugin state | Embed unsaved recordings; external library references with relink/collect | DEC-025; host state prototype |
-| Freeze | Adopt source-snapshot Freeze as proposed in `FREEZE_BEHAVIOR_SPECIFICATION.md` | Owner approval required |
+| Freeze | Source Snapshot Freeze per `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 | **Approved — DEC-042**; engineering limits remain open |
 | R1 DSP latency | Granular and Sampler add no algorithmic latency | GS-NFR-004 validation |
 | Resource ceilings | Measured safe limits, deterministic overload and user-visible failure; no guessed numeric caps | Q-T07 and Phase 5 |
 
@@ -56,7 +56,7 @@ The following are architecture/product decisions that should not be silently com
 1. Framework and core boundary (Q-T01/Q-T02), subject to licence and prototype evidence.
 2. Minimum macOS and Universal 2 support target (Q-T03).
 3. Parameter ID and host-exposure contract (Q-T12), irreversible once public automation is shipped.
-4. Freeze semantics (DEC-020/GS-SMG-021) as specified or amended in `FREEZE_BEHAVIOR_SPECIFICATION.md`.
+4. Freeze semantics are approved as Source Snapshot (DEC-042); numeric memory limits, capture duration and crossfade remain engineering gates.
 5. AU component strategy and host-visible bus topology (Q-P06), subject to host validation.
 
 Other numeric values remain conditional on measurement and must not be approved by document wording alone.
