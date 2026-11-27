@@ -1,8 +1,8 @@
 # Live Performance Specification
 
-**Status:** Draft. New document, created in direct response to two owner decisions recorded on PR #2 (2026-11-27): **DEC-015** (Q-P19 resolved — both studio sound design and live performance are primary use cases) and **DEC-016** (controller-only live operability is a core R1 requirement). Those two decisions, and the requirements they produce (GS-MID-008, GS-UI-007 in GRANULAR_SYNTH_REQUIREMENTS.md), are the only things this document treats as approved. Everything else below — workflow details, mapping architecture, acceptance-criteria numbers, and in particular the sequencer reassessment in §10 — is a **proposal/recommendation for ChatGPT and owner review**, not a decision. This document does not start Phase 4 (UI/UX) and does not authorize any implementation.
+**Status:** Product behavior baseline approved under DEC-015…DEC-021 and the owner's explicit delegation to ChatGPT as product manager. UI layouts, mapping UX, DSP architecture, numeric acceptance thresholds and implementation remain later-phase work; this document does not authorize implementation.
 
-**Version:** 0.1
+**Version:** 0.2
 **Inputs:** CLAUDE.md, DECISIONS_LOG.md (DEC-015, DEC-016), OPEN_QUESTIONS.md (Q-P05, Q-P06, Q-P12, Q-T01, Q-T12), GRANULAR_SYNTH_REQUIREMENTS.md (GS-MID-*, GS-UI-*), DSP_ARCHITECTURE.md §4, §9, §12a, GR_MEGA_FEATURE_MAP.md (performance workflows, §11).
 
 ---
@@ -136,26 +136,35 @@ Numeric thresholds (if any are needed beyond pass/fail) are deferred to Phase 5,
 
 ---
 
-## 10. Sequencer reassessment (recommendation only — Q-P05 is **not** approved here)
+## 10. Sequencer decision — R1 (approved; supersedes the former L2 recommendation)
 
-DEC-009 ("step sequencer in L2, not R1") was reasoned primarily from "DAW hosts sequence already" — an argument that assumes a studio/DAW context. DEC-015 confirms live performance is equally primary, and a solo live performer running the **standalone** app has no DAW host to fall back on for sequencing.
+The former recommendation to defer the full sequencer to L2 is **superseded by DEC-019**. The owner chose a full central step sequencer for R1 after considering the standalone live-performance requirement.
 
-**Analysis (not a decision):**
+The authoritative feature-level behavior is in docs/R1_PRODUCT_SPECIFICATION.md §4. Summary:
 
-- Arguments for keeping the sequencer in L2 (unchanged):
-  - The benchmark's sequencer is deep (64 steps, 7 notes/step, 4 mod lanes, 16 p-lock lanes, ties — GR_MEGA_FEATURE_MAP.md) and would be a large, self-contained R1 cost (DEVELOPMENT_ROADMAP.md milestone sizing already treats it as L2-sized work).
-  - R1 already ships per-layer drone/play mode, host-synced LFOs, and (with this document) full controller-only performance control of macros/scan/pitch/layer mix — a meaningful live performance is possible without a step sequencer.
-  - Scope discipline: CLAUDE.md's phase gating explicitly warns against building everything in parallel; adding sequencer work to R1 now would expand scope that Phase 2 has not yet frozen.
-- Arguments for reconsidering (new, from DEC-015):
-  - A live performer without a DAW and without a step sequencer has no on-board pattern/groove tool at all in R1 — for live-performance-primary use this is a real capability gap, not just a "nice to have."
-  — A **much smaller** performance-oriented tool (e.g., simple pattern/mute recall, not the full 64-step/p-lock system) could close much of this gap at a fraction of the full sequencer's cost, without pulling the whole L2 sequencer forward.
+- One central sequencer controls the four layers.
+- TB-3-inspired direct step-based workflow; original GRANULAR SYNTH interaction design.
+- Variable pattern length and step/edit resolution; no arbitrary product-level maximum.
+- Up to eight simultaneous events per step, freely distributed across the four layers.
+- Events can trigger Grains and control layer/granular parameters independently.
+- Patterns can be saved, recalled, switched and chained; switching during playback occurs at bar end.
+- Internal BPM, MIDI Clock, Ableton Link and DAW/host transport synchronization.
+- Quantization, triplets, Swing, Humanize and Microtiming.
+- Automatic latched granular Fill across all active layers, with continuous intensity control; Fill changes granular character, not the rhythmic structure.
+- Immediate Mute for layers and individual steps/events, with selectable unmute behavior for an individual event.
+- Independent Pattern Library plus Pattern data stored with Presets; changing Preset does not replace the active Pattern.
+- Ordered Performance Sets.
+- Live editing with bar-end application, explicit Save, temporary Draft on Pattern switch, full Undo/Redo and no persistent version archive.
+- All sequencer operations, including editing, are MIDI-controller accessible. Generic MIDI controllers are supported; each controller's physical capabilities determine the available ergonomics.
 
-**Recommendation (for ChatGPT/owner review, not approved):** keep the full step sequencer in L2 as before (DEC-009 unchanged), but flag for Phase 2 scoping discussion whether a minimal performance pattern tool should be added to the R1 definition as a *separate, smaller* requirement — distinct from GS-SEQ-001 and the rest of the L2 sequencer block. This document does not create that requirement or change any tier; it only asks that Phase 2 consider it explicitly in light of DEC-015.
+This is a product requirement, not an architecture choice. Sequencer data structures, scheduling, CPU limits, parameter ownership and thread boundaries are Phase 3 work. Acceptance tests and numerical thresholds are Phase 5 work.
 
----
+## 11. Remaining questions and later gates
 
-## 11. Summary of what remains open
+The product scope questions Q-P04, Q-P05, Q-P06, Q-P12 and Q-P20 are answered by DEC-017…DEC-021. Remaining open questions concern:
+- AU/VST3 component and bus implementation for live input (Phase 3).
+- Framework, parameter IDs/host exposure, sample and preset persistence, thread model and resource budgets (Phase 3).
+- Detailed UI workflows, MIDI mapping editor and controller-only acceptance workflow (Phase 4/5).
+- Numeric performance and acceptance thresholds (Phase 5).
+- Legal/IP, naming, distribution and licensing questions (pre-release).
 
-Nothing in this document resolves Q-P04, Q-P05, Q-P06, Q-P12, Q-T01, or Q-T12 — see OPEN_QUESTIONS.md for their current (unchanged, except for the cross-references added in this revision) status. The only approvals this document relies on are DEC-015 and DEC-016, both already recorded in DECISIONS_LOG.md before this document was written.
-
-*End of LIVE_PERFORMANCE_SPECIFICATION.md*
