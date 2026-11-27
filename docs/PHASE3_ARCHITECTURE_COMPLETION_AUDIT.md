@@ -1,6 +1,6 @@
 # Phase 3 Architecture Completion Audit
 
-**Version:** 0.2  
+**Version:** 0.3  
 **Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
 **Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
 **Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
@@ -21,7 +21,7 @@ The repository already contains a substantial **candidate** architecture in `DSP
 2. Audio/plugin component and bus design is not host-validated, especially AU live input (Q-P06 / DEC-020 / Q-P09).
 3. Stable parameter IDs, host exposure, parameter grouping and migration rules are not frozen (Q-T12).
 4. Sample and recording-buffer lifecycle, including embedded plugin-state serialization, is incomplete (Q-T04…Q-T05, Q-T15…Q-T16, DEC-025).
-5. Freeze product behavior is now approved as Source Snapshot (DEC-042); capture duration, memory budget, crossfade and RT implementation remain engineering work.
+5. Freeze product behavior is approved as Source Snapshot (DEC-042); the rolling-buffer retention lease and single global transaction are now specified as candidate contracts, while exact mechanisms, spare capacity, memory budget, crossfade and RT proof remain engineering work.
 6. Real-time ownership, object retirement, command-queue capacity and overload behavior need a complete bounded model.
 7. CPU, memory, latency and grain-budget values are not measured. The current memory figures are explicitly raw-payload arithmetic, not measured RSS or an approved budget.
 8. The R1 architecture has not been traced to all 124 R1 requirements (100% module/interface coverage is a roadmap exit criterion).
@@ -177,7 +177,7 @@ The owner approved Source Snapshot Freeze as DEC-042 on 2026-11-27. Product sema
 8. Missing/disconnected source or memory exhaustion fails safely, preserving the prior valid source and reporting status.
 9. Freeze state and snapshot persist under DEC-025; All Sound Off does not thaw.
 
-Still open as engineering work: owner review and host/UX validation of the proposed recording taps, snapshot memory accounting/admission, capture preparation/copy strategy, bounded transition work, crossfade duration, object retirement and host-state serialization limits. These do not reopen the approved product behavior.
+Still open as engineering work: owner review and host/UX validation of the proposed recording taps; selection and proof of the rolling-source retention mechanism and spare capacity; snapshot memory accounting/admission; bounded transition work; crossfade duration; object retirement; and host-state serialization limits. The key concurrency invariant is now explicit: committed frames may be overwritten by a rolling writer, so an off-thread Freeze copy must hold a bounded retention lease or fail before switching. Global Freeze is specified as one transaction payload so successful layers cannot land on different render boundaries. These details do not reopen the approved product behavior.
 
 ---
 
@@ -187,7 +187,7 @@ Still open as engineering work: owner review and host/UX validation of the propo
 |---|---|---|
 | `DSP_ARCHITECTURE.md` v1.0 | Approved module boundaries, signal flow, RT model, resource policies, host integration, sample/state lifecycle and explicit deferrals | No contradictory Phase 2 decisions; all architecture decisions cross-referenced |
 | `PARAMETER_ID_SPECIFICATION.md` v1.0 | Stable IDs, host numeric mapping, metadata schema, grouping, automation semantics and migration policy | Full R1 parameter inventory generated; uniqueness and stability tests specified |
-| `THREADING_AND_OWNERSHIP_SPECIFICATION.md` v1.0 | Threads, queues, capacities, ownership, reclamation, RT prohibitions and overload behavior | Every cross-thread object has a defined owner and bounded transfer/reclamation path |
+| `THREADING_AND_OWNERSHIP_SPECIFICATION.md` v1.0 | Threads, queues, capacities, ownership, reclamation, RT prohibitions, rolling-source retention leases and global Freeze transaction behavior | Every cross-thread object has a defined owner and bounded transfer/reclamation path; rolling-source reads cannot race ring overwrite |
 | `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` v1.0 | Loading, recording, sample handles, embedded unsaved buffers, external references, save/restore and recovery | DEC-025 fully reflected; failure cases and size handling specified |
 | `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` v1.0 | Standalone/AU/VST3 components, input/output buses, MIDI, host capabilities and fallback behavior | Host/format matrix and unresolved compatibility evidence explicit |
 | `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 | Capture boundary, freeze/thaw state machine, interactions and failure behavior | Product behavior approved and mapped to GS-SMG-021 acceptance |
@@ -234,6 +234,8 @@ The API/signal-flow proposal now recommends one coherent routing contract across
 
 
 ## Cross-document consistency audit — 2026-11-27
+
+A deeper concurrency review found an additional Freeze gap: a committed-frame count does not keep a rolling-ring region alive while a non-RT snapshot copy is in progress. The Threading, Lifecycle, API, Interface and Acceptance documents now require a bounded retention lease (or equivalent segment rotation), independent recorder write space, and safe pre-switch failure when retention cannot be guaranteed. Global Freeze is represented as one bounded transaction with per-layer outcomes, preventing four independent commands from applying at different boundaries. The exact retention implementation and capacity remain open; no code or measurement was run.
 
 A deeper comparison against the approved requirement inventory found and corrected a material routing contradiction:
 
