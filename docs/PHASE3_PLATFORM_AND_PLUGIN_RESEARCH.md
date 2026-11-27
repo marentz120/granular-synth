@@ -1,6 +1,6 @@
 # Phase 3 Platform and Plugin Research
 
-**Research date:** 2026-11-27 (official AU/VST3 callback cross-check added 2026-11-27)  
+**Research date:** 2026-11-27; AU component strategy update: 2026-11-28  
 **Status:** Evidence note. This document does not approve a framework, deployment target, plugin component set or host compatibility claim.
 
 ## 1. JUCE 8 licensing — current public terms
@@ -173,7 +173,7 @@ Official sources checked 2026-11-28:
 - https://developer.apple.com/documentation/audiotoolbox/kaudiounittype_musiceffect
 - https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/AudioUnit.html
 - https://developer.apple.com/documentation/audiotoolbox/auaudiounit
-- https://developer.apple.com/documentation/avfaudio/avaudiounitinstrument
+- https://developer.apple.com/documentation/avfaudio/avaudiounitmidiinstrument
 - https://developer.apple.com/documentation/avfaudio/avaudiouniteffect/init%28audiocomponentdescription%3A%29
 
 ### 10.2 Revised recommendation
