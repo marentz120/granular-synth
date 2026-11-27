@@ -19,3 +19,4 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [TESTING_STRATEGY.md](TESTING_STRATEGY.md) | Test approach and release validation | Initial principles (Phase 5) |
 
 - PHASE3_API_SYMBOL_TRACEABILITY.md — candidate class/API-operation mapping for all 124 R1 requirements; acceptance gaps and owner gates remain explicit.
+- [PHASE5_TEST_DESIGN_BACKLOG.md](PHASE5_TEST_DESIGN_BACKLOG.md) — 71 R1 requirements still needing explicit acceptance/test links or cross-cutting rationale; planning only, no thresholds or test IDs assigned.
