@@ -4,6 +4,15 @@
 **Version:** 1.0 (Phase 2 scope and specification completion, 2026-11-27)
 **Inputs:** GR_MEGA_FEATURE_MAP.md (manual 1.8.d + fw 1.8.x release notes), PRODUCT_VISION.md, CLAUDE.md.
 
+## Change summary (v0.5 → v1.0)
+
+- Approved the release-tier classification for all 168 requirement rows under DEC-041.
+- Resolved product-level questions Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16 and relevant manual ambiguities through DEC-022…DEC-040.
+- Moved GS-SEQ-010 (Patch spray/bias) to L2; benchmark semantics remain unverified and it is not an R1 dependency.
+- Added six detailed domain specifications, the consolidated R1 Release Scope Matrix and product-level R1 Acceptance Criteria.
+- Reconciled requirement totals: 124 R1, 27 L2, 9 L3, 8 OPT, 0 Other (168 total).
+- Numeric technical targets, architecture choices, measured resource limits and implementation remain gated to later phases.
+
 ## Change summary (v0.4 → v0.5)
 
 Corrections only — no decision status or R1 scope changed beyond what DEC-017…DEC-021 already approved:
