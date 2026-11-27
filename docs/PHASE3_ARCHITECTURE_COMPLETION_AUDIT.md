@@ -231,3 +231,15 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 ## Recommended signal-flow defaults added (2026-11-27)
 
 The API/signal-flow proposal now recommends one coherent routing contract across engine, recorder and host adapters: layer recording and layer output are post-FX/pre-fader; layer stem capture is independent of mute/solo; master recording is post-layer-mix/pre-host-output and reflects fader/mute/solo; live input feeds each layer before FX and follows the required parallel dry-to-master path (GS-ARC-007), with DEC-040 mono centering; voice chain preserves engine + sub-oscillator → LPF → HPF, with amp-envelope/pan placement pending validation. These are engineering recommendations pending host and UX validation, not new product-level decisions.
+
+
+## Cross-document consistency audit — 2026-11-27
+
+A deeper comparison against the approved requirement inventory found and corrected a material routing contradiction:
+
+- The initial Phase 3 recommendation to omit a parallel dry live-input path contradicted **GS-ARC-007**, which explicitly requires dry live input to be summed before the master. That recommendation has been removed from the API, DSP, Lifecycle, Plugin Bus, Interface Contracts and Roadmap documents.
+- The reconciled proposal now routes live input both into the per-layer wet/FX path and through the required parallel dry path to the master. The master recording tap includes both paths. Per-layer stem/output taps remain post-FX/pre-layer-fader and represent the wet layer path. Host adapters must prevent accidental double summing of layer outputs.
+- The voice-chain description now preserves the explicit GS-ARC-007 order: engine + sub-oscillator → LPF → HPF. Amp-envelope and pan placement remain engineering details requiring validation.
+- The four serial FX slots per layer (R1 acceptance criteria) are distinct from the seven available effect types approved by DEC-023; there is no count conflict. Exact slot behavior/order and per-effect parameters remain to be reconciled with the Effects Specification.
+
+This is a documentation correction to preserve approved product scope, not a new product decision. The revised routing remains an architecture proposal pending owner review and host/UX validation. No implementation, benchmark or merge was performed.
