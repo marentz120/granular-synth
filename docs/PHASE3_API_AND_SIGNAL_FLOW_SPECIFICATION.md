@@ -668,3 +668,26 @@ These are coherent engineering defaults, not changes to the approved product fea
 | Verification and release | IRealtimeAudit::checkCallbackPath; IRandomStream::seed/nextForNote; IDspTestRegistry::casesForComponent; IRealtimeLoadAcceptanceProfile::evaluate; ReleaseValidationMatrix::auval/pluginval/hostMatrix; ReleasePackagingManifest::architectures/minimumMacOS/signAndNotarize; HostParameterManifest::appendOnlyLookup | These are planned test/build contracts, not executed validation. Q-T03, Q-T07, Q-T12 and Q-P09 remain open. No benchmark is authorized by this catalogue. |
 
 The exact C++ signatures, object layouts, ownership types and concrete test fixtures are still to be specified. The candidate names below are used by PHASE3_API_SYMBOL_TRACEABILITY.md to make the 124-row mapping auditable without silently freezing implementation details.
+
+### 14.1 Supporting value types and policy interfaces used by the traceability matrix
+
+The following supporting symbols are also candidate design vocabulary used by the 124-row matrix. They are listed here so every qualified symbol in the matrix has a declared home; they do not add product behavior or settle open policies.
+
+| Supporting symbol | Operation / role | Status or constraint |
+|---|---|---|
+| BuildMatrix | packageUniversal2 | Build-system concept only; architecture/deployment remains Q-T03 open. |
+| VoicePoolConfig | polyphonyLimit | Carries the approved per-layer voice limit; no pool capacity beyond product scope is implied. |
+| GrainPoolConfig | perVoiceLimit | Carries the approved per-voice grain ceiling; global budget remains AR-02 open. |
+| GrainRate / GrainParameters / GrainPosition | grainsPerSecond / sizeMilliseconds / normalizedDouble | Value types for existing R1 parameter ranges; no host parameter IDs are assigned. |
+| LfoConfig | rate / waveform / phase / defaultPhaseMode | Must preserve DEC-024 Mono default and per-LFO Poly/Mono selection. |
+| SamplerLayerConfig | envPileUpEnabled | Default remains OFF per DEC-037. |
+| IResampler | prepare | Non-RT preparation or explicitly bounded render-time strategy; final algorithm remains open. |
+| ISampleRatePolicy | prepareForRate | Coordinates rate changes off RT; must preserve GS-PLT-003/GS-NFR-010 without claiming untested support. |
+| IScanController | positionForBlock | Applies the approved sample-region/scan semantics; does not introduce additional scan modes. |
+| ISequencerPattern | eventAtStep | Data access for the single central sequencer; event limits follow DEC-019 and the R1 requirement. |
+| IPerformanceSet / IPerformanceBank | nextPattern / lookup | Separate sequencer performance ordering from explicit Program Change bank mapping (DEC-033). |
+| IParameterWriterPolicy | resolve | Placeholder for AR-01; no writer precedence is selected by naming this interface. |
+| IParameterRuntime | resetControllers | Reset-controller semantics remain distinct from All Notes Off and All Sound Off. |
+| ParameterScaleVersion | versioned scale conversion | Preserves preset sound across schema versions; Q-T15 remains open. |
+
+No implementation or benchmark was run. If a future implementation uses different names or combines these responsibilities, update the traceability matrix rather than treating this candidate vocabulary as a binding ABI.
