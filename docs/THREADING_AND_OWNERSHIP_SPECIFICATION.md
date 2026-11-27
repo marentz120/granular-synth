@@ -86,6 +86,17 @@ A global Freeze request is one bounded transaction, not four independently publi
 
 Avoid general-purpose shared_ptr destruction on the audio thread. If reference counting is used, its final-release behavior must be controlled and tested.
 
+### 4.2 Replacement generations and retirement saturation
+
+- Each replaceable asset slot has a monotonically increasing request generation assigned by its non-RT coordinator. The audio thread accepts only the currently authorized generation; a late completion from an older request is rejected and retired by its non-RT owner.
+- Publication is an ownership-transfer point: before successful bounded-queue publication, the producer owns the prepared payload; after publication, the command/engine ownership contract owns it. Queue-full or command rejection must not leak or prematurely destroy the payload.
+- Active voices/grains/sampler heads must retain a stable asset lifetime token independent of the slot's current handle. Replacing the slot does not invalidate readers already using the previous asset.
+- The audio thread must not depend on a reference-count decrement being the final release. Final destruction is explicitly deferred to housekeeping.
+- Retirement queue full is not permission to overwrite an older retirement entry. The fallback storage is bounded and preallocated; if all retirement capacity is occupied, admission of further structural replacements must be stopped/rejected before another swap can create an unretirable object. The exact handshake that applies backpressure to non-RT producers, fallback capacity and worst-case proof remain open engineering details.
+- Every asset lifecycle transition exposes a non-RT status/generation so UI and state capture can distinguish requested, prepared, pending, active, superseded, rejected and retired. Status reporting must not expose raw runtime pointers.
+
+
+
 ## 5. Structural update protocol
 
 1. Non-RT producer validates request and builds all required objects.
