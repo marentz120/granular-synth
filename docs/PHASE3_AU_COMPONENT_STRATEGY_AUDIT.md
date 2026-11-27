@@ -4,7 +4,7 @@
 **Reviewed:** 2026-11-28  
 **Status:** Architecture research and recommendation only. No AU component subtype, AU generation (v2/v3), framework, host compatibility claim or implementation is approved.  
 **Authority:** DEC-020, DEC-026, GS-ARC-006, GS-SMG-020, Q-P06, Q-P09.  
-**Related documents:** `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md`, `PHASE3_HOST_CAPABILITY_EVIDENCE_MATRIX.md`, `PHASE3_ARCHITECTURE_DECISION_REGISTER.md`.
+**Related documents:** `DSP_ARCHITECTURE.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md`, `PHASE3_HOST_CAPABILITY_EVIDENCE_MATRIX.md`, `PHASE3_ARCHITECTURE_DECISION_REGISTER.md`.
 
 ## 1. Executive finding
 
