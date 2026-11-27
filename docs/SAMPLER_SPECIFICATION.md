@@ -2,7 +2,7 @@
 
 **Version:** 0.1 — Phase 2 working specification  
 **Status:** R1 product behavior specification; product scope decisions approved by DEC-030/037. No DSP implementation authorized.  
-**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-SMP-001…007 and GS-SMG-001…021; DEC-017…020.  
+**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-SMP-001…007 and GS-SMG-001…021; DEC-017…020, DEC-030 and DEC-037.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §4 and §9.3.
 
 ## 1. R1 role and boundary
