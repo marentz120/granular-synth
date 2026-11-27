@@ -1,6 +1,6 @@
 # Threading and Ownership Specification
 
-**Version:** 0.2 — Freeze source-retention and transaction contract added  
+**Version:** 0.3 — AU/VST3 callback lifecycle constraints added  
 **Status:** Proposed; requires architecture approval. No implementation is authorized.  
 **Authority:** REQ-AUD-001…003, GS-NFR-001/005/006, DEC-020/025, Q-T08/Q-T09.
 
@@ -191,3 +191,33 @@ Required instrumentation/tests:
 - Whether the host can call a given lifecycle method on a non-message thread: verify per SDK/format.
 
 **Status:** This proposal establishes the ownership and bounded-communication contract needed before implementation. It does not set measured resource values or authorize code.
+
+## 10. AU/VST3 callback execution and reconfiguration constraints
+
+This section refines the generic thread model using official format documentation. It does not choose a framework or authorize host-shell code.
+
+### 10.1 AU execution
+
+- The host caches the AU render block before realtime rendering. Treat the resulting render invocation as the RT boundary; no adapter operation inside it may allocate, block, log or perform I/O.
+- The host sets maximumFramesToRender before render-resource allocation and cannot change it while resources remain allocated. Preallocate for that maximum. A changed maximum or bus format requires a controlled deallocation/reconfiguration/allocation lifecycle; do not resize callback storage in internalRenderBlock.
+- AU scheduleParameterBlock may be called from any thread, including an RT render thread. The wrapper must preserve the event timing while placing the normalized event into bounded storage. Do not connect this multi-context entry point directly to an SPSC queue unless a single-producer guarantee is established by the adapter.
+- A failed AU input pull invalidates the current input data. Publish an explicit unavailable-input state for that call; never attempt to read stale or null sample memory.
+- Host transport and MPE capabilities are queried through AU APIs but may not be available or valid in every host. Context absence is data, not a reason to invent a clock or MIDI capability.
+
+### 10.2 VST3 execution
+
+- VST3 process() and setProcessing() may execute on the audio thread. Both paths must be bounded and allocation-free.
+- setupProcessing() establishes sample rate and maximum block size while the processor is inactive. Steinberg documents that these values cannot change while the component is active. Reconfiguration must stop processing, deactivate, prepare/setup the new configuration, reactivate and restart using generation checks.
+- A VST3 process call may be issued with no audio buffers to flush parameters (numInputs = 0, numOutputs = 0). The adapter must classify this separately from an audio block, apply the permitted parameter/event updates, and avoid touching absent bus arrays or advancing audio/transport by an invented frame count.
+- The host may omit trailing inactive buses from the per-call arrays. Use numInputs/numOutputs before indexing. For a bus entry that is present, honor its negotiated channel count; inactive channel sample pointers may be null. Do not equate declared-bus count, active-bus count and current array length.
+- VST3 process context is optional. Request required fields through IProcessContextRequirements when using the applicable SDK; validate the returned context flags for each call.
+- In offline VST3 operation, state callbacks may occur on the same thread as processing. Immutable snapshot/restore preparation remains required; do not assume state callbacks always arrive on a UI thread or that offline mode makes mutable shared-state access safe.
+
+### 10.3 Cross-format concurrency consequences
+
+- A format callback may have a different producer/thread topology than the generic UI/loader queues. Document every adapter ingress separately before selecting SPSC/MPSC/mailbox primitives.
+- The normalized process context must include an explicit process kind and per-call bus-entry validity, not just frame count and nullable pointers.
+- Sample-rate, maximum-block-size, bus-arrangement and render-capacity changes are lifecycle transactions. Prepare new resources off the render thread, advance the lifecycle generation, and publish only after the old configuration is no longer active under the host contract.
+- State callbacks may be concurrent with realtime rendering in one format/context and sequential on the processing thread in another. Use immutable generation-consistent snapshots and host-specific callback rules; never solve this by blocking the render thread.
+
+These constraints are API-derived. Exact host behavior, callback sequences and live-input/output exposure still require the authorized host matrix; no host prototype or benchmark was run.
