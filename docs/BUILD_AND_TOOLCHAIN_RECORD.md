@@ -3,7 +3,7 @@
 **Version:** 0.1 — Milestone A0
 **Status:** Record of what the A0 build actually is and what it deliberately does not decide. This document approves nothing.
 **Authority:** Owner authorization comment on PR #6, 2026-11-27 — "Milestone A0 only: framework-free build & headless test skeleton".
-**Branch base:** `phase3/architecture-completion-audit` @ `b0371db59ae6fc4b913142b9af503f1ae45b61d6`.
+**Branch base (after synchronization):** `phase3/architecture-completion-audit` @ `f4c5285a9e51b9c855a099ce7d4ac0131a4472ea`.
 
 ## 1. What A0 contains
 
@@ -15,7 +15,7 @@
 | Build system | CMake ≥ 3.22 + `CMakePresets.json` | Presets: `macos-debug`, `macos-release`, `ci-debug`, `ci-release` |
 | Determinism guard | `cmake/GsDeterminism.cmake` | `-ffp-contract=off`; refuses fast-math style flags at configure time |
 | Core-boundary guard | `cmake/GsNoFrameworkGuard.cmake` | CTest check that `src/core` contains no framework/plug-in SDK includes |
-| CI | `.github/workflows/ci.yml` | macos-13 (x86_64) + macos-14 (arm64), Debug + Release |
+| CI | `.github/workflows/ci.yml` | macos-15-intel (x86_64) + macos-15 (arm64), Debug + Release |
 
 ## 2. What A0 deliberately does NOT decide
 
