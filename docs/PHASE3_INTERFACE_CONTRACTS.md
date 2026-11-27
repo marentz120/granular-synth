@@ -42,6 +42,17 @@ Every interface must define its producer, consumer, data ownership, execution co
 - Global Freeze is one bounded transaction; four independent layer commands must not be allowed to land on different render boundaries. The current successful-subset behavior for mixed preparation results is proposed, not approved; owner review must resolve it against an all-or-nothing alternative before implementation.
 - Host callback buffers and MIDI event memory are borrowed only for the callback unless copied into owned bounded storage.
 
+### 3.4 Host adapter normalization
+- The host adapter is the only layer permitted to interpret AU/VST3/Standalone SDK lifecycle, bus and process-context objects. The shared core receives normalized frame count, sample rate, process mode, per-call bus map, transport snapshot and bounded engine-owned events.
+- Bus identity and activation are distinct. A declared bus may be inactive or have no valid buffer for a callback; the engine must receive an explicit inactive/unavailable state rather than infer one from pointer presence.
+- Primary master output remains active independently of optional layer outputs. An inactive layer output never removes that layer from the internal master mix; an unavailable layer bus is not compensated by summing the layer twice.
+- Live-input unavailability is explicit and safe. The engine must not dereference absent input buffers, and the instrument path remains valid when external input is unavailable.
+- Host transport is the sole plugin-context authority while valid. Plugin MIDI Clock cannot silently become a concurrent second master. Standalone selects exactly one authority among internal clock, MIDI Clock and Link.
+- Lifecycle reconfiguration (bus map, sample rate, device, state restore, suspend/resume) is prepared off-thread and activated by a generation-checked safe-point command. Stale prepared configurations are rejected.
+- Shutdown retains ownership of pending commands/recordings and performs final reclamation off the audio thread; no callback blocks waiting for worker completion.
+
+
+
 ### 3.2 Ordering and determinism
 - Host transport/process context is sampled once per block.
 - Host automation and timestamped MIDI events are merged with internal sequencer events using sample offsets and a documented deterministic tie-break.
