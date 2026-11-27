@@ -273,3 +273,18 @@ The DSP review also found that the former grain-stealing expression used an unde
 
 
 The two unresolved cross-cutting items are now tracked as AR-01 (same-offset event tie-break and parameter-writer precedence) and AR-02 (deterministic voice/grain capacity reclamation) in `PHASE3_ARCHITECTURE_DECISION_REGISTER.md` §5. Both remain OPEN; neither changes approved product scope or authorizes implementation/benchmark work.
+
+
+## Sample replacement and memory-admission audit — 2026-11-27
+
+A focused review of sample replacement and runtime ownership found that the previous documents required immutable assets and deferred destruction but did not fully define stale asynchronous load completion, the publication ownership-transfer point, per-voice/grain lifetime retention, or what happens when both the retirement queue and its fallback are saturated.
+
+The Lifecycle, Threading and IF-05 API contracts now specify:
+- per-slot monotonically increasing request generations so stale completions cannot replace newer accepted requests;
+- producer ownership until successful bounded publication, followed by explicit command/engine ownership;
+- independent lifetime retention for active voices, grains and sampler heads after a slot swap;
+- non-RT final destruction and bounded backpressure before a swap can create an unretirable object;
+- reservation-based memory admission accounting for peak coexistence (active, pending, reader-held, retiring and staging payloads), with reconciliation against actual decoded sizes;
+- visible lifecycle states and safe rejection preserving the last valid active asset.
+
+The exact retirement backpressure handshake, fallback capacity, generation storage/rollover representation, memory headroom and warning/admission thresholds remain engineering gates. No implementation, benchmark or runtime measurement was performed.
