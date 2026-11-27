@@ -245,3 +245,8 @@ A deeper comparison against the approved requirement inventory found and correct
 - The four serial FX slots per layer (R1 acceptance criteria) are distinct from the seven available effect types approved by DEC-023; there is no count conflict. Exact slot behavior/order and per-effect parameters remain to be reconciled with the Effects Specification.
 
 This is a documentation correction to preserve approved product scope, not a new product decision. The revised routing remains an architecture proposal pending owner review and host/UX validation. No implementation, benchmark or merge was performed.
+
+
+## Source-inventory arithmetic correction — 2026-11-27
+
+A cross-check of the Phase 2 requirement inventory found a stale arithmetic expression in §6.1 of `GRANULAR_SYNTH_REQUIREMENTS.md`: it stated `124 + 26 + 9 + 8 + 1 = 168`, while the approved DEC-041 tier totals and the adjacent §6.2 table state `124 + 27 + 9 + 8 + 0 = 168`. The Phase 3 branch corrects only that arithmetic expression. No requirement row, tier, wording, or approved scope was changed. The reconciled totals remain 124 R1, 27 L2, 9 L3, 8 OPT, 0 Other (168 total).
