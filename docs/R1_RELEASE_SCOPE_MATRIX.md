@@ -17,7 +17,7 @@
 
 - **Approved product decisions:** DEC-015…DEC-021 are binding and are not reopened by this matrix.
 - **Existing R1 rows:** Requirements labelled R1 in GRANULAR_SYNTH_REQUIREMENTS.md remain the current scope baseline unless explicitly marked proposed/unapproved in the source documents.
-- **Pending product approvals:** Q-P07 and Q-P11 remain PROPOSED. Q-P08 is a proposed persistence policy with Phase 3 technical consequences.
+- **Approved Phase 2 product decisions:** Q-P07 (DEC-022), Q-P11 (DEC-023), Q-M11 (DEC-024) and Q-P08 product persistence policy (DEC-025). Technical serialization and host-state implementation remain Phase 3.
 - **Technical proposals:** Q-T01…Q-T17 are not approved architecture decisions. Numeric performance limits, formats, component/bus layout and serialization are not settled by this matrix.
 - **Benchmark parity is not scope authority:** a feature in GR_MEGA_FEATURE_MAP.md is not R1 unless it is explicitly represented in the GRANULAR SYNTH requirements or approved decisions.
 
