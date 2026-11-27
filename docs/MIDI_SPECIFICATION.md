@@ -2,7 +2,7 @@
 
 **Version:** 0.1 — Phase 2 working specification  
 **Status:** R1 MIDI product behavior specification; DEC-033/034/038/039 settle product-level mapping and transport behavior. MPE zone and protocol implementation remain Phase 3.  
-**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-MID-001…008; R1_PRODUCT_SPECIFICATION.md §5; LIVE_PERFORMANCE_SPECIFICATION.md; DEC-016, DEC-019, DEC-021.  
+**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-MID-001…008; R1_PRODUCT_SPECIFICATION.md §5; LIVE_PERFORMANCE_SPECIFICATION.md; DEC-016, DEC-019, DEC-021, DEC-033/034/038/039.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §11.1.
 
 ## 1. R1 scope and governing decisions
@@ -95,4 +95,4 @@ Standalone essential live-performance operations, including all sequencer functi
 
 ## 11. Acceptance intent
 
-Tests must cover per-layer channel routing, overlapping notes, MPE expression isolation, MIDI Learn/manual mapping, soft takeover, mapping conflicts/recovery, Program Change, MIDI Clock input and clock-loss handling once specified, channel-mode messages, panic reachability and controller-only operation for the full essential-operation list. Host-format-specific behavior is tested after Phase 3 integration decisions.
+Tests must cover per-layer channel routing, overlapping notes, MPE expression isolation, MIDI Learn/manual mapping, soft takeover, mapping conflicts/recovery, Program Change, MIDI Clock input and clock-loss handling per DEC-039, channel-mode messages, panic reachability and controller-only operation for the full essential-operation list. Host-format-specific behavior is tested after Phase 3 integration decisions.
