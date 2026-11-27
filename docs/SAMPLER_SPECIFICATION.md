@@ -85,8 +85,8 @@ Sampler uses the common sample management model:
 
 | Item | Status |
 |---|---|
-| Looped release ON/OFF meaning | OPEN; manual contradiction EDT-07 / Q-M05 |
-| Env Pile-up default | OPEN; manual recommends OFF for sampler but no GRANULAR SYNTH default approved |
+| Looped release ON/OFF meaning | **ANSWERED — DEC-030:** ON continues looping through voice release; OFF exits at next valid loop boundary toward Stop. This is GRANULAR SYNTH behavior, not a verified benchmark claim. |
+| Env Pile-up default | R1 toggle is required; default OFF for Sampler (DEC-037) |
 | Scan offset exact mathematical behavior | Partially documented; refine in DSP specification |
 | Spray and Pan Spray distribution | Q-I08 / source map under-documented |
 | Interpolation mode choices/default | Phase 3/5 |
