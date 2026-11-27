@@ -1,6 +1,6 @@
 # Sample and State Lifecycle Specification
 
-**Version:** 0.3 — recording tap proposal aligned  
+**Version:** 0.4 — Freeze source-retention contract added  
 **Status:** Proposed; requires architecture and owner approval. No implementation is authorized.  
 **Authority:** DEC-025/028/040, GS-SMG-001…021, GS-PRS-005/006, Q-T04/Q-T05/Q-T15/Q-T16.
 
@@ -51,11 +51,14 @@ The final supported matrix must be explicit; proposed rates are not considered a
 
 The six-minute stereo 48 kHz float32 target is 138.24 MB decimal per layer (raw audio payload), approximately 553 MB for four layers. This excludes analysis, guard frames, recording buffers, temporary copies, allocator overhead, voices, grains, effects and UI waveform data.
 
+If all four six-minute sources are each copied into a distinct full-length Freeze snapshot, source plus snapshot audio alone can reach approximately 1.106 GB decimal (1,105,920,000 bytes, about 1.03 GiB). This is a capacity-planning scenario, not an approved memory budget; it excludes active recording headroom and all other runtime/state overhead. Immutable library samples should not incur a redundant copy.
+
 The runtime must maintain separate accounting for:
 - prepared library samples;
 - active and pending sample replacements;
 - live recording buffers;
 - committed but not exported recording buffers;
+- Freeze snapshots and the source-retention/rotation headroom needed while snapshots are prepared;
 - analysis products;
 - serialization staging buffers;
 - engine/voice/grain/FX memory.
@@ -126,11 +129,13 @@ The maximum embedded state size, compression policy, chunking strategy and failu
 ## 9. Freeze integration (approved product behavior — DEC-042)
 
 - Freeze creates an immutable snapshot of the layer's current valid source region, respecting active crop/loop bounds and excluding uncommitted frames.
+- For a rolling source, committed frames may still be overwritten when the ring wraps. Before off-thread copying, the system must reserve a bounded retention lease (for example, pinned preallocated pages or segment rotation) that prevents the selected region from being overwritten. The exact mechanism and spare-capacity requirement remain engineering work.
+- Recording remains independently armed and continues into a separate writable region while the lease is held. The audio thread must never wait, copy a large region or write into leased pages. If retention cannot be guaranteed, Freeze fails before switching sources; the previous source and recorder state remain unchanged and the failure is visible.
 - The source snapshot is prepared off-thread and published through the bounded structural-command path; the audio callback only switches to a ready snapshot.
 - Existing grains/voices, new notes, sequencer, MIDI, modulation, envelopes, shared transport and layer FX continue normally.
 - Independent recording continues at its defined tap. Freeze does not start/stop the recorder or mutate the frozen snapshot.
 - Thaw crossfades back to the prior live/rolling source. Static library samples report already static or disable redundant capture.
-- Global Freeze transitions all four layers at one logical boundary; partial failure must be visible.
+- Global Freeze is prepared and published as one bounded transaction with four per-layer outcomes, not four independent queue commands. All ready layers switch at the same logical boundary; failed layers remain on their previous source, and partial failure is visible. Failure to publish the transaction leaves all layers unchanged.
 - Freeze state and snapshot audio persist in plugin state; the snapshot is treated as an unsaved recording buffer and embedded under DEC-025.
 - Memory exhaustion or source loss must fail safely, preserve the prior valid source and report status. All Sound Off does not thaw.
 
@@ -141,7 +146,8 @@ Numeric capture duration, memory budget, copy strategy, crossfade duration and s
 | Question | Status |
 |---|---|
 | Source-rate playback vs SRC | Q-T04 — proposal A preferred; measurement required |
-| R1 resident memory/admission budget | Open — Phase 3/5 measurement |
+| R1 resident memory/admission budget | Open — Phase 3/5 measurement; include simultaneous source, snapshot, recording and retention headroom |
+| Rolling-source snapshot retention | Proposed bounded lease/segment rotation; exact mechanism and spare capacity require architecture review and Phase 5 stress validation |
 | Decoder and malformed-file policy | Q-T16 — validate AudioToolbox coverage |
 | State container format and migration | Q-T15 — JSON manifest + binary chunks proposed |
 | Maximum embedded recording size | Open — host API prototype and test |
