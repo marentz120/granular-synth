@@ -1,6 +1,6 @@
 # Threading and Ownership Specification
 
-**Version:** 0.1 — Phase 3 proposal  
+**Version:** 0.2 — Freeze source-retention and transaction contract added  
 **Status:** Proposed; requires architecture approval. No implementation is authorized.  
 **Authority:** REQ-AUD-001…003, GS-NFR-001/005/006, DEC-020/025, Q-T08/Q-T09.
 
@@ -71,6 +71,19 @@ Use a proven triple-buffer or sequence-counter implementation with explicit memo
 - **Parameter registry:** immutable after initialization; runtime values are atomically published or audio-thread-owned according to the parameter class.
 - **UI state:** UI owns presentation state. It sends commands/parameter gestures; it does not hold raw pointers into voice, grain or FX internals.
 
+### 4.1 Rolling-buffer readers and Freeze source retention
+
+A committed-frame boundary establishes which audio is valid; it does **not** guarantee that a rolling ring will keep those frames unchanged while an off-thread reader copies them. A reader must never access a region that the audio writer may concurrently overwrite.
+
+Proposed contract for Freeze, state capture and export from a rolling source:
+1. At the capture boundary, the audio thread publishes a bounded descriptor containing source generation, first frame, committed frame count and the requested region. It does not copy audio or wait for a reader.
+2. Before an off-thread copy starts, a pre-reserved retention lease must protect the selected pages/region from overwrite for the entire read. The mechanism may use preallocated page pinning, segment rotation or an equivalent bounded design; the exact mechanism remains open.
+3. The independently armed recorder continues writing into a separate writable region. The audio thread never writes into leased pages and never waits for lease release.
+4. If the lease or required spare capacity cannot be reserved, Freeze preparation fails before the source switch. The previous source and recorder state remain unchanged, and a visible failure is reported. Do not fall back to an unsafe concurrent copy.
+5. The non-RT reader validates the source generation and committed range, copies to an immutable destination, then releases the lease. Retired pages are reusable only after release.
+
+A global Freeze request is one bounded transaction, not four independently published layer commands. The non-RT coordinator prepares four per-layer outcomes and publishes one transaction payload. At one audio safe point, all ready layer snapshots switch together; layers whose preparation failed remain on their prior source. Per-layer outcomes and partial global failure are observable. If the transaction itself cannot be published, no layer switches. This is a proposed mechanism for DEC-042, not a change to its product behavior.
+
 Avoid general-purpose shared_ptr destruction on the audio thread. If reference counting is used, its final-release behavior must be controlled and tested.
 
 ## 5. Structural update protocol
@@ -118,6 +131,8 @@ Required instrumentation/tests:
 - queue overflow/underflow counters;
 - maximum command count and callback execution time;
 - retirement queue saturation tests;
+- rolling-ring wrap while a Freeze/state snapshot lease is held, including lease exhaustion and safe rejection;
+- global Freeze transaction publication under queue saturation and mixed per-layer preparation outcomes;
 - randomized producer stress with deterministic audio output;
 - ThreadSanitizer for non-RT concurrency tests where compatible;
 - RealtimeSanitizer evaluation (Q-T09), without treating tool absence as permission to omit RT tests;
