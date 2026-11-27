@@ -23,13 +23,23 @@ Sources:
 
 ## 2. JUCE build and deployment claims
 
-The current JUCE GitHub README advertises macOS deployment targets as low as macOS 10.11 for x86_64 and arm64, and lists Xcode 12.4 / macOS 11 Apple Silicon as build requirements. These are framework-level minima, not a recommendation for GRANULAR SYNTH and not proof that every required API, host or dependency supports those targets.
+Do not use a generic repository README or an old JUCE release's deployment minimum as the R1 support commitment. The exact JUCE 8 tag, Xcode version, macOS SDK, deployment target and required APIs must be pinned together in the build decision record. The framework's nominal minimum does not prove that the selected host matrix or all dependencies support that OS.
 
-Source: https://github.com/juce-framework/JUCE
+**Architecture implication:** the proposed macOS 12+ Universal 2 target remains a candidate, not an approved minimum. Confirm it against the pinned JUCE 8 release, current Xcode/SDK, required Apple APIs, host versions and an actual Intel/Apple Silicon test matrix. Universal 2 is retained as an R1 requirement unless the owner changes scope.
 
-**Architecture implication:** the repository's proposed macOS 12+ Universal 2 target is a product/platform decision to validate, not a technical minimum forced by JUCE. The actual minimum should be selected from the required APIs, host matrix, signing/toolchain constraints and available test machines. Intel support must be an explicit cost/benefit decision because Universal 2 is an R1 requirement in GS-PLT-002 unless the owner changes scope.
+## 3. Current VST3 SDK evidence
 
-## 3. Apple Audio Unit component model
+The current Steinberg VST3 SDK documentation identifies the 3.8.x line and lists macOS 10.14–26 with x86, x86_64 and Apple Silicon architectures. The VST3 model supports multiple dynamic audio I/O buses, but hosts may activate/deactivate buses and may pass null buffers for inactive buses; processing must respect the bus index and negotiated channel arrangements. Steinberg's multi-timbral guidance also makes clear that multi-output routing and track-to-output association require deliberate implementation rather than simply declaring extra buses.
+
+Sources:
+- VST3 SDK and system requirements: https://github.com/steinbergmedia/vst3sdk
+- Multiple dynamic I/O: https://github.com/steinbergmedia/vst3_dev_portal/blob/main/src/pages/Technical%2BDocumentation/Change%2BHistory/3.0.0/Multiple%2BDynamic%2BIO.md
+- Complex/multi-timbral structures: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Complex%2BStructures/Index.html
+- VST3 process and buffer behavior: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/API%2BDocumentation/Index.html
+
+**Architecture implication:** the proposed stereo master plus four stereo layer outputs is compatible with the VST3 bus model, but cannot be assumed to work uniformly across hosts. The adapter must correctly handle inactive buses, variable block sizes, parameter-flush process calls and input/output buffer aliasing. Host validation remains mandatory.
+
+## 4. Apple Audio Unit component model
 
 Apple's Audio Unit documentation identifies four component types:
 - `aufx`: effect
@@ -46,7 +56,7 @@ Sources:
 
 **Architecture implication:** the proposal to expose an `aumu` instrument and a separate `aufm` music-effect component for live audio input is technically plausible as a design option, but it is not automatically the correct product choice. It can create two insert identities and different host workflows. Validate whether the required live-input workflow can be supported in the selected AU implementation and target hosts before deciding to ship two AU components. Do not describe the legacy Audio Unit framework as the current implementation API.
 
-## 4. VST3 bus model
+## 5. VST3 bus model
 
 Steinberg's current VST3 SDK documentation describes dynamic multiple audio I/O buses, including input and output buses, and a separation between the processing component and edit controller. The SDK's AudioEffect API provides methods to add audio input/output buses and event input/output buses.
 
@@ -57,7 +67,7 @@ Sources:
 
 **Architecture implication:** a VST3 instrument with a stereo input bus and multiple stereo outputs is supported by the API model. This does not establish that every host exposes all buses in the same way. The product must define required/default bus activation and fallback behavior, then test each supported host/format combination.
 
-## 5. Evidence-based candidate assessment
+## 6. Evidence-based candidate assessment
 
 | Candidate | Evidence-based assessment | Open gate |
 |---|---|---|
@@ -68,7 +78,7 @@ Sources:
 
 **Recommendation for the next architecture iteration:** retain C++20 + JUCE 8 as the leading candidate, keep the DSP/state core framework-independent, and make the framework decision conditional on (a) a reviewed licence fit, (b) successful minimal host/component prototypes, and (c) a reproducible build/test workflow. This is a recommendation, not an approved decision.
 
-## 6. Evidence gaps that remain
+## 7. Evidence gaps that remain
 
 - No current Logic Pro, Ableton Live, Bitwig or Reaper test has been run for the proposed AU/VST3 input/output topology.
 - No prototype has verified the AU live-input path, component identity, MIDI behavior or automation/state behavior.
