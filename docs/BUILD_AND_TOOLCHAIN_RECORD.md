@@ -110,9 +110,7 @@ The advisory `clang-format` job failed: clang-format 23.1.6 reported formatting 
 Stated plainly so no reader over-reads the green build/test result:
 
 - **No Universal 2 binary** was produced, and no `lipo` verification was performed — architectures are intentionally unset.
-- **No macOS version support claim.** The deployment target is unset; CI ran on the observed macOS 15 versions only.
-- **No Universal 2 binary** was produced, and no `lipo` verification was performed — architectures are intentionally unset.
-- **No macOS version support claim.** The deployment target is unset; only macOS 12.7.6 was exercised.
+- **No macOS version support claim.** The deployment target is unset; CI ran on the observed macOS 15 versions, and the local A0 evidence was collected on macOS 12.7.6.
 - **No AU/VST3/Standalone validation**, no `auval`, no `pluginval`, no host scan.
 - **No realtime-safety proof.** The allocation guard is test instrumentation with documented blind spots (see `tests/support/include/gs/test/RtGuard.h`): it sees only global `operator new`/`delete` in this binary, not `malloc`, locks, blocking calls or I/O.
 - **No performance data.** No benchmark was built or run; Q-T07 numeric budgets remain unmeasured and unauthorized.
