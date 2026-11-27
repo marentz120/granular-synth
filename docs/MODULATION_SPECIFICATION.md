@@ -113,9 +113,9 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 |---|---|---|
 | Q-M11 | Are LFOs per-voice or per-layer? | **ANSWERED — DEC-024:** per-LFO Poly/Mono switch; default Mono (shared per-layer phase), Poly uses independent per-voice phase. |
 | MAC-07 | Is 20-macro support required? | R1 remains 10. Do not promote to 20 absent approval. |
-| MAC-04 | Are macro modulation values per-voice or shared? | OPEN; define before architecture. |
+| MAC-04 | Are macro modulation values per-voice or shared? | **ANSWERED — DEC-031:** base macro value is shared per layer patch; per-note sources may produce per-voice modulated destinations. DSP evaluation order Phase 3. |
 | MTX-03 | Exact curve equation and taper | Needs a precise product definition; manual provides qualitative behavior only. |
-| MTX-04 | XY pad coordinate and source normalization | Product-level behavior to be finalized in Phase 2/4; no hardware touch requirement. |
+| MTX-04 | XY pad coordinate and source normalization | **ANSWERED — DEC-032:** each axis normalized 0.0–1.0; saved patch recall position defaults to center (0.5, 0.5). UI details Phase 4. |
 | Q-T12 | Exact host parameter exposure and stable IDs | Phase 3 decision; this document does not decide it. |
 | MTX-05 | Exact R1 destination inventory | Reconcile against the final R1 parameter inventory; do not count deferred-only parameters. |
 
@@ -124,7 +124,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 - Drawn XY trajectory modulator: L3 in current requirements.
 - CV inputs: optional/later; not R1.
 - Patch randomizer: L2.
-- 20 macros: unresolved benchmark ambiguity, not an R1 commitment.
+- 20 macros: not an R1 commitment (DEC-036).
 - Poly/Mono LFO scope: resolved by DEC-024; Mono default, Poly selectable per LFO.
 
 ## 8. Acceptance intent (criteria finalized in Phase 5)
