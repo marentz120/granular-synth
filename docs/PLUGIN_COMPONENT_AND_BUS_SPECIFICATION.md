@@ -1,6 +1,6 @@
 # Plugin Component and Bus Specification
 
-**Version:** 0.1 — Phase 3 proposal  
+**Version:** 0.2 — output tap and live-input semantics aligned  
 **Status:** Proposed; host validation and owner approval required. No plugin implementation is authorized.  
 **Authority:** DEC-020/026, GS-PLT-001/004/005, GS-ARC-006, GS-SMG-020, Q-P06/Q-P09/Q-T01/Q-T03.
 
