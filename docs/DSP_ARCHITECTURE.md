@@ -494,3 +494,24 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 All items from the v0.1 "Decisions required" list (framework/language; threading model; target macOS and CPU architectures; initial release engines; sample formats and streaming; measured CPU/memory budgets; plugin formats and distribution/signing) are covered by the rows above. R1 includes Granular and Sampler only; Slice is L2, Tape L2 and Spectral L3 (DEC-018).
 
 *End of DSP_ARCHITECTURE.md*
+
+
+---
+
+## 12. Recommended R1 voice/layer signal-flow contract (Phase 3 proposal)
+
+The following recommended ordering reconciles the granular render description (grain accumulation and voice filter after summation) with the per-layer live-input, FX and recording requirements. It is a design proposal, not a claim about GR-MEGA internals or an approved implementation API.
+
+1. Granular or Sampler voice source.
+2. Voice source summation.
+3. Sub-oscillator mix.
+4. Voice filter stage.
+5. Amp envelope.
+6. Voice pan into the stereo layer sum.
+7. Per-layer live input is gain-staged and mixed into that layer before its FX chain; mono input is centered across the stereo path per DEC-040.
+8. Per-layer FX chain.
+9. Post-FX/pre-layer-fader layer stem output and layer recording tap.
+10. Layer fader, mute and solo into the master mixer.
+11. Stereo master output and master recording tap immediately before host/device output.
+
+Recommended recording semantics: layer stems ignore layer fader/mute/solo so they remain independently mixable; master mix reflects those controls. No parallel dry-input-to-master route is enabled by default. This proposal must be validated with impulse/routing fixtures and Standalone monitoring tests before implementation.
