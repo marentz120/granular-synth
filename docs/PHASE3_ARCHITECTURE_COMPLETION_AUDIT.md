@@ -257,3 +257,16 @@ A cross-check of the Phase 2 requirement inventory found a stale arithmetic expr
 The 124-row architecture traceability table was cross-checked against the current `R1_ACCEPTANCE_CRITERIA.md`. The current acceptance draft explicitly references 47 of the 124 R1 requirement IDs; 77 have no explicit AC reference yet. The detailed per-area counts and missing-ID list are recorded in §8 of `PHASE3_ARCHITECTURE_TRACEABILITY.md`.
 
 This is not a product-scope defect and does not imply those requirements are unassigned in the architecture map. It is a test-traceability gap: the existing acceptance document is partial and explicitly defers detailed acceptance/test design to Phase 5. Phase 5 must close all 124 links, either with specific test IDs or a documented cross-cutting validation rationale. Phase 3 will not invent numeric pass thresholds or claim test evidence that does not exist.
+
+
+## Event ordering and overload determinism review — 2026-11-27
+
+The API and threading specifications now make event-time constraints explicit without inventing unresolved product precedence:
+
+- Events are block-relative, validated in `[0, frameCount)`, preserve source-local order and use a deterministic explicit cross-source tie-break.
+- Sample-accurate event classes require segmented rendering at exact offsets; block/control-rate classes must declare their update class.
+- Host automation, MIDI mapping, sequencer parameter locks and UI gestures remain distinct writers. Their precedence must be specified per parameter class; queue arrival order is explicitly not a precedence rule.
+- DEC-031 shared macro base values and per-voice modulation contributions remain distinct.
+- The writer-precedence matrix, same-offset tie-break and overload capacities remain open; no implementation or benchmark was run.
+
+The DSP review also found that the former grain-stealing expression used an undefined `k`, and offered “oldest” versus “longest-remaining” as interchangeable choices despite different outcomes. The revised DSP section separates voice stealing (GS-VOI-001) from global grain-budget reclamation (GS-ARC-004), records a deterministic candidate comparator, and marks it as a proposal requiring validation. No threshold, fade duration, grain budget or click-free performance claim is approved by this documentation change.
