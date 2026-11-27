@@ -14,7 +14,7 @@ Standalone essential live-performance operations, including all sequencer functi
 ## 2. MIDI note and channel behavior
 
 - Each layer has an independently configurable MIDI receive channel (GS-MID-001).
-- Channel assignment must be unambiguous when multiple layers use the same channel; the product must define whether same-channel notes trigger all matching enabled layers or a selected/focused layer. This behavior is unresolved and must be decided before implementation.
+- If multiple layers share a MIDI channel, all matching layers receive the incoming event (DEC-034); no hidden focus/priority winner is used.
 - Note-on triggers the selected layer voice according to the layer's engine and voice configuration.
 - Note-off releases the corresponding voice; sustain/hold CC64 follows the shared voice requirements.
 - Velocity, pitch bend, channel/poly aftertouch and MPE timbre are routed to the corresponding voice/layer sources.
@@ -86,7 +86,7 @@ Standalone essential live-performance operations, including all sequencer functi
 | Same MIDI channel assigned to multiple layers | Product behavior: all matching layers receive the event; implementation/configuration UX Phase 3/4 |
 | MPE zone/master/member channel configuration | OPEN; exact compatibility profile |
 | MPE pitch-bend range and negotiation | OPEN; benchmark documents 48 semitones, product profile not fully settled |
-| Program Change mapping to library/performance bank | Phase 4 product interaction detail; unmapped messages must not recall arbitrary content |
+| Program Change mapping to library/performance bank | **DEC-033:** explicit slot assignment in the active performance bank; unmapped program values are ignored. Mapping editor UX is Phase 4 |
 | Clock loss/restart/song-position behavior | OPEN |
 | NRPN timeout, termination and 7/14-bit precedence | Phase 3 protocol detail |
 | Exact host parameter exposure | Q-T12 / Phase 3 |
