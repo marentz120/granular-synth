@@ -50,13 +50,11 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 ### Remaining gates
 
 - **Phase 2:** complete the domain specifications, R1 requirement/tier matrix, traceability and product-level acceptance criteria. Q-P07, Q-P08 and Q-P11 are now answered; technical format/host decisions remain Phase 3.
-- **Phase 3:** resolve Q-P02 (AU/VST3 and any other formats), Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), and the format-specific implementation of live input.
+- **Phase 3:** resolve Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), Q-P09/Q-P10 host/reference-machine details, and the format-specific implementation of live input. Freeze product semantics are resolved by DEC-042; technical resource and RT implementation remain open.
 - **Evidence/research:** Q-P13 (physical GR-MEGA access), Q-I15 (firmware roadmap 1.9–1.12), remaining manual ambiguities and undocumented behaviors.
 - **Legal/release:** Q-L01…Q-L07, product naming and distribution questions before release.
 
 ## A. Product decisions (Owner)
-
-Q-P21 was added after the owner approved Freeze Source Snapshot semantics on 2026-11-27 (DEC-042).
 
 | ID | Question | Context / options | Recommendation | Blocks | Status |
 |---|---|---|---|---|---|
@@ -80,6 +78,7 @@ Q-P21 was added after the owner approved Freeze Source Snapshot semantics on 202
 | Q-P18 | Engine scope after R1 | Order Tape (L2) before Spectral (L3)? | Tape L2 before Spectral L3 | Phase 2 | **ANSWERED — DEC-018** |
 | Q-P19 | Main use case: studio sound design, live performance, or both? | Drives priority of sequencer, MIDI-controller templates, standalone features, CPU headroom targets | **ANSWERED (DEC-015, 2026-11-27):** both, and the instrument must be a genuine performance tool, not merely a plugin wrapper. Raises priority of Q-P05 (sequencer reassessment, docs/LIVE_PERFORMANCE_SPECIFICATION.md) and establishes DEC-016 (controller-only operability); does not itself decide Q-P12's specific-controller question | Phase 2 | **ANSWERED** |
 | Q-P20 | First-release engines | Granular-only · Granular + Sampler · broader engine set | Granular + Sampler in R1; Granular Slice deferred; Tape L2, Spectral L3 | Phase 2 | **ANSWERED — DEC-018** |
+| Q-P21 | R1 Freeze behavior | Source snapshot · grain/voice hold · post-FX latch · full engine pause | Source Snapshot: immutable current source region; voices/notes/transport/modulation/FX continue; independent recording continues; thaw crossfades back; global applies to all four layers; static samples report already static; state persists under DEC-025 | Phase 3 | **ANSWERED — DEC-042** |
 
 ---
 
