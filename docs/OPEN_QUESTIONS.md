@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 0.2 (Issue #1 — Phase 1). Recommendations below are proposals only; nothing is decided until recorded as *Approved* in DECISIONS_LOG.md.
+**Version:** 0.4 (R1 product-scope decisions, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v0.3 → v0.4):** Q-P04, Q-P05, Q-P06, Q-P12 and Q-P20 are now answered under the owner's explicit delegation to ChatGPT as product manager. The resulting R1 scope is recorded in DEC-017…DEC-021 and docs/R1_PRODUCT_SPECIFICATION.md. Technical implementation details (framework, AU/VST3 component/bus design, resource budgets, parameter exposure) remain open for later gates.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -13,11 +15,11 @@ Every item from the v0.1 list is kept and mapped:
 |---|---|---|
 | Owner: Relationship to GR-MEGA (parity / inspired-by / baseline + differentiation) | Q-P15 | OPEN — recommendation given |
 | Owner: Confirm formats | Q-P02 | OPEN — recommendation given |
-| Owner: Layer model (4 fixed, more, configurable) | Q-P04 | OPEN — recommendation given |
-| Owner: First-release engines | Q-P20 | OPEN — recommendation given |
+| Owner: Layer model (4 fixed, more, configurable) | Q-P04 | **ANSWERED — DEC-017** |
+| Owner: First-release engines | Q-P20 | **ANSWERED — DEC-018** |
 | Owner: Approve framework after comparison | Q-T01 (comparison in DSP_ARCHITECTURE.md §2) | OPEN |
 | Owner: Minimum macOS / Apple Silicon–Intel | Q-T03 | OPEN |
-| Owner: Main use case (studio / live / both) | Q-P19 | OPEN |
+| Owner: Main use case (studio / live / both) | Q-P19 | **ANSWERED** — both (DEC-015) |
 | Research: Inspect manual 1.8.d with page/section refs | — | **Done** (GR_MEGA_FEATURE_MAP.md) |
 | Research: Manual vs firmware version differences | Q-I15 | **Partly done** — release notes 1.8.0–1.8.4 reviewed (feature map §16); roadmap 1.9–1.12 not reviewed |
 | Research: Verify numeric limits against manual | Q-M01…M19 | **Done**; 15 manual conflicts logged |
@@ -31,20 +33,26 @@ Every item from the v0.1 list is kept and mapped:
 
 ---
 
-## 0. The six questions that block Phase 2 (answer these first)
+## 0. Product-scope decisions resolved for R1
 
-| # | Question | Why it blocks | Recommendation |
-|---|---|---|---|
-| 1 | **Q-P04** — Ship 4 multitimbral layers in the first release? | Drives the state model, UI layout, CPU budget and plugin bus layout | **Yes**: the layer abstraction is cheap if designed in from day one, costly to retrofit |
-| 2 | **Q-P05** — Is the step sequencer required for the first release? | Largest single feature after the engines | **No** (L2) unless standalone live use is the primary market; DAW hosts sequence already |
-| 3 | **Q-P06** — Must the *plugin* granulate live audio input (not just the standalone)? | Determines AU component type(s) and bus layout | **Yes** for VST3 + AU music-effect variant; it is a core GR-MEGA workflow |
-| 4 | **Q-P02** — Confirm plugin formats: AU + VST3 only? (AAX / CLAP?) | Framework choice, test matrix | AU + VST3 for R1; CLAP optional; AAX not planned |
-| 5 | **Q-T01** — Approve C++20 + JUCE 8 with a framework-free DSP core | Every later assignment depends on it | Approve (subject to JUCE EULA review, Q-L04) |
-| 6 | **Q-P13** — Do we have access to a physical GR-MEGA for A/B reference? | Many behaviors are undocumented (§D); without a unit they become our own design | Strongly recommended; otherwise owner accepts "inspired-by" behavior for undocumented areas |
+The owner explicitly delegated remaining open product decisions to ChatGPT as product manager on 2026-11-27, with the constraint that no decision may contradict an already-approved owner decision. The following product questions are now answered and recorded in DECISIONS_LOG.md:
 
-Q-P19 (studio vs live use) and Q-P20 (first-release engines) shape answers #1–#3 and are best decided in the same session.
+| ID | Resolution | Decision |
+|---|---|---|
+| Q-P04 | **ANSWERED** | Exactly four independent layers in R1, each selectable as Granular or Sampler (DEC-017/018). |
+| Q-P05 | **ANSWERED** | Full central performance-oriented step sequencer in R1 (DEC-019), not L2. |
+| Q-P06 | **ANSWERED** | Live input to each layer in Standalone and plug-in contexts; format-specific AU/VST3 implementation remains Phase 3 work (DEC-020). |
+| Q-P12 | **ANSWERED** | Generic class-compliant MIDI controller support, MIDI Learn + manual CC/channel/Note mapping; no named-controller template or MIDI feedback in R1 (DEC-021). |
+| Q-P20 | **ANSWERED** | Granular + Sampler in R1; Granular Slice deferred; Tape later (L2), Spectral later (L3) (DEC-018). |
 
----
+These answers establish the product baseline; they do **not** close Phase 2, approve a framework, set measured performance budgets, or authorize implementation.
+
+### Remaining gates
+
+- **Phase 2:** finalize the complete R1 requirement/tier matrix, including effect set, library/preset behavior, supported host formats and any exclusions.
+- **Phase 3:** resolve Q-P02 (AU/VST3 and any other formats), Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), and the format-specific implementation of live input.
+- **Evidence/research:** Q-P13 (physical GR-MEGA access), Q-I15 (firmware roadmap 1.9–1.12), remaining manual ambiguities and undocumented behaviors.
+- **Legal/release:** Q-L01…Q-L07, product naming and distribution questions before release.
 
 ## A. Product decisions (Owner)
 
@@ -53,23 +61,23 @@ Q-P19 (studio vs live use) and Q-P20 (first-release engines) shape answers #1–
 | Q-P01 | Final product name and visual identity. Is "GRANULAR SYNTH" a working title? | Must avoid confusion with Tasty Chips trademarks/trade dress (see Q-L03) | Keep as working title; brand decision before Phase 8 | Phase 8 | OPEN |
 | Q-P02 | Plugin formats | AU + VST3 (stated); CLAP (cheap with modern frameworks); AAX (Pro Tools; extra SDK, signing, cost); AUv3 (sandbox, iPad path) | AU + VST3 in R1; CLAP OPT | Phase 3 | PROPOSED |
 | Q-P03 | Commercial product or personal/internal tool? Distribution channel? Copy protection? | Affects licence tier (JUCE), notarization, installer, licensing system | Decide before Phase 6 | Phase 6 | OPEN |
-| Q-P04 | Layer model and R1 layer count | 4 fixed layers (benchmark) · more layers · configurable count | 4 fixed layers in R1, data model allowing N later | Phase 2–3 | PROPOSED |
-| Q-P05 | Step sequencer tier | R1 vs L2. Benchmark sequencer is deep (p-locks, mod lanes, ties) | L2; R1 has per-layer drone/play mode and host-synced LFOs | Phase 2 | PROPOSED |
-| Q-P06 | Live-input granulation in plugins | See Arch §5.6 | Yes, VST3 input + AU `aumf` variant | Phase 3 | PROPOSED |
+| Q-P04 | Layer model and R1 layer count | 4 fixed layers · more layers · configurable count | Exactly four independent Granular layers in R1 | Phase 2–3 | **ANSWERED — DEC-017** |
+| Q-P05 | Step sequencer tier | R1 vs L2; standalone live performance must not depend on a DAW | Full central performance-oriented step sequencer in R1 | Phase 2 | **ANSWERED — DEC-019** |
+| Q-P06 | Live-input granulation in plugins | Live input per layer is a core product workflow; AU/VST3 component and bus implementation is host-specific | Yes: live input per layer in Standalone and plug-in contexts; exact AU/VST3 implementation is Phase 3 | Phase 3 | **ANSWERED — DEC-020** |
 | Q-P07 | Library model | (a) Benchmark-style fixed slots: 50 projects × 128 presets × 128 multis; (b) desktop file library with browser, tags, favourites, plus an optional 128-slot "performance bank" view for MIDI program change | (b) with performance bank view | Phase 2/4 | PROPOSED |
 | Q-P08 | Recorded/edited samples in plugin state | (a) always embed audio in DAW project; (b) reference files + "collect" on save; (c) embed only unsaved recordings | (c) — embed unsaved recordings, reference library files | Phase 3 | PROPOSED |
 | Q-P09 | Host certification list | Logic Pro, Ableton Live, Bitwig, Reaper, Cubase, Studio One, MainStage? | Logic, Live, Bitwig, Reaper for R1 | Phase 7 | OPEN |
 | Q-P10 | Reference machine and minimum supported Mac | Defines CPU budget and acceptance tests | Reference: Apple Silicon M1 (base) as minimum performance target; also test latest M-series | Phase 5 | OPEN |
 | Q-P11 | R1 effect set | Proposal: Delay, PP Delay, Reverb, Chorus, EQ3, Saturator, Compressor | Approve or amend | Phase 2 | PROPOSED |
-| Q-P12 | Dedicated hardware-controller support? | Benchmark is a hardware instrument; owner may want a specific controller template (8 engine knobs, faders, 100 mm slider equivalent) | Generic MIDI learn in R1; templates later | Phase 4 | OPEN |
+| Q-P12 | Dedicated hardware-controller support (a *specific* controller template/target)? | Generic controller operation is required by DEC-016/021; a named template is optional | Generic class-compliant MIDI controller, MIDI Learn + manual CC/channel/Note mapping; no named template or feedback in R1 | Phase 4 | **ANSWERED — DEC-021** |
 | Q-P13 | GR-MEGA unit access for A/B | Needed for §C/§D items | Yes if possible | Phase 2 | OPEN |
 | Q-P14 | Factory content | Who produces samples/presets; licensing of samples | Decide before Phase 8 | Phase 8 | OPEN |
 | Q-P15 | Fidelity policy | Where the benchmark has a *limitation* (linear interpolation in granular, window crackle, 128-grain bunching, crackling auto-slice, 8192-FFT mono), do we replicate or improve? | Improve by default; keep a "classic" option only where the artefact is musically useful (e.g. stealing OFF bunching, Draft interpolation) | Phase 2 | PROPOSED |
 | Q-P16 | Granular sample-length ceiling | Benchmark: 5m49s efficient limit | ≥ 6 min stereo per layer (GS-SMG-019); higher if memory allows | Phase 2 | PROPOSED |
 | Q-P17 | Document naming | Earlier chat drafts used `GR_MEGA_FEATURE_MAP.md` / `DSP_ARCHITECTURE.md`; the repository uses `GR_MEGA_FEATURE_MAP.md` / `DSP_ARCHITECTURE.md` | Repository names are canonical; drafts merged into them | Admin | RESOLVED-EVIDENCE |
 | Q-P18 | Engine scope after R1 | Order Tape (L2) before Spectral (L3)? | Yes: Tape reuses sampler infrastructure; Spectral is a separate DSP project | Phase 2 | PROPOSED |
-| Q-P19 | Main use case: studio sound design, live performance, or both? | Drives priority of sequencer, MIDI-controller templates, standalone features, CPU headroom targets | Both; if forced, live performance raises Q-P05 and Q-P12 priority | Phase 2 | OPEN |
-| Q-P20 | First-release engines | All five · granular-first · granular + spectral · granular + slice + sampler | Granular + Slice + Sampler (shared infrastructure, lowest risk); Tape L2, Spectral L3 | Phase 2 | PROPOSED |
+| Q-P19 | Main use case: studio sound design, live performance, or both? | Drives priority of sequencer, MIDI-controller templates, standalone features, CPU headroom targets | **ANSWERED (DEC-015, 2026-11-27):** both, and the instrument must be a genuine performance tool, not merely a plugin wrapper. Raises priority of Q-P05 (sequencer reassessment, docs/LIVE_PERFORMANCE_SPECIFICATION.md) and establishes DEC-016 (controller-only operability); does not itself decide Q-P12's specific-controller question | Phase 2 | **ANSWERED** |
+| Q-P20 | First-release engines | Granular-only · Granular + Sampler · broader engine set | Granular + Sampler in R1; Granular Slice deferred; Tape L2, Spectral L3 | Phase 2 | **ANSWERED — DEC-018** |
 
 ---
 
@@ -144,7 +152,7 @@ Q-P19 (studio vs live use) and Q-P20 (first-release engines) shape answers #1–
 | Q-I15 | Firmware changes and roadmap | Release notes 1.8.0–1.8.4 reviewed → feature map §16. Roadmap 1.9–1.12 (Dec 2026–Jul 2027) not yet reviewed | Review roadmap at Phase 2 start | OPEN |
 | Q-I16 | Voice-stealing keyboard-position heuristic | p.120 | Our own design (protect lowest/highest held notes) | PROPOSED |
 | Q-I17 | "Pos Y" modulation source | RN 1.8.4 mentions POS X and POS Y; manual table lists only Pos X | Verify; our XY pad covers both | OPEN |
-| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Capture semantics before sequencer spec (L2) | OPEN |
+| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Capture semantics before Phase 4/5 acceptance design for the R1 sequencer | OPEN |
 
 ---
 

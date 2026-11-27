@@ -7,7 +7,7 @@
 
 - **Phase numbering aligned with CLAUDE.md** (8 phases). v0.1 had 6 phases: its "Phase 5 — Incremental implementation" is now Phases 5 (plan & acceptance criteria) + 6 (implementation), and "Phase 6 — Validation and release" is now Phases 7 + 8. No v0.1 content was dropped; each phase's v0.1 text is kept under "Scope".
 - Added per-phase **dependencies**, **deliverables** and **measurable exit criteria**.
-- Added a proposed **implementation milestone plan** (M1–M12) for Phase 6 with dependencies. It is a planning aid only; it authorizes nothing.
+- Added a proposed **implementation milestone plan** (M1–M13) for Phase 6 with dependencies. It is a planning aid only; it authorizes nothing.
 - Numeric thresholds marked *(proposed)* are placeholders for owner/ChatGPT approval in Phase 5.
 
 ---
@@ -47,7 +47,7 @@ flowchart LR
 **Deliverables:** GR_MEGA_FEATURE_MAP.md, refined GRANULAR_SYNTH_REQUIREMENTS.md, DSP_ARCHITECTURE.md options, OPEN_QUESTIONS.md, this roadmap, PHASE1_REFERENCE_SUMMARY.md (Issue #1).
 
 **Measurable exit criteria**
-1. Every feature-map row has an evidence class (MC / INT / PROP / UNV / RN); every MC row cites page and section — 0 exceptions.
+1. Every feature-map row has one of the four canonical evidence classes (Manual-confirmed / Interpretation / Proposal / Unverified); [RN] is only a supplemental source marker, never a standalone class. Every Manual-confirmed row cites page and section — 0 exceptions.
 2. All manual chapters relevant to the instrument (pp. 11–164) are represented in the feature map; hardware-only chapters are listed as N/A.
 3. All detected manual inconsistencies are logged with page references (feature map §15) and mirrored as OPEN_QUESTIONS §C items.
 4. ChatGPT review comments on the Issue #1 PR are resolved or explicitly deferred.
@@ -59,7 +59,7 @@ flowchart LR
 
 **Scope (v0.1):** Define first-release features, priorities, supported formats, performance targets and acceptance criteria.
 
-**Depends on:** OPEN_QUESTIONS §0 answers (Q-P02, Q-P04, Q-P05, Q-P06, Q-T01) plus Q-P15, Q-P19, Q-P20.
+**Depends on:** Phase 1 exit and approved product baseline DEC-015…DEC-021; Phase 2 still finalizes remaining R1 tiers, format scope and exclusions.
 
 **Deliverables:** GRANULAR_SYNTH_REQUIREMENTS.md v1.0 (tiers approved), PRODUCT_VISION.md updated with use-case priority, DECISIONS_LOG entries.
 
@@ -137,7 +137,8 @@ flowchart TD
   M8 --> M11
   M9 --> M11
   M10 --> M11
-  M11 --> M12[M12 UI on state snapshots]
+  M11 --> M13[M13 Central sequencer & performance system]
+  M13 --> M12[M12 UI on state snapshots]
 ```
 
 | # | Milestone | Depends on | Key requirements | Measurable acceptance (proposed) |
@@ -149,11 +150,12 @@ flowchart TD
 | M5 | Voice layer: allocation, stealing, envelopes, LPF/HPF slopes, sub-osc, glide, MPE | M2 | GS-VOI-*, GS-MID-002 | Envelope timing error < 1 sample; SVF magnitude response within 0.1 dB of analytic; click-free voice steal |
 | M6 | Modulation: 4 LFOs, matrix (50 rows), macros, randoms, follower | M4/M5 | GS-MOD-001…009 | Every registered modulatable parameter reachable from the matrix (automated check); no zipper noise in sweep tests |
 | M7 | Granular completion: ratio modes, spawn modes, clock sync, chord/arp, quantization | M6 | GS-GRN-011/014–016, GS-CHD-* | Ratio-mode invariants (density constant where specified) unit-tested; synced spawns sample-accurate vs transport |
-| M8 | Slice and Sampler engines | M4/M5 | GS-SLC-*, GS-SMP-* (R1) | Loop one-shot/wrap/bounce edge cases (incl. RN-21 cases) tested; auto-slice preview causes 0 audio glitches |
+| M8 | Sampler engine | M4/M5 | GS-SMP-* (R1) | Loop one-shot/wrap/bounce edge cases tested; sample-rate and loop-boundary tests pass |
 | M9 | Recording & live-input granulation, scrolling record | M3, M4, Q-P06 | GS-SMG-008…012 | 1-h loop-record soak with granulation: 0 dropouts, 0 allocations |
 | M10 | FX slot host + R1 effects | M2, Q-P11 | GS-FX-001/002/004/006 | Each effect passes impulse/sine tests; FX swap click-free |
 | M11 | 4 layers, multi-out buses, presets/templates/library, plugin state | M7–M10, Q-P07/Q-P08 | GS-ARC-001/006, GS-PRS-* | State round-trip bit-exact; preset migration test; standalone vs plugin bit-identical render (GS-PLT-004) |
-| M12 | UI implementation | M2 (snapshots), Phase 4 spec | GS-UI-* | UI never blocks audio (callback timing unchanged with UI open); all R1 controls present |
+| M13 | Central step sequencer, pattern library/chains, Performance Sets, live editing and controller mapping | M2, M7, M11 | GS-SEQ-001…012, DEC-019/021 | Variable-length patterns, 8 simultaneous events/step, four-layer event routing, bar-quantized pattern changes, sync sources and controller-only editing pass deterministic timing tests |
+| M12 | UI implementation | M2 (snapshots), Phase 4 spec, M13 | GS-UI-* | UI never blocks audio (callback timing unchanged with UI open); all R1 controls present |
 
 **Phase 6 exit:** all R1 milestones accepted and merged after review.
 

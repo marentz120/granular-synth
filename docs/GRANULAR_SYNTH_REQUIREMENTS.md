@@ -1,8 +1,21 @@
 # GRANULAR SYNTH Requirements
 
-**Status:** Draft; subject to owner and architecture review. **No requirement or tier in this document is approved.** Tiers are *proposals* for the owner's Phase 2 decision (see OPEN_QUESTIONS.md §0); approval is recorded only in DECISIONS_LOG.md.
-**Version:** 0.2 (Issue #1 — Phase 1 refinement)
+**Status:** Draft; detailed acceptance criteria and technical feasibility remain subject to architecture and test review. Product scope for four layers, R1 engines, the R1 sequencer, live input and controller-only performance is approved in DECISIONS_LOG.md (DEC-015…DEC-021) and docs/R1_PRODUCT_SPECIFICATION.md. Other requirement tiers remain proposals unless explicitly approved.
+**Version:** 0.4 (R1 product-scope decisions, 2026-11-27)
 **Inputs:** GR_MEGA_FEATURE_MAP.md (manual 1.8.d + fw 1.8.x release notes), PRODUCT_VISION.md, CLAUDE.md.
+
+## Change summary (v0.3 → v0.4)
+
+- Added the authoritative R1 product scope baseline in docs/R1_PRODUCT_SPECIFICATION.md; recorded DEC-017…DEC-021.
+- R1 scope now includes four independent layers, Granular + Sampler engines (Granular Slice deferred), a full central step sequencer, live input/Freeze/recording and generic controller-only performance.
+- Reclassified sequencer requirements and MIDI Clock input to R1; sequencer topology and behavior are specified in the R1 product specification.
+- Detailed DSP limits, acceptance thresholds and format-specific plugin input implementation remain for later phases.
+
+## Change summary (v0.2 → v0.3)
+
+- GS-MID-008 and GS-UI-007 remain the explicitly approved controller-operability requirements. DEC-017…DEC-021 additionally approve product scope for layers, engines, sequencer, live input and MIDI control; detailed acceptance criteria and engineering feasibility remain later-phase work.
+- Updated §1/§2 to record that both studio and live-performance use cases are now confirmed primary (DEC-015), and updated §6/§7 counts and dependencies accordingly.
+- No other requirement, tier, or wording changed.
 
 ## Change summary (v0.1 → v0.2)
 
@@ -42,6 +55,8 @@ GRANULAR SYNTH is a professional, sample-based granular instrument for macOS, de
 - **Standalone macOS application** (own audio/MIDI device handling, live audio input).
 - **Audio plugins:** AU and VST3 (target formats subject to confirmation — see OPEN_QUESTIONS Q-P02).
 
+**Use case (DEC-015, Approved 2026-11-27):** both studio sound design and live performance are primary. The resulting approved R1 layer, engine, sequencer, live-input and controller scope is recorded in DEC-017…DEC-021 and docs/R1_PRODUCT_SPECIFICATION.md.
+
 Functional benchmark: Tasty Chips GR-MEGA (manual 1.8.d) — DEC-001. We reproduce *documented behavior and workflows*, not firmware, code, UI artwork or file formats, and we add improvements where software allows (marked **[PROP]** in the feature map).
 
 ## 2. Priority tiers (proposed)
@@ -52,7 +67,7 @@ Functional benchmark: Tasty Chips GR-MEGA (manual 1.8.d) — DEC-001. We reprodu
 | **L** | Later development. Planned, sequenced after R1. Sub-tagged **L2** (next wave) / **L3** (following wave) as a *suggested* order only. |
 | **OPT** | Optional improvement; no commitment. |
 
-**Proposed R1 theme (owner decision pending, Q-P04/Q-P05/Q-P06/Q-P20):** "a better-sounding, rock-stable granular/slice/sampler instrument with deep modulation, live-input granulation and 4 layers, usable identically as plugin and standalone." Tape, Spectral and the full step sequencer follow in L2/L3 because each is a self-contained subsystem with its own risk profile (Spectral especially).
+**Approved R1 product scope (DEC-017…DEC-021):** four independent layers; Granular + Sampler engines; live input, Freeze and recording; a full central performance step sequencer; controller-only standalone live operation. Granular Slice is deferred; Tape and Spectral remain later engines. See docs/R1_PRODUCT_SPECIFICATION.md.
 
 Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
@@ -79,7 +94,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-ARC-002 | Per-layer polyphony 1–20 voices (patch parameter). | R1 | ARCH-05, VOI-01 |
 | GS-ARC-003 | Up to 128 simultaneous grains per voice. | R1 | ARCH-06 |
 | GS-ARC-004 | A global, configurable grain budget across all layers with graceful (click-free), deterministic degradation when exceeded. | R1 | ARCH-07; refines REQ-AUD-003; [PROP] — budget value set by CPU benchmark (Q-T07) |
-| GS-ARC-005 | Engine selectable per layer: Granular, Granular Slice, Sampler (R1); Tape, Spectral (L). | R1/L | ARCH-01 |
+| GS-ARC-005 | Engine selectable per layer: Granular and Sampler (R1); Granular Slice deferred (L2 candidate), Tape L2, Spectral L3. | R1/L | ARCH-01; DEC-018 |
 | GS-ARC-006 | Multi-output: stereo main + 4 stereo layer outputs (plugin busses / standalone channel routing). | R1 | SIG-07 |
 | GS-ARC-007 | Signal chain per voice: engine + sub-osc → LPF → HPF; per layer: FX×4 → M-S → patch volume → layer mix → wet; dry live-input path summed before master. | R1 | SIG-01…04 |
 | GS-ARC-008 | Default voice gain and grain-count normalization designed so 4 dense layers do not clip at default settings. | R1 | SIG-08, SIG-09 |
@@ -126,16 +141,16 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-CHD-006 | Microtonal scales (n-TET > 12). | L2 | PQ-02 |
 | GS-CHD-007 | Scala (.scl/.kbm) import and MTS-ESP support. | OPT | PQ-06 [PROP] |
 
-### 3.5 Granular Slice engine (SLC)
+### 3.5 Granular Slice engine (SLC) — deferred from R1
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-SLC-001 | Slice engine: granular playback confined to a slice; chromatic mapping from a configurable root (default C-2 per benchmark). | R1 | SLC-01, SLC-02; root note configurable = [PROP] |
-| GS-SLC-002 | Manual add / delete / delete-all / drag slices (mouse and keyboard). | R1 | SLC-03, SLC-05, SLC-06 |
-| GS-SLC-003 | Auto-slice by transient detection with sensitivity, previewed before commit, non-blocking for audio. | R1 | SLC-04 (benchmark is offline and may crackle → we must not) |
+| GS-SLC-001 | Slice engine: granular playback confined to a slice; chromatic mapping from a configurable root (default C-2 per benchmark). | L2 | SLC-01, SLC-02; root note configurable = [PROP] |
+| GS-SLC-002 | Manual add / delete / delete-all / drag slices (mouse and keyboard). | L2 | SLC-03, SLC-05, SLC-06 |
+| GS-SLC-003 | Auto-slice by transient detection with sensitivity, previewed before commit, non-blocking for audio. | L2 | SLC-04 (benchmark is offline and may crackle → we must not) |
 | GS-SLC-004 | Filter cutoff per slice option. | L2 | SLC-07 |
 | GS-SLC-005 | WAV cue/marker import as slices. | L2 | SLC-08 |
-| GS-SLC-006 | Slice count ≥ 128. | R1 | SLC-11 [UNV] — our spec |
+| GS-SLC-006 | Slice count ≥ 128. | L2 | SLC-11 [UNV] — our spec |
 
 ### 3.6 Sampler engine (SMP)
 
@@ -194,10 +209,10 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-006 | Flags: start, stop, loop start, loop end; scan modes one-shot / loop / bounce; scan key trigger Off/On/Legato/Poly; scan sync; loop clock sync; looped release. | R1 | EDT-01…07 |
 | GS-SMG-007 | Crop (to view, to recorded, to flags), soft-cut crossfade, normalize; non-destructive with undo. | R1 | EDT-08…10, EDT-P2 [PROP] |
 | GS-SMG-008 | Record live input into the layer buffer: one-shot or loop recording; record start modes; input gain ±12 dB; mono duplication LL/RR. | R1 | REC-03, REC-04, REC-06, REC-07 |
-| GS-SMG-009 | Granulate/play the buffer while recording (all R1 engines). | R1 | REC-13 |
+| GS-SMG-009 | Granulate/play the buffer while recording (R1 Granular and Sampler engines). | R1 | REC-13 |
 | GS-SMG-010 | Scrolling record (play head locked at adjustable distance behind record head). | R1 | REC-08 |
 | GS-SMG-011 | Buffer size AUTO or fixed (seconds or bars), init mono/stereo. | R1 | REC-10, REC-11 |
-| GS-SMG-012 | Live-input path with input level, wet, dry controls (granular effect use). | R1 | REC-14, SIG-04 |
+| GS-SMG-012 | Live-input path with input level, wet, dry controls (granular effect use) in Standalone and plug-in contexts; format-specific bus/component design remains Phase 3 work. | R1 | REC-14, SIG-04 |
 | GS-SMG-013 | Arm/trigger: on transport start, or input threshold −80…0 dB. | L2 | REC-05 |
 | GS-SMG-014 | Clocked (bar-length) recording. | L2 | REC-09 |
 | GS-SMG-015 | Resample instrument output to a new sample / WAV file. | L2 | REC-12, SIG-11 |
@@ -205,6 +220,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-017 | Export / save edited or recorded buffer as WAV. | R1 | SMG-01 |
 | GS-SMG-018 | Tuning reference tone. | L2 | EDT-11 |
 | GS-SMG-019 | Maximum granular sample length ≥ 6 minutes stereo at 48 kHz per layer (exceeds benchmark 5m49s). | R1 | SMG-08, C-02 |
+| GS-SMG-020 | Record each layer independently and record the stereo master mix; save/export captured audio for later sample use. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3 |
 
 ### 3.11 Modulation (MOD)
 
@@ -227,16 +243,18 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-SEQ-001 | One step sequencer per layer: up to 64 steps, up to 7 notes per step; per step length, velocity, chance, 4 mod values. | L2 (owner decision Q-P05: R1?) | SEQ-01…04 |
-| GS-SEQ-002 | 4 mod lanes with slew 0–1000 ms, usable without notes. | L2 | SEQ-05 |
-| GS-SEQ-003 | 16 parameter-lock lanes with live-override semantics. | L2 | SEQ-06 |
-| GS-SEQ-004 | Ties, play modes (fwd/rev/ping-pong/random), drunkness, transpose, length, position, rate, global/free BPM, seeded/incremental position. | L2 | SEQ-07…10 |
-| GS-SEQ-005 | Sync to host transport (plugin) / internal clock and MIDI clock in (standalone). | L2 | MID-08 |
+| GS-SEQ-001 | One central step sequencer controls all four layers; variable pattern length and step/edit resolution; up to 8 simultaneous events per step, freely assigned across layers; event-level pitch and granular/layer parameter data. | R1 — scope approved | SEQ-01…04; DEC-017/019 |
+| GS-SEQ-002 | Sequencer modulation lanes and parameter-lock/event overrides with live-edit semantics. | R1 | SEQ-05/06; DEC-019 |
+| GS-SEQ-003 | Pattern timing tools: selectable straight grids, triplets, per-pattern quantization, microtiming, Swing and Humanize. | R1 | SEQ-07…10; DEC-019 |
+| GS-SEQ-004 | Pattern management: multiple patterns, save/recall, end-of-bar pattern switching, chaining and ordered Performance Sets; no fixed product-level count cap. | R1 | SEQ-01…10; DEC-019 |
+| GS-SEQ-005 | Synchronization to internal BPM, external MIDI Clock, Ableton Link and DAW/host transport. | R1 | MID-08; DEC-019 |
 | GS-SEQ-006 | MIDI out of sequencer notes; MIDI clock/transport out (standalone; plugin MIDI out where the format allows). | L3 | SEQ-13, MID-09 |
 | GS-SEQ-007 | Record MIDI into sequencer. | L2 | SEQ-11 |
 | GS-SEQ-008 | Play/drone mode per layer (latching continuous note) and panic. | R1 | MID-13 |
 | GS-SEQ-009 | Layer mix and per-layer position performance controls. | R1 | PRF-01 |
 | GS-SEQ-010 | Patch spray / bias equivalent. | Pending Q-M12 | PRF-02 |
+| GS-SEQ-011 | Automatic latched granular Fill with continuous intensity control, plus immediate layer and step/event Mute. | R1 | DEC-019; R1_PRODUCT_SPECIFICATION.md §4.3 |
+| GS-SEQ-012 | Pattern editing during playback; edits apply at bar end; explicit save, temporary draft on pattern switch, full Undo/Redo and latest-saved-version-only persistence. | R1 | DEC-019; R1_PRODUCT_SPECIFICATION.md §4.5 |
 
 ### 3.13 MIDI (MID)
 
@@ -248,7 +266,8 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MID-004 | Default CC map documented; benchmark CC map compatibility (same CC numbers for common parameters). | L2 | MID-05; Q-L02 |
 | GS-MID-005 | Program change → preset recall (standalone; plugin where host allows). | R1 | MID-06 |
 | GS-MID-006 | Channel-mode messages: all notes off, all sound off (incl. FX tails), reset controllers. | R1 | MID-12 |
-| GS-MID-007 | MIDI clock in (standalone). | L2 | MID-08 |
+| GS-MID-007 | MIDI clock in (standalone). | R1 | MID-08; DEC-019 |
+| GS-MID-008 | Standalone operation shall be fully operable via MIDI controller alone for all *essential live-performance* operations, without requiring a computer keyboard or mouse. "Essential" excludes one-time setup/configuration tasks (sample loading, patch editing detail, initial mapping). | **R1 — Approved** | DEC-016 (owner decision, PR #2, 2026-11-27). Detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Generic class-compliant controller is the R1 target; no named-controller template or MIDI feedback is required (DEC-021). |
 
 ### 3.14 Effects (FX)
 
@@ -288,6 +307,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-UI-004 | Resizable, HiDPI, keyboard-navigable UI; tooltips; value readout on hover. | R1 | PRF-03 [PROP] |
 | GS-UI-005 | CPU meter by category (voices / FX / housekeeping). | R1 | PRF-07 |
 | GS-UI-006 | Plugin UI and standalone UI are the same component. | R1 | GS-PLT-004 |
+| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery, and controller feedback where the connected controller supports it — sufficient to satisfy GS-MID-008. | **R1 — Approved** | DEC-016. Mapping architecture and conflict handling detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; its acceptance criteria (§9 there) are **proposed**, not approved — final criteria are a Phase 5 deliverable per §8 below. Does not decide parameter-exposure scope (Q-T12, still OPEN) or a specific controller target (Q-P12, still OPEN). |
 
 ---
 
@@ -340,12 +360,12 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | Samples/recording (SMG) | 14 (1 split R1/L2) | 5 | — | — | — |
 | Modulation (MOD) | 9 | 1 | 1 | 1 | — |
 | Sequencer/performance (SEQ) | 2 | 6 | 1 | — | 1 pending Q-M12 |
-| MIDI (MID) | 5 | 2 | — | — | — |
+| MIDI (MID) | 6 (1 Approved: GS-MID-008) | 2 | — | — | — |
 | Effects (FX) | 4 | 2 | 1 | 1 | — |
 | Presets/state (PRS) | 9 | — | — | 1 | — |
-| UI (UI) | 6 | — | — | — | — |
+| UI (UI) | 7 (1 Approved: GS-UI-007) | — | — | — | — |
 | Non-functional (NFR) | 13 | — | — | — | — |
-| **Total (162)** | **116** | **28** | **9** | **8** | **1** |
+| **Total (164)** | **118** (2 Approved, 116 still Proposed) | **28** | **9** | **8** | **1** |
 
 ## 7. Dependencies between requirement areas
 
@@ -364,6 +384,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | FX | Parameter registry, ARC-007 | Slot host + registered FX params |
 | PRS | Parameter registry, SMG (sample refs), Q-P07/Q-P08 | Serialization of every registered parameter + sample references |
 | MID | Parameter registry, VOI (MPE voice mapping) | MIDI learn binds to parameter IDs; MPE binds to voices |
+| GS-MID-008, GS-UI-007 (live performance) | GS-MID-003 (MIDI learn), parameter registry, UI | Controller mapping/feedback binds to registered parameters; see docs/LIVE_PERFORMANCE_SPECIFICATION.md |
 | UI | Everything above | UI reads state snapshots only |
 
 ## 8. Traceability
@@ -375,7 +396,7 @@ Current coverage:
 | Attribute | Where it lives now |
 |---|---|
 | Unique ID | `GS-<AREA>-NNN` column |
-| Source / evidence class | "Source / notes" column → feature-map IDs; the evidence class (MC/INT/PROP/UNV/RN) is the one recorded on that feature-map row. Requirements without a benchmark source are marked [PROP]. |
+| Source / evidence class | "Source / notes" column → feature-map IDs; the evidence class (Manual-confirmed / Interpretation / Proposal / Unverified) is the one recorded on that feature-map row; [RN] is a supplemental source marker only. Requirements without a benchmark source are marked [PROP]. |
 | Priority | "Proposed tier" column (not approved) |
 | Rationale | Notes column where non-obvious; otherwise parity with the cited benchmark feature |
 | Dependencies | Area-level in §7; requirement-level in Phase 5 |
