@@ -2,7 +2,7 @@
 
 **Version:** 0.1 — Phase 2 working specification  
 **Status:** Product policies Q-P07/Q-P08 approved by DEC-022/025; technical serialization and implementation remain Phase 3. No implementation authorized.  
-**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-PRS-001…010; R1_PRODUCT_SPECIFICATION.md §§4.4–4.5; DEC-015…021.  
+**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-PRS-001…010; R1_PRODUCT_SPECIFICATION.md §§4.4–4.5; DEC-015…025.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §13.
 
 ## 1. Purpose
