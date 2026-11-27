@@ -54,7 +54,7 @@ Each registry entry must include:
 | `stringId` | Canonical permanent identity |
 | `hostId` | Stable numeric ID, or null if not host exposed |
 | `name` / `category` | Display metadata; localizable separately |
-| `scope` | Global, layer, performance, sequencer or other defined scope |
+| `scope` | Global, layer, voice, performance or sequencer; the candidate API uses the same five-value scope set |
 | `type` | Continuous, boolean, enum or trigger/action |
 | `unit` | dB, Hz, ms, semitones, %, beats, enum label, etc. |
 | `plainRange` | Minimum/maximum or explicit enum values |
