@@ -137,8 +137,8 @@ The product output model remains one stereo master plus four optional stereo lay
 - Each Layer 1–4 output is post-layer-FX and pre-layer-fader/mute/solo. This provides stable stems for DAW mixing and aligns the layer output with its recording tap.
 - The stereo master output is the sum of the four layer signals after layer gain, mute and solo logic.
 - Master recording captures the same stereo master signal immediately before it is handed to the host/device output.
-- Each layer's live input enters that layer before its FX chain. Mono input is centered across the stereo layer path (DEC-040).
-- There is no separate direct/dry input-to-master bypass by default. This avoids duplicate monitoring paths and keeps layer FX, stems, Freeze source and master recording semantics consistent.
+- Each layer's live input feeds that layer before its FX chain; mono input is centered across the stereo layer path (DEC-040).
+- A parallel dry live-input path is also summed before the master, as required by GS-ARC-007. This is intentional product routing, not an optional bypass. Master recording includes the dry path; layer stem outputs remain post-FX/pre-layer-fader. Host adapters must prevent accidental duplicate summing of layer buses.
 - When a host does not expose all optional layer buses, the main stereo master remains usable. The adapter must not sum layer buses into the master a second time.
 
 These are recommended signal semantics, not a decision to select AU instrument or music-effect component types, nor proof that every host exposes all five outputs. AU/VST3 validation must confirm whether the semantic tap model can be preserved in each target host.
