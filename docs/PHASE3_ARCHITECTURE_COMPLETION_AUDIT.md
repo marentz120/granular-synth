@@ -150,7 +150,7 @@ The current `DSP_ARCHITECTURE.md` has useful outlines, but the following design 
 ### 5.4 Audio/DSP signal flow
 - Normative signal-flow diagram for voice, layer, FX, layer outputs, dry live input and master.
 - Exact per-layer and master recording tap points.
-- Freeze capture boundary and interaction with recording, live input, sample playback, grain scheduling, voice state, modulation, FX tails, sequencer and transport.
+- Engineering definition of the approved Freeze capture boundary, recording tap, live-input source handoff, snapshot publication/retirement and failure reporting; product interactions are fixed by DEC-042.
 - Channel mapping for mono/stereo live input and multi-channel device/host buses.
 - Sampler and granular interpolation, loop boundary and sample-swap behavior.
 
@@ -204,7 +204,7 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 4. Freeze parameter schema and stable host ID strategy before any public automation IDs exist.
 5. Specify sample, recording and plugin-state lifecycle, implementing DEC-025 without changing its policy.
 6. Define threading, queue capacities, ownership and overload behavior.
-7. Implement the approved Freeze semantics (DEC-042) in the architecture specification and validation plan; do not reopen the product behavior without an owner decision.
+7. Verify that the architecture and validation plan fully preserve the already-approved Freeze semantics (DEC-042); close only the remaining engineering details (recording tap, snapshot memory/admission, publication/retirement, transition work and serialization). Do not reopen product behavior.
 8. Define resource accounting and deterministic overload policy; separately plan the benchmark needed to set numeric budgets.
 9. Complete requirement-to-architecture traceability and independent review.
 10. Submit Phase 3 completion PR for owner review. Do not begin production implementation until Phase 3 is approved and Phase 4/5 gates are satisfied.
@@ -219,4 +219,4 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 - No proprietary GR-MEGA firmware, source, presets, artwork or undocumented file format may be copied or reverse-engineered.
 - Host compatibility, legal review and distribution remain separate evidence/gates; this audit does not certify them.
 
-**Audit outcome:** Phase 3 is correctly started, but not complete. The repository needs the deliverables in §7 before the architecture can be considered implementation-ready.
+**Audit outcome:** Phase 3 is correctly started, but not complete. The repository needs the deliverables in §7 before the architecture can be considered implementation-ready. The traceability table currently maps all 124 R1 rows at domain/module level; it does not yet provide class/API-level contracts or passing validation evidence.
