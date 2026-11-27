@@ -92,7 +92,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 ## 4. Persistence and interaction
 
 - LFO configuration, matrix rows, macro assignments and envelope-follower configuration are part of the layer Patch state.
-- XY pad current position is a performance value; whether its last position is persisted as patch state is an unresolved interaction detail and should not be assumed.
+- XY pad current position is a performance value; persistence/reset behavior remains a Phase 4 interaction detail.
 - Copy/paste of a layer or patch copies its modulation configuration.
 - Copy/paste of a matrix row preserves all row fields and destination reference.
 - Undo/Redo applies to editing operations, consistent with the global R1 editing model.
@@ -111,7 +111,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 
 | ID | Question | Status / handling |
 |---|---|---|
-| Q-M11 | Are LFOs per-voice or per-layer? | OPEN. Existing proposal is a per-LFO Poly/Mono switch, default Mono, but not yet owner-approved. |
+| Q-M11 | Are LFOs per-voice or per-layer? | **ANSWERED — DEC-024:** per-LFO Poly/Mono switch; default Mono (shared per-layer phase), Poly uses independent per-voice phase. |
 | MAC-07 | Is 20-macro support required? | R1 remains 10. Do not promote to 20 absent approval. |
 | MAC-04 | Are macro modulation values per-voice or shared? | OPEN; define before architecture. |
 | MTX-03 | Exact curve equation and taper | Needs a precise product definition; manual provides qualitative behavior only. |
@@ -125,7 +125,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 - CV inputs: optional/later; not R1.
 - Patch randomizer: L2.
 - 20 macros: unresolved benchmark ambiguity, not an R1 commitment.
-- Poly/Mono LFO scope: unresolved until Q-M11 is decided.
+- Poly/Mono LFO scope: resolved by DEC-024; Mono default, Poly selectable per LFO.
 
 ## 8. Acceptance intent (criteria finalized in Phase 5)
 
