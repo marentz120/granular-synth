@@ -13,7 +13,7 @@
 
 ## Change summary (v0.2 → v0.3)
 
-- **Added two owner-approved requirements** reflecting DEC-015/DEC-016 (owner decisions on PR #2, 2026-11-27): GS-MID-008 and GS-UI-007 (§3.13, §3.16). These are the **only** requirements in this document with Tier status **Approved**; every other requirement and tier is still Proposed/Pending as before. Full detail in docs/LIVE_PERFORMANCE_SPECIFICATION.md.
+- GS-MID-008 and GS-UI-007 remain the explicitly approved controller-operability requirements. DEC-017…DEC-021 additionally approve product scope for layers, engines, sequencer, live input and MIDI control; detailed acceptance criteria and engineering feasibility remain later-phase work.
 - Updated §1/§2 to record that both studio and live-performance use cases are now confirmed primary (DEC-015), and updated §6/§7 counts and dependencies accordingly.
 - No other requirement, tier, or wording changed.
 
@@ -55,7 +55,7 @@ GRANULAR SYNTH is a professional, sample-based granular instrument for macOS, de
 - **Standalone macOS application** (own audio/MIDI device handling, live audio input).
 - **Audio plugins:** AU and VST3 (target formats subject to confirmation — see OPEN_QUESTIONS Q-P02).
 
-**Use case (DEC-015, Approved 2026-11-27):** both studio sound design and live performance are primary use cases; the instrument must be a genuine performance tool, not merely a plugin wrapper. This does not by itself decide layer count, engine scope, sequencer tier, or plugin live input (DEC-008/009/010 remain Proposed) — see docs/LIVE_PERFORMANCE_SPECIFICATION.md for the live-performance consequences that *are* specified (GS-MID-008, GS-UI-007).
+**Use case (DEC-015, Approved 2026-11-27):** both studio sound design and live performance are primary. The resulting approved R1 layer, engine, sequencer, live-input and controller scope is recorded in DEC-017…DEC-021 and docs/R1_PRODUCT_SPECIFICATION.md.
 
 Functional benchmark: Tasty Chips GR-MEGA (manual 1.8.d) — DEC-001. We reproduce *documented behavior and workflows*, not firmware, code, UI artwork or file formats, and we add improvements where software allows (marked **[PROP]** in the feature map).
 
