@@ -288,3 +288,20 @@ The Lifecycle, Threading and IF-05 API contracts now specify:
 - visible lifecycle states and safe rejection preserving the last valid active asset.
 
 The exact retirement backpressure handshake, fallback capacity, generation storage/rollover representation, memory headroom and warning/admission thresholds remain engineering gates. No implementation, benchmark or runtime measurement was performed.
+
+
+## State save/restore consistency audit — 2026-11-27
+
+A second focused review covered DEC-025 persistence, recording snapshots and host state callbacks. The previous text required stable snapshots and atomic/recoverable saves, but did not fully define generation consistency between metadata and rolling audio, the completeness condition for all embedded recordings, or restore publication as one candidate-runtime transaction.
+
+The Lifecycle, Threading and IF-11 API contracts now require:
+- a state generation plus per-recording source generation and committed-frame range;
+- bounded retention or immutable staging for rolling recording data, because committed frames alone may still be overwritten;
+- one save transaction covering every required unsaved recording and Freeze chunk, with manifest lengths/format/rate/channels/frame range/generation/checksum;
+- host-specific callback compliance without waiting for disk I/O, audio-thread acknowledgement or global audio quiescence;
+- validated chunk bounds/checksums and memory admission before large restore allocations;
+- off-thread candidate restore preparation and one safe-point publication, preserving the prior active runtime if preparation/publication fails;
+- explicit relink/recovery status and no silent replacement or omission of unsaved audio;
+- atomic or recoverable final save publication.
+
+Open engineering gates remain: exact AU/VST3/Standalone callback strategy, state size and chunk limits, compression, snapshot deadlines, staging/lease capacities and recovery UX. No implementation, host prototype, benchmark or runtime test was performed.
