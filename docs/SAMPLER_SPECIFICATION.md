@@ -97,4 +97,4 @@ Sampler uses the common sample management model:
 
 ## 10. Acceptance intent
 
-Phase 5 tests must cover pitch-as-speed, forward/reverse playback, scan and spray, pan spray, all loop modes, loop boundaries, release behavior once resolved, env pile-up, voice stealing, interpolation quality, mono/stereo sources, sample swap, buffer playback while recording, persistence and missing-sample recovery. Numerical CPU and memory limits are not set here.
+Phase 5 tests must cover pitch-as-speed, forward/reverse playback, scan and spray, pan spray, all loop modes, loop boundaries, Loop Release ON/OFF behavior per DEC-030, env pile-up, voice stealing, interpolation quality, mono/stereo sources, sample swap, buffer playback while recording, persistence and missing-sample recovery. Numerical CPU and memory limits are not set here.
