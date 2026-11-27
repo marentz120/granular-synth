@@ -1,7 +1,7 @@
 # Presets, Projects and Library Specification
 
 **Version:** 0.1 — Phase 2 working specification  
-**Status:** Proposed; subject to owner review. No serialization or architecture decision authorized.  
+**Status:** Product policies Q-P07/Q-P08 approved by DEC-022/025; technical serialization and implementation remain Phase 3. No implementation authorized.  
 **Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-PRS-001…010; R1_PRODUCT_SPECIFICATION.md §§4.4–4.5; DEC-015…021.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §13.
 
@@ -98,7 +98,7 @@ The existing requirements use “Patch”, “Preset”, “Multi” and “Proj
 | Q-P07 | Exact conceptual and UX distinction among Patch, Preset, Multi, Project and global Library | **ANSWERED — DEC-022**; UI details remain Phase 4 |
 | Q-P08 | Embed versus reference recorded buffers and samples in plugin state | **Product policy ANSWERED — DEC-025**; serialization and size policy Phase 3 |
 | GS-PRS-006 | Plugin state includes recorded unsaved buffers | R1 product policy: embed unsaved buffers (DEC-025); exact mechanism Phase 3 |
-| GS-PRS-009 | Patch comments | Requirement currently proposed R1; benchmark has 100-character limit but product limit unapproved |
+| GS-PRS-009 | Patch comments | R1 requirement; no benchmark-specific 100-character limit imposed |
 | GS-PRS-010 / Q-L01 | GR-1/GR-MEGA import | Optional and legally blocked; excluded from R1 |
 | Q-T12 | Host parameter IDs/exposure | Phase 3 |
 
