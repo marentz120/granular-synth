@@ -1,6 +1,6 @@
 # Phase 2 — Specification Completion Audit
 
-**Status:** Working document — not approved; no product decisions or implementation authorized.
+**Status:** Historical Phase 2 gap-audit snapshot. Its identified product questions have since been resolved or explicitly deferred in DEC-022…DEC-041; the six domain specifications and R1 Release Scope Matrix are the current specifications. This document does not authorize implementation.
 **Baseline:** `main` at the current approved R1 product scope and DEC-015…DEC-021.
 **Purpose:** Complete only requirements that are still open, underspecified, contradictory, or missing. Existing approved requirements remain unchanged.
 **Benchmark source:** Tasty Chips GR-MEGA User Manual 1.8.d, as mapped in `GR_MEGA_FEATURE_MAP.md`. Official support page and firmware roadmap are supplementary evidence, not authority to change GRANULAR SYNTH scope.
@@ -161,3 +161,18 @@ The feature map already contains substantial manual-derived research for Sampler
 ## 6. Exit criteria
 
 Phase 2 is complete only when all six domain specifications are reviewed, all unresolved ambiguities are explicitly tracked, the requirement inventory and tier counts reconcile, acceptance criteria are testable, and the owner has approved the resulting PR. No implementation begins as part of this work.
+
+
+## 7. Resolution status after the audit
+
+The initial gaps were addressed as follows:
+
+- Modulation: DEC-024 resolves LFO Poly/Mono scope; DEC-031 resolves macro modulation context; DEC-032 resolves XY normalization and saved recall position. Parameter-domain equations and host exposure remain Phase 3.
+- Effects: DEC-023 approves the seven-effect R1 set. Parameter ranges/tapers and algorithm details remain Phase 3.
+- Sampler: DEC-030 defines GRANULAR SYNTH loop-release behavior; DEC-037 sets Env Pile-up default OFF. Scan mathematics and interpolation implementation remain Phase 3.
+- Presets/Library: DEC-022 approves the searchable library/performance-bank model; DEC-025 approves embedding unsaved recording buffers in plugin state. Serialization remains Phase 3.
+- MIDI: DEC-026 confirms AU/VST3 delivery target; DEC-033/034/038/039 settle Program Change mapping, shared-channel routing, MPE bend range and clock-loss behavior. Zone negotiation and protocol implementation remain Phase 3.
+- Audio/I/O: DEC-040 settles mono live-input behavior. Freeze semantics, host buses, signal tap points and measured resource budgets remain Phase 3/5.
+- Scope: DEC-041 approves all 168 requirement tiers; GS-SEQ-010 is L2. Counts reconcile to 124 R1, 27 L2, 9 L3, 8 OPT and 0 Other.
+
+This audit remains as a traceable record of the original gap-finding exercise. For current behavior, use the domain specifications and R1_PRODUCT_SPECIFICATION.md.
