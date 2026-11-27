@@ -39,7 +39,7 @@ The owner explicitly delegated remaining open product decisions to ChatGPT as pr
 
 | ID | Resolution | Decision |
 |---|---|---|
-| Q-P04 | **ANSWERED** | Exactly four independent Granular layers in R1 (DEC-017). |
+| Q-P04 | **ANSWERED** | Exactly four independent layers in R1, each selectable as Granular or Sampler (DEC-017/018). |
 | Q-P05 | **ANSWERED** | Full central performance-oriented step sequencer in R1 (DEC-019), not L2. |
 | Q-P06 | **ANSWERED** | Live input to each layer in Standalone and plug-in contexts; format-specific AU/VST3 implementation remains Phase 3 work (DEC-020). |
 | Q-P12 | **ANSWERED** | Generic class-compliant MIDI controller support, MIDI Learn + manual CC/channel/Note mapping; no named-controller template or MIDI feedback in R1 (DEC-021). |
@@ -152,7 +152,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-I15 | Firmware changes and roadmap | Release notes 1.8.0–1.8.4 reviewed → feature map §16. Roadmap 1.9–1.12 (Dec 2026–Jul 2027) not yet reviewed | Review roadmap at Phase 2 start | OPEN |
 | Q-I16 | Voice-stealing keyboard-position heuristic | p.120 | Our own design (protect lowest/highest held notes) | PROPOSED |
 | Q-I17 | "Pos Y" modulation source | RN 1.8.4 mentions POS X and POS Y; manual table lists only Pos X | Verify; our XY pad covers both | OPEN |
-| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Capture semantics before sequencer spec (L2) | OPEN |
+| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Capture semantics before Phase 4/5 acceptance design for the R1 sequencer | OPEN |
 
 ---
 
