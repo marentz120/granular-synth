@@ -1,6 +1,6 @@
 # DSP and Application Architecture
 
-**Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions (DEC-005 remains *Proposed*).
+**Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions; approved product decisions DEC-015…DEC-042 take precedence over this candidate architecture.
 **Version:** 0.5 (Phase 3 architecture proposal reconciliation, 2026-11-27)
 
 **Change summary (v0.4 → v0.5):**
@@ -489,7 +489,7 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 | Q-P08 / DEC-025 | Unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect |
 | Q-P02 | Plugin formats | AU + VST3 (R1); CLAP optional |
 | Q-P03 | Distribution, signing, notarization | Decide before Phase 6 |
-| Q-P20 | First-release engines | Granular + Slice + Sampler; Tape L2; Spectral L3 |
+| Q-P20 | First-release engines | Granular + Sampler in R1; Granular Slice deferred; Tape L2; Spectral L3 (DEC-018) |
 
 All items from the v0.1 "Decisions required" list (framework/language; threading model; target macOS and CPU architectures; initial release engines; sample formats and streaming; measured CPU/memory budgets; plugin formats and distribution/signing) are covered by the rows above.
 
