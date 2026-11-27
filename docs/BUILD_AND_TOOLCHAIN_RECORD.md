@@ -90,18 +90,33 @@ Harness detail (Debug): **12 test cases registered, 12 passed, 0 failed.** CTest
 
 These were throwaway checks outside the source tree; no such file is committed.
 
-## 6. Explicitly NOT validated
+## 6. CI evidence and explicitly NOT validated
 
-Stated plainly so no reader over-reads the green test output:
+### Observed CI evidence — PR #7, commit `7a5d3705c7790b67e3368fb2ee05ef94cf8bead8`
 
-- **CI has not been observed.** The workflow is committed but no run has been seen by the author of this record. Treat CI status as unknown until a run is inspected on the PR.
-- **No Apple Silicon validation.** The arm64 CI leg exists; its result has not been observed. Nothing was executed on arm64 locally.
+GitHub Actions run [#46056952540](https://github.com/marentz120/granular-synth/actions/runs/46056952540) completed on 2026-11-27. All four build/test jobs succeeded:
+
+| Runner | Observed OS | Architecture | Compiler | CMake | Result |
+|---|---|---|---|---|---|
+| `macos-15-intel` Debug | macOS 15.7.9 | x86_64 | AppleClang 17.0.0 | 4.4.2 | Build passed; 6/6 CTest passed |
+| `macos-15-intel` Release | macOS 15.7.9 | x86_64 | AppleClang 17.0.0 | 4.4.2 | Build passed; 6/6 CTest passed |
+| `macos-15` Debug | macOS 15.8.2 | arm64 | AppleClang 17.0.0 | 4.5.1 | Build passed; 6/6 CTest passed |
+| `macos-15` Release | macOS 15.8.2 | arm64 | AppleClang 17.0.0 | 4.5.1 | Build passed; 6/6 CTest passed |
+
+The advisory `clang-format` job failed: clang-format 23.1.6 reported formatting violations across tracked C++ files. Because the job has `continue-on-error: true`, the workflow conclusion is success; this must not be represented as a clean formatting check. Formatting cleanup remains outstanding.
+
+### Explicitly NOT validated
+
+Stated plainly so no reader over-reads the green build/test result:
+
+- **No Universal 2 binary** was produced, and no `lipo` verification was performed — architectures are intentionally unset.
+- **No macOS version support claim.** The deployment target is unset; CI ran on the observed macOS 15 versions only.
 - **No Universal 2 binary** was produced, and no `lipo` verification was performed — architectures are intentionally unset.
 - **No macOS version support claim.** The deployment target is unset; only macOS 12.7.6 was exercised.
 - **No AU/VST3/Standalone validation**, no `auval`, no `pluginval`, no host scan.
 - **No realtime-safety proof.** The allocation guard is test instrumentation with documented blind spots (see `tests/support/include/gs/test/RtGuard.h`): it sees only global `operator new`/`delete` in this binary, not `malloc`, locks, blocking calls or I/O.
 - **No performance data.** No benchmark was built or run; Q-T07 numeric budgets remain unmeasured and unauthorized.
-- **No clang-tidy enforcement.** A configuration exists; the CI job that would run formatting checks is marked advisory because its runner toolchain has not been confirmed.
+- **No clang-tidy enforcement.** A configuration exists but clang-tidy is not run by CI. The clang-format advisory job now has a confirmed runner/toolchain and exposed formatting violations; it remains non-blocking until the source files are formatted and the check passes.
 
 ## 7. Next gated step
 
