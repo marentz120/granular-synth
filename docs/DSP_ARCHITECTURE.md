@@ -1,7 +1,7 @@
 # DSP and Application Architecture
 
 **Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions; approved product decisions DEC-015…DEC-042 take precedence over this candidate architecture.
-**Version:** 0.5 (Phase 3 architecture proposal reconciliation, 2026-11-27)
+**Version:** 0.6 (proposed voice/layer signal-flow contract, 2026-11-27)
 
 **Change summary (v0.4 → v0.5):**
 - Reconciled sample/plugin state policy with DEC-025: unsaved recording buffers are embedded; library samples remain external references with relink/collect.
