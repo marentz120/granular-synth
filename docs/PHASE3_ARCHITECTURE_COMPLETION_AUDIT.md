@@ -111,7 +111,7 @@ The following is an audit recommendation, not an approval. “Proposed” means 
 
 ### 4.1 Related questions outside Q-T01…Q-T17
 
-- **Q-P06 / DEC-020:** AU/VST3 live input. Must settle the exact plugin component(s), input bus arrangement, MIDI behavior, host routing and whether AU needs separate instrument/music-effect components.
+- **Q-P06 / DEC-020:** the product requirement (live input per layer in Standalone and plug-in contexts) is answered; AU implementation topology remains open. The new AU component audit retains `aumu` as first validation candidate, requires a full-band input-source test, defines `aufm` fallback criteria and permits dual components only for distinct evidence-backed workflows. Exact input buses, MIDI/MPE, host routing and five-output behavior remain unproven.
 - **Q-P09:** target host matrix. The current proposal names Logic Pro, Ableton Live, Bitwig and Reaper; establish exact versions and which host/format combinations are release-blocking.
 - **Q-P10:** reference machine. The proposed base M1 target needs an actual machine/OS/host specification and reproducible profiling setup.
 - **Q-P08 / DEC-025:** product policy is resolved; serialization size, host state callbacks, chunking, cancellation, missing-file and restore behavior are not.
