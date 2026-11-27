@@ -1,6 +1,6 @@
 # Sample and State Lifecycle Specification
 
-**Version:** 0.1 — Phase 3 proposal  
+**Version:** 0.2 — Phase 3 proposal, DEC-042 aligned  
 **Status:** Proposed; requires architecture and owner approval. No implementation is authorized.  
 **Authority:** DEC-025/028/040, GS-SMG-001…021, GS-PRS-005/006, Q-T04/Q-T05/Q-T15/Q-T16.
 
@@ -123,7 +123,20 @@ The maximum embedded state size, compression policy, chunking strategy and failu
 - Collect/relink must not mutate the original library source by default.
 - Plugin state must remain portable when all referenced assets have been collected to a known package location.
 
-## 9. Open technical decisions
+## 9. Freeze integration (approved product behavior — DEC-042)
+
+- Freeze creates an immutable snapshot of the layer's current valid source region, respecting active crop/loop bounds and excluding uncommitted frames.
+- The source snapshot is prepared off-thread and published through the bounded structural-command path; the audio callback only switches to a ready snapshot.
+- Existing grains/voices, new notes, sequencer, MIDI, modulation, envelopes, shared transport and layer FX continue normally.
+- Independent recording continues at its defined tap. Freeze does not start/stop the recorder or mutate the frozen snapshot.
+- Thaw crossfades back to the prior live/rolling source. Static library samples report already static or disable redundant capture.
+- Global Freeze transitions all four layers at one logical boundary; partial failure must be visible.
+- Freeze state and snapshot audio persist in plugin state; the snapshot is treated as an unsaved recording buffer and embedded under DEC-025.
+- Memory exhaustion or source loss must fail safely, preserve the prior valid source and report status. All Sound Off does not thaw.
+
+Numeric capture duration, memory budget, copy strategy, crossfade duration and snapshot buffer admission remain engineering decisions for Phase 3/5.
+
+## 10. Open technical decisions
 
 | Question | Status |
 |---|---|
