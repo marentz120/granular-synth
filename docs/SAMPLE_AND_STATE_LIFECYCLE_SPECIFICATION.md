@@ -127,15 +127,25 @@ The precise container encoding (JSON manifest plus binary chunks is the candidat
 
 ### 7.3 Save/restore behavior
 
-- State save must operate on a stable snapshot; it must not block the audio thread.
-- Host state callbacks may impose synchronous API constraints. The adapter must copy or snapshot bounded state without waiting for disk I/O or audio quiescence.
-- If embedded recordings exceed a defined size/time budget, do not silently omit them. Return a documented failure or use a verified host-supported chunking strategy; notify the user and preserve the in-memory recording.
-- Restore reconstructs the recording buffers and resolves external references off-thread before publishing runtime objects.
-- If an external file is missing, load the rest of the project safely and expose a relink-required state.
-- Checksums detect corruption; corrupt embedded audio is rejected without crashing or invalidating unrelated patch state.
-- Save operations must be atomic or recoverable after interruption.
+**Capture and save**
+- State save operates on an immutable, internally consistent snapshot; it never reads mutable audio-writer memory directly and never blocks the audio thread.
+- The capture descriptor records a state generation and the committed-frame/source-generation tuple for each unsaved recording and Freeze snapshot. A snapshot must not combine metadata from one recording generation with audio from another.
+- Recording capture uses the same bounded retention/lease principle as Freeze: committed frames are not automatically immutable while a rolling ring continues to write. The capture coordinator reserves retention or copies into a pre-reserved immutable staging region off-thread; if it cannot guarantee a stable read, capture fails before returning a snapshot. The audio writer never waits for serialization.
+- All unsaved recording payloads required by DEC-025 are part of one save manifest transaction. The serializer must not mark the state complete if any required recording or Freeze chunk is absent, truncated or checksum-invalid.
+- Host state callbacks may impose synchronous API constraints. The adapter must follow the specific host callback contract; it may use a previously prepared immutable snapshot or a bounded capture/copy path, but must not wait for disk I/O, an audio-thread acknowledgement or global audio quiescence. If the required bounded snapshot is not ready within the host's permitted contract, return a documented save failure rather than omit audio.
+- Serialize large audio payloads as binary chunks; do not base64-encode them into JSON. Chunk order, lengths, format, sample rate, channel count, frame range, source generation and checksum are recorded in the manifest.
+- Write to a temporary/incomplete container and publish the final state only after all chunks and manifest have been written and verified. Use an atomic finalization mechanism where the host/container supports it; otherwise use a recoverable commit marker/version protocol. An interrupted save must leave either the prior valid state or a clearly detectable incomplete candidate, never a plausible-looking partial success.
+- If embedded recordings exceed the defined size/time budget or the host cannot accept the payload, do not silently omit them. Return a documented failure or use a verified host-supported chunking strategy; notify the user and preserve the in-memory recording.
 
-The maximum embedded state size, compression policy, chunking strategy and failure behavior are unresolved until host prototypes and reference tests are complete.
+**Restore**
+- Inspect container bounds, manifest schema/version, chunk lengths and checksums before allocating large payloads. Reject impossible lengths, overflow, unsupported formats and malformed manifests safely.
+- Migrate metadata and prepare embedded recordings, Freeze snapshots and external sample references off-thread. Apply memory admission before allocating/decoding the full restore payload.
+- Missing external library files do not invalidate unrelated patch/sequencer state; restore the rest with an explicit relink-required status and stable unresolved asset identity.
+- Corrupt or unsupported embedded audio is never silently replaced by silence or omitted. Mark the affected recording/Freeze asset unavailable with explicit recovery status while preserving unrelated valid patch state where safe.
+- Prepare the complete candidate runtime graph off-thread. Do not mutate the active project incrementally while decoding. Publish a validated restore transaction at one documented safe point; if preparation/publication fails, keep the previous active runtime intact.
+- After successful publication, retire the previous runtime and release restore staging resources through the non-RT ownership path.
+
+The maximum embedded state size, compression policy, chunking strategy, capture deadline, host-specific synchronous callback handling and recovery UI remain unresolved until host prototypes and reference tests are complete.
 
 ## 8. Collect and relink
 
