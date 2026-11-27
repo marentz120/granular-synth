@@ -221,3 +221,8 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 - Host compatibility, legal review and distribution remain separate evidence/gates; this audit does not certify them.
 
 **Audit outcome:** Phase 3 is correctly started, but not complete. The repository needs the deliverables in §7 before the architecture can be considered implementation-ready. The traceability table now maps all 124 R1 rows individually to proposed modules, interfaces and validation families; it does not yet provide concrete class/API signatures or passing validation evidence.
+
+
+## API and signal-flow refinement (2026-11-27)
+
+`PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` adds candidate service boundaries and typed interface sketches for IF-01…IF-12, plus render ordering, signal-flow topology, recording-tap alternatives and validation obligations. It does not approve framework, ABI, numeric capacities, plugin topology or implementation. Recording tap selection, dry-input routing, mute/solo capture semantics, layer output tap and exact voice processing order remain open pending owner review and host evidence.
