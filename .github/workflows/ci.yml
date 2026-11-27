@@ -6,9 +6,9 @@
 #   * Universal 2 / deployment target    -> Q-T03 open; architectures stay unset
 #   * benchmarks or timing measurement   -> requires separate owner authorization (Q-T07)
 #
-# The arm64 leg runs on a GitHub-hosted Apple Silicon runner and the x86_64 leg on an Intel
-# runner. That exercises both architectures natively, but it is NOT a Universal 2 binary and
-# must not be reported as one.
+# The macos-15 leg runs on a GitHub-hosted Apple Silicon runner and macos-15-intel on Intel.
+# That exercises both architectures natively, but it is NOT a Universal 2 binary and must not
+# be reported as one. Older macos-13 and macos-14 labels are retired.
 
 name: CI
 
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [macos-13, macos-14]
+        runner: [macos-15-intel, macos-15]
         preset: [ci-debug, ci-release]
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
 
   format:
     name: clang-format (advisory)
-    runs-on: macos-14
+    runs-on: macos-15
     # Advisory until the runner toolchain has been confirmed in an actual CI run. It must not
     # block A0 review, and a green tick here is not evidence that formatting was checked.
     continue-on-error: true
