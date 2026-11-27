@@ -1,6 +1,6 @@
 # Claude Code Implementation Handoff
 
-**Version:** 0.1 — implementation preparation package  
+**Version:** 0.2 — implementation preparation package  
 **Status:** Ready for owner review; this document is not authorization to begin production implementation.  
 **Audience:** Claude Code (implementation agent), project owner and architecture reviewer.  
 **Authority:** Approved product decisions in `docs/DECISIONS_LOG.md`, Phase 2 product specification and requirements; Phase 3 documents are architecture proposals unless explicitly marked approved.
@@ -18,14 +18,14 @@ Claude Code must read these repository files before proposing code:
 1. `docs/DECISIONS_LOG.md` — approved decisions and their exact boundaries.
 2. `docs/R1_PRODUCT_SPECIFICATION.md` — R1 behavior and scope.
 3. `docs/GRANULAR_SYNTH_REQUIREMENTS.md` — 168 requirements and tier assignments.
-4. `docs/R1_ACCEPTANCE_CRITERIA.md` — current acceptance draft; known traceability gap is recorded below.
+4. `docs/R1_ACCEPTANCE_CRITERIA.md` — current acceptance draft; see `docs/PHASE5_TEST_DESIGN_BACKLOG.md` for the corrected 71-row traceability backlog.
 5. `docs/PHASE3_ARCHITECTURE_COMPLETION_AUDIT.md` — known gaps, corrections and review findings.
 6. `docs/PHASE3_ARCHITECTURE_DECISION_REGISTER.md` — open technical decisions.
 7. `docs/PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` and `docs/PHASE3_INTERFACE_CONTRACTS.md` — candidate APIs and cross-domain contracts.
 8. `docs/THREADING_AND_OWNERSHIP_SPECIFICATION.md` — realtime boundaries, ownership, queues and lifecycle.
 9. `docs/SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` and `docs/FREEZE_BEHAVIOR_SPECIFICATION.md` — sample, recording, Freeze and persistence behavior.
 10. `docs/PARAMETER_ID_SPECIFICATION.md`, `docs/DSP_ARCHITECTURE.md`, `docs/PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `docs/PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md` — parameter, DSP, host and platform proposals.
-11. `docs/PHASE3_ARCHITECTURE_TRACEABILITY.md` and `docs/DEVELOPMENT_ROADMAP.md` — requirement mapping and milestone sequence.
+11. `docs/PHASE3_ARCHITECTURE_TRACEABILITY.md`, `docs/PHASE3_API_SYMBOL_TRACEABILITY.md`, `docs/PHASE5_TEST_DESIGN_BACKLOG.md` and `docs/DEVELOPMENT_ROADMAP.md` — requirement/API/test traceability and milestone sequence.
 
 If documents conflict, stop and report the exact conflicting passages and decision authority. Do not silently reconcile product behavior in code.
 
@@ -43,7 +43,7 @@ These are owner/engineering gates, not permission for Claude to decide autonomou
 | AR-01 | Same-offset event tie-break and parameter writer precedence | Prevents accidental host/MIDI/sequencer/UI ordering semantics |
 | AR-02 | Voice/grain overload selection and fallback policy | Prevents implementation-dependent stealing behavior |
 | DEC-042 follow-up | Confirm global Freeze successful-subset versus all-or-nothing preparation failure | Existing documents flag this interpretation for owner review |
-| Phase 5 | Acceptance IDs for the 77 R1 requirements not explicitly referenced in current AC draft | Prevents untestable completion claims |
+| Phase 5 | Explicit AC/test links or documented cross-cutting rationale for the 71 R1 requirements still lacking an acceptance/release-gate link | Prevents untestable completion claims |
 
 Q-T07 numeric grain budget and numeric CPU/memory capacities remain measurement gates. Do not invent values. Any benchmark requires separate explicit owner authorization. Host prototypes and production DSP are distinct work items and require explicit scope authorization.
 
@@ -155,7 +155,7 @@ Do not claim these tests are complete merely because the test names or harness e
 
 - Phase 2 baseline is merged in `main`; Phase 3 remains an open Draft PR.
 - Phase 3 architecture maps 124/124 R1 requirement IDs at module/interface level.
-- Current acceptance draft explicitly references 47/124 R1 IDs; 77 require explicit Phase 5 test linkage or documented cross-cutting rationale.
+- Corrected acceptance audit: 49/124 direct AC-table references plus four cross-domain release-gate links (53/124); 71 requirements remain unlinked and are listed in `docs/PHASE5_TEST_DESIGN_BACKLOG.md`.
 - Event precedence (AR-01) and voice/grain overload (AR-02) remain open.
 - Sample replacement, memory admission, state save/restore and host adapter contracts have been refined in Phase 3 documentation.
 - No production DSP, plugin shell, UI, host prototype, benchmark or implementation code is authorized by this handoff.
