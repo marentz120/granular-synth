@@ -500,18 +500,20 @@ All items from the v0.1 "Decisions required" list (framework/language; threading
 
 ## 12. Recommended R1 voice/layer signal-flow contract (Phase 3 proposal)
 
-The following recommended ordering reconciles the granular render description (grain accumulation and voice filter after summation) with the per-layer live-input, FX and recording requirements. It is a design proposal, not a claim about GR-MEGA internals or an approved implementation API.
+The following recommended ordering preserves the approved GS-ARC-007 chain (engine + sub-oscillator → LPF → HPF; four-slot layer FX and M-S/patch-volume/layer-mix/wet; parallel dry live input summed before master) while making recording and bus taps explicit. It is a design proposal, not a claim about GR-MEGA internals or an approved implementation API.
 
 1. Granular or Sampler voice source.
 2. Voice source summation.
 3. Sub-oscillator mix.
-4. Voice filter stage.
+4. LPF stage.
+5. HPF stage.
 5. Amp envelope.
 6. Voice pan into the stereo layer sum.
-7. Per-layer live input is gain-staged and mixed into that layer before its FX chain; mono input is centered across the stereo path per DEC-040.
-8. Per-layer FX chain.
-9. Post-FX/pre-layer-fader layer stem output and layer recording tap.
-10. Layer fader, mute and solo into the master mixer.
-11. Stereo master output and master recording tap immediately before host/device output.
+7. Per-layer live input is gain-staged and mixed into that layer before its four-slot FX chain; mono input is centered across the stereo path per DEC-040.
+8. A parallel dry live-input path is summed before the master, as required by GS-ARC-007.
+9. Per-layer four-slot FX chain, followed by M-S, patch volume, layer mix and wet path as specified by GS-ARC-007.
+10. Post-FX/pre-layer-fader layer stem output and layer recording tap.
+11. Layer fader, mute and solo into the master mixer; parallel dry live input is also summed before the master.
+12. Stereo master output and master recording tap immediately before host/device output.
 
 Recommended recording semantics: layer stems ignore layer fader/mute/solo so they remain independently mixable; master mix reflects those controls. No parallel dry-input-to-master route is enabled by default. This proposal must be validated with impulse/routing fixtures and Standalone monitoring tests before implementation.
