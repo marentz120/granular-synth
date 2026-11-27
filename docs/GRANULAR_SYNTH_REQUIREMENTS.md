@@ -396,7 +396,7 @@ Current coverage:
 | Attribute | Where it lives now |
 |---|---|
 | Unique ID | `GS-<AREA>-NNN` column |
-| Source / evidence class | "Source / notes" column → feature-map IDs; the evidence class (MC/INT/PROP/UNV/RN) is the one recorded on that feature-map row. Requirements without a benchmark source are marked [PROP]. |
+| Source / evidence class | "Source / notes" column → feature-map IDs; the evidence class (Manual-confirmed / Interpretation / Proposal / Unverified) is the one recorded on that feature-map row; [RN] is a supplemental source marker only. Requirements without a benchmark source are marked [PROP]. |
 | Priority | "Proposed tier" column (not approved) |
 | Rationale | Notes column where non-obvious; otherwise parity with the cited benchmark feature |
 | Dependencies | Area-level in §7; requirement-level in Phase 5 |
