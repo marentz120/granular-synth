@@ -1,7 +1,7 @@
 # DSP and Application Architecture
 
 **Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions (DEC-005 remains *Proposed*).
-**Version:** 0.3
+**Version:** 0.4 (consistency fix, 2026-11-27: §7 Granular Slice row corrected from "(R1)" to "(L2 — deferred, DEC-018)", matching GRANULAR_SYNTH_REQUIREMENTS.md §3.5 and the approved R1 engine scope)
 **Inputs:** GR_MEGA_FEATURE_MAP.md, GRANULAR_SYNTH_REQUIREMENTS.md, CLAUDE.md engineering principles.
 
 Every item marked **⚑ DECISION** needs ChatGPT review and owner approval before Phase 3 is closed. They are collected in OPEN_QUESTIONS.md §B with options and trade-offs. Nothing here instructs implementation.
@@ -306,7 +306,7 @@ All engines implement one voice-level interface: `noteOn / noteOff / render(bloc
 
 | Engine | Core model | Notes |
 |---|---|---|
-| **Granular Slice** (R1) | GranularEngine with position fixed to slice start/region; key → slice index; per-slice filter override (L2) | Slice table immutable, swapped like samples; auto-slice runs on loader thread with preview overlay (benchmark crackles here; we must not) |
+| **Granular Slice** (L2 — deferred, DEC-018) | GranularEngine with position fixed to slice start/region; key → slice index; per-slice filter override (L2) | Slice table immutable, swapped like samples; auto-slice runs on loader thread with preview overlay (benchmark crackles here; we must not) |
 | **Sampler** (R1) | 1 play head (+chord heads ≤ 12); loop confinement with one-shot / wrap / bounce; looped release; optional loop crossfade | Polyphase interpolation; long-file streaming L2 |
 | **Tape** (L2) | Target position = slider + scan + mod; head follows via critically-damped 2nd-order follower with slew time; readInc = Δhead per sample → pitch from motion; chord heads as pitch-bent copies | Needs high-quality interpolation and anti-aliasing at extreme speeds; reverse and stop behavior must be click-free |
 | **Spectral** (L3) | STFT phase vocoder; FFT 256–8192, Hann window, 4× overlap (⚑ Q-T11); per-bin magnitude/phase manipulations: threshold, phase smear (phase randomization), amp smear (magnitude smoothing across bins), freeze (magnitude/phase hold with decay), bend (log-map warp vs linear shift), fold, pitch blend (second shifted layer), formant lock/shift (cepstral or LPC envelope), spectral window shaping | Fixed per-voice latency = FFT size; quality mode with phase-gradient heap integration (published RTPGHI method); chord ×12 by resynthesizing pitch-shifted copies from one analysis |
