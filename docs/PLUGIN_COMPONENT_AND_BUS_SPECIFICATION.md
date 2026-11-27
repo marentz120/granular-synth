@@ -1,6 +1,6 @@
 # Plugin Component and Bus Specification
 
-**Version:** 0.3 — AU/VST3 callback and bus semantics cross-checked  
+**Version:** 0.4 — render-capacity and input-bus fan-out clarified  
 **Status:** Proposed; host validation and owner approval required. No plugin implementation is authorized.  
 **Authority:** DEC-020/026, GS-PLT-001/004/005, GS-ARC-006, GS-SMG-020, Q-P06/Q-P09/Q-T01/Q-T03.
 
@@ -36,7 +36,7 @@ Candidate instrument component:
 - Main event input: MIDI event bus.
 - Main stereo audio output: master mix, default active.
 - Four stereo auxiliary audio outputs: Layer 1–4, optional/deactivatable where the host permits.
-- Stereo audio input: live input source, optional; define whether it is main or auxiliary/sidechain and how channels map to layers.
+- Optional live-input bus collection, with one stereo input as the minimum host-validation configuration. This is not a product-level maximum: DEC-020 does not impose a fixed product cap on live-input channels/sources. The adapter must normalize the host's negotiated input bus/channel collection and expose explicit per-layer source routing; a read-only input view may be shared by multiple layers without copying. Actual additional input availability is host/device-specific and must be validated.
 
 The VST3 API supports multiple dynamic audio input/output buses and event buses. That API capability does not guarantee identical host UI/routing behavior.
 
@@ -44,6 +44,7 @@ The VST3 API supports multiple dynamic audio input/output buses and event buses.
 
 Candidate primary instrument component:
 - `aumu` instrument with MIDI input and stereo master output.
+- Use one optional stereo input as the minimum live-input validation configuration, not as a product-wide input limit. The normalized adapter model must represent the negotiated input bus/channel collection and map those physical inputs to logical per-layer source views without assuming one physical bus per layer.
 - Validate whether target hosts permit the required live-input routing to this component and whether output buses are exposed as needed.
 
 Alternative:
@@ -142,7 +143,7 @@ The adapter owns host SDK objects and host callback buffers. The shared core rec
 ## 7. Required prototype and validation work
 
 Before choosing the final AU/VST3 component topology:
-1. Build a minimal instrument prototype with MIDI input, stereo output and one optional stereo input.
+1. Build a minimal instrument prototype with MIDI input, stereo output and one optional stereo input as a baseline configuration only; do not treat this as the product's maximum input topology.
 2. Test AU instrument live-input routing in Logic Pro and at least one additional target host.
 3. Test whether the AU music-effect alternative supports the required MIDI/live-input workflow and compare the insertion UX.
 4. Test VST3 input plus five stereo outputs (master + four layers) in each proposed host.
@@ -226,3 +227,28 @@ The exact C++ representation remains open. This refinement is necessary to prese
 The host matrix must explicitly cover: VST3 parameter flush with no audio buses; an inactive middle bus with a later active bus; trailing inactive buses omitted from ProcessData; kDefaultActive not honored; block-size/sample-rate reconfiguration while inactive; invalid AU pull-input result; AU maximum-frame reconfiguration; missing AU/VST3 transport context; and offline VST3 state callbacks. These are host-adapter contract tests, not evidence that any target host has passed them.
 
 **Sources:** Apple AUAudioUnit, maximumFramesToRender, renderBlock, scheduleParameterBlock, AURenderPullInputBlock; Steinberg VST3 ProcessData, AudioBusBuffers, IAudioProcessor, IProcessContextRequirements, and Processing FAQ. Exact URLs are listed in PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md §8.
+
+## 11. Render capacity, bus fan-out and transient memory
+
+The host maximum block size determines the fixed render-resource capacity for each lifecycle generation:
+
+| Format | Capacity source | Required lifecycle |
+|---|---|---|
+| AU | `maximumFramesToRender` | Set before `allocateRenderResources`; a changed maximum requires the AU render-resource lifecycle, not an in-render resize. |
+| VST3 | `ProcessSetup::maxSamplesPerBlock` | Change only while inactive; deactivate, call `setupProcessing`, then reactivate/restart under a new lifecycle generation. |
+| Standalone | Configured audio-device maximum | Prepare a new device/render configuration off callback and publish only after the old configuration is quiescent. |
+
+Let `B` be the prepared maximum frames and `N` the actual render frames. Require `N <= B` before any scratch access. Scratch capacity is prepared off-thread and never grows/shrinks in `process` or AU render. A call beyond capacity enters a bounded adapter failure path; exact SDK status mapping and host recovery require validation. A VST3 zero-bus parameter-flush call is not an audio render and must not touch audio scratch or advance transport.
+
+The product output model has five stereo buses when all are exposed: one primary master plus four optional layer stems. This is ten output channels, but the host-owned buffers are borrowed views and are not automatically ten channels of engine-owned scratch. If an implementation materializes copies of all five outputs, the float32 payload is `5 × 2 × B × 4 = 40B` bytes. One additional stereo input staging copy adds `8B` bytes. More generally:
+
+`M_transient = B × 4 × (C_in_staged + C_out_staged)`
+
+where channel counts include only data actually copied into engine-owned staging/working buffers. Internal per-layer work planes, FX workspaces and guard/alignment memory must be itemized separately. Direct writes to valid host output buffers and read-only fan-out of one input bus do not incur a second full-bus copy.
+
+The R1 product policy does not set a fixed maximum input channel/source count. A one-stereo-input test is a baseline, not a limit. The adapter must distinguish physical host input buses from logical per-layer source views: the same read-only physical input may feed multiple layers, and each layer's source routing is independent. Do not imply four separate host input buses or four duplicate input buffers merely because the engine has four layer source views.
+
+All byte-size calculations use checked wide arithmetic and validate conversion to `size_t` before allocation. Float32 sample width is distinct from process architecture width. The current macOS target investigation concerns x86_64/arm64; Q-T03 remains open and no 32-bit macOS target is approved or implied.
+
+The detailed equations, illustrative 1,024/4,096-frame calculations, admission ledger and validation obligations are in `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md`. These examples do not approve a block-size range, host topology, memory budget or implementation.
+
