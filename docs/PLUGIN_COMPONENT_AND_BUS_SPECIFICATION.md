@@ -1,6 +1,6 @@
 # Plugin Component and Bus Specification
 
-**Version:** 0.4 — render-capacity and input-bus fan-out clarified  
+**Version:** 0.5 — AU component decision gate clarified  
 **Status:** Proposed; host validation and owner approval required. No plugin implementation is authorized.  
 **Authority:** DEC-020/026, GS-PLT-001/004/005, GS-ARC-006, GS-SMG-020, Q-P06/Q-P09/Q-T01/Q-T03.
 
