@@ -1,6 +1,6 @@
 # Phase 3 Architecture Completion Audit
 
-**Version:** 0.4  
+**Version:** 0.5 — AU component strategy evidence gate added  
 **Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
 **Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
 **Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
@@ -72,7 +72,7 @@ These are sound architectural directions, but the concrete algorithms, queue bou
 | `DSP_ARCHITECTURE.md` §3 | Candidate tree lists Slice, Tape and Spectral engine modules without tier qualifiers. | Label Granular and Sampler as R1; Slice/Tape as later-tier extension points and Spectral as L3. Do not imply R1 implementation scope. |
 | `DSP_ARCHITECTURE.md` §9.3 | The prior revision said 10 macros, “scalable to 20”. | **Reconciled in this branch:** exactly ten macros in R1 under DEC-036; no R1 scalability implication. |
 | `DSP_ARCHITECTURE.md` §12 | Suggests MIDI out “where format/host support it” and standalone MIDI clock in/out. | Reconcile with R1: MIDI clock input is required in Standalone; MIDI clock/feedback/sequencer MIDI output are not R1 commitments. |
-| `DSP_ARCHITECTURE.md` §5.6 | Proposes AU `aumu` + `aumf` variants and VST3 input bus. | Treat as options only. Validate real host insertion/routing/automation behavior before selecting the component set. |
+| `DSP_ARCHITECTURE.md` §5.6 | Proposes AU `aumu` + `aufm` candidates and VST3 input bus. | Treat as options only. Validate real host insertion/routing/automation behavior before selecting the component set. |
 | `DSP_ARCHITECTURE.md` §5.3 | Memory table is raw sample payload arithmetic only. | Keep explicit estimate label; do not promote these figures to a memory budget. Add measured RSS and non-audio overhead later. |
 
 ### 3.3 Requirements needing explicit architectural interpretation
