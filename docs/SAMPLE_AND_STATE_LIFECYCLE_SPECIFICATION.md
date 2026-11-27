@@ -83,7 +83,7 @@ States:
 
 Per-layer recorders and the stereo master recorder are separate assets. Recording is written into preallocated buffers/rings; disk writing and WAV export happen off-thread. A buffer-full or resource-exhaustion condition stops capture safely, preserves valid frames and informs the user.
 
-Recommended architecture defaults (pending product UX and host validation): per-layer capture is post-FX and pre-layer-fader, independent of layer fader/mute/solo; a muted or solo-isolated layer continues recording its own stem when armed. Master capture is the final stereo master mix after layer faders/mute/solo and before host output, including live input routed through the layer graph. No separate dry-to-master bypass is enabled by default. These tap positions are engineering recommendations, not new approved product requirements. Exact start modes, stop semantics and loop/scroll behavior remain to be specified and tested.
+Recommended architecture defaults (proposal pending owner review and host validation): per-layer capture is post-FX and pre-layer-fader, independent of layer fader/mute/solo; a muted or solo-isolated layer continues recording its own stem when armed. Master capture is the final stereo master mix after layer faders/mute/solo and before host output, including live input routed through the layer graph. No separate dry-to-master bypass is enabled by default. These tap positions are engineering recommendations, not new approved product requirements. Exact start modes, stop semantics and loop/scroll behavior remain to be specified and tested.
 
 ## 7. Plugin state and persistence — DEC-025 implementation
 
@@ -146,9 +146,9 @@ Numeric capture duration, memory budget, copy strategy, crossfade duration and s
 | State container format and migration | Q-T15 — JSON manifest + binary chunks proposed |
 | Maximum embedded recording size | Open — host API prototype and test |
 | Host state callback threading/size constraints | Open — AU/VST3 prototype |
-| Exact per-layer/master record tap | Open — signal-flow decision |
+| Exact per-layer/master record tap | Proposed: post-FX/pre-layer-fader for stems; final master pre-host-output for master capture — owner/host validation pending |
 | Recording buffer capacity and overflow | Open — measured and bounded |
-| Freeze interaction with recording | **Answered — DEC-042**; recorder continues at its defined tap, frozen snapshot remains immutable. Exact tap definition remains open in signal-flow design |
+| Freeze interaction with recording | **Answered — DEC-042**; recorder continues independently at the proposed recording tap, while the frozen source snapshot remains immutable. Validate implementation tap equivalence in host/Standalone tests |
 
 **Status:** Proposed engineering specification aligned with approved product policies DEC-025 and DEC-042. It does not approve a memory ceiling or a serialization container.
 
