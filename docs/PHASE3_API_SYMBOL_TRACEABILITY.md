@@ -1,6 +1,6 @@
 # Phase 3 R1 API Symbol Traceability
 
-**Version:** 0.2 — 2026-11-27  
+**Version:** 0.3 — render-capacity and logical input routing symbols added, 2026-11-27  
 **Status:** Proposed class/API-symbol traceability; no implementation, ABI or public API approval.  
 **Baseline:** docs/GRANULAR_SYNTH_REQUIREMENTS.md R1-tier rows, DEC-041, docs/R1_ACCEPTANCE_CRITERIA.md, and candidate symbols in docs/PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md §14.  
 **Branch baseline:** Phase 3 architecture branch; this document is documentation-only.
@@ -15,17 +15,17 @@ The mapping preserves the current 12 IF contracts. The IF column is copied from 
 
 | Requirement | Candidate API symbol / operation | Existing IF contracts | Current acceptance link | Open boundary / decision note |
 |---|---|---|---|---|
-| GS-PLT-001 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; IStandaloneDeviceAdapter::processDeviceBlock; IAudioEngine::prepare/process | IF-01, IF-11, IF-12 | AC-AUD-001 | — |
+| GS-PLT-001 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; IStandaloneDeviceAdapter::processDeviceBlock; IAudioEngine::prepare/process; RenderCapacity::maxFramesPerBlock/lifecycleGeneration | IF-01, IF-11, IF-12 | AC-AUD-001 | — |
 | GS-PLT-002 | ReleasePackagingManifest::architectures; BuildMatrix::packageUniversal2 | IF-01, IF-11, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | Q-T03 פתוח: Universal 2 וגרסת macOS מינימלית אינן מאושרות. |
-| GS-PLT-003 | IAudioEngine::process; ProcessBlock::frameCount; BlockContext::sampleRate | IF-01, IF-11, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | טווח 44.1–192 kHz ובלוקים 16–4096 כפוף ל-Q-T17; אין כאן התחייבות תאימות שנבדקה. |
+| GS-PLT-003 | IAudioEngine::process; ProcessBlock::frames; RenderCapacity::maxFramesPerBlock; BlockContext::sampleRate | IF-01, IF-11, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | טווח 44.1–192 kHz ובלוקים 16–4096 כפוף ל-Q-T17; אין כאן התחייבות תאימות שנבדקה. |
 | GS-PLT-004 | IOfflineRenderer::render; IAudioEngine::process; IRandomStream::seed | IF-01, IF-11, IF-12 | §7 — shared-core/Standalone↔plugin behavior consistency | נדרשת הבהרה של bit-identical בין arm64/x86_64; מדיניות FP עדיין לא הוגדרה. |
 | GS-ARC-001 | LayerRuntime::ownedPatch/voices/modulation/fx/channel; ILayerProcessor::processVoices/processInput/processEffects/processOutput | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-ARC-002 | IVoiceAllocator::allocate; VoicePoolConfig::polyphonyLimit | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-ARC-003 | IGrainPool::tryAcquire/release; GrainPoolConfig::perVoiceLimit | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-ARC-004 | IGrainBudgetPolicy::admit/selectReclamationCandidates; IGrainPool::tryAcquire | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | AR-02 פתוח; תקציב הגרגרים, מדיניות reclaim וספי degradation לא נבחרו ולא נמדדו. |
 | GS-ARC-005 | ILayerEngineSelector::prepareEngine/publishSelection; LayerEngineKind | IF-01, IF-03, IF-09, IF-10, IF-12 | AC-SMP-001 | — |
-| GS-ARC-006 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; IStandaloneDeviceAdapter::mapOutputChannels; IMasterMixer::mixLayers | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | מיפוי bus הוא חוזה אדפטר; פריסת buses סופית לכל Host עדיין דורשת אימות. |
-| GS-ARC-007 | ILayerProcessor::processVoices/processInput/processEffects/processOutput; IMasterMixer::mixLayers | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
+| GS-ARC-006 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; IStandaloneDeviceAdapter::mapOutputChannels; ProcessBlock::mainOutput/layerOutput/inputBuses/layerInput; IMasterMixer::mixLayers | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | מיפוי bus הוא חוזה אדפטר; פריסת buses סופית לכל Host עדיין דורשת אימות. |
+| GS-ARC-007 | ILayerProcessor::processVoices/processInput/processEffects/processOutput; ProcessBlock::inputBuses/layerInput; IMasterMixer::mixLayers | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-ARC-008 | IVoiceGainPolicy::gainForVoice; IGrainNormalizer::gainForCount; IMasterMixer::mixLayers | IF-01, IF-03, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-GRN-001 | IGrainScheduler::schedule; GrainRate::grainsPerSecond | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-GRN-002 | IGrainScheduler::schedule; GrainParameters::sizeMilliseconds | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
@@ -76,7 +76,7 @@ The mapping preserves the current 12 IF contracts. The IF column is copied from 
 | GS-SMG-009 | ILayerProcessor::processInput; ISampleAsset::channelData | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-009 | — |
 | GS-SMG-010 | IRecordingPlayhead::position; IRecorder::processCapture | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-008 | — |
 | GS-SMG-011 | IRecordingBufferPolicy::reserve/initialize; IMemoryAdmission::reserve | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-008 | — |
-| GS-SMG-012 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; ILayerProcessor::processInput | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-003, AC-AUD-004 | — |
+| GS-SMG-012 | IAUProcessAdapter::normalizeProcessContext; IVST3ProcessAdapter::normalizeProcessContext; ProcessBlock::inputBuses/layerInput; ILayerProcessor::processInput | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-003, AC-AUD-004 | — |
 | GS-SMG-017 | ISampleExportService::exportWav | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-010 | — |
 | GS-SMG-019 | IMemoryAdmission::reserve; ISampleStore::prepareAsset | IF-01, IF-05, IF-06, IF-07, IF-11 | אין AC מפורש — Phase 5: להוסיף AC או rationale | DEC-028: יעד שש דקות סטריאו ל-layer כפוף להיתכנות בטוחה; לא בוצע Benchmark. |
 | GS-SMG-020 | IRecorder::processCapture; RecordTap; IMasterMixer::mixLayers | IF-01, IF-05, IF-06, IF-07, IF-11 | AC-AUD-006, AC-AUD-007 | — |
