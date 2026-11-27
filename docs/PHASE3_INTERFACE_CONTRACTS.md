@@ -54,18 +54,18 @@ Every interface must define its producer, consumer, data ownership, execution co
 - Missing external assets do not invalidate unrelated patch state.
 - Global Freeze reports per-layer success/failure and never reports success if one layer failed.
 
-## 4. Signal-flow decisions still required
+## 4. Signal-flow proposal and validation gate
 
-Before implementation, a normative signal-flow diagram must identify:
-1. Live-input monitoring and per-layer input routing, including mono-to-stereo behavior under DEC-040.
-2. Voice engine/sub-osc/filter order and per-layer FX chain order.
-3. Dry live-input path position relative to layer FX and master mix.
-4. Exact per-layer recording tap and master recording tap, including pre/post FX and mute/solo behavior.
-5. Freeze source tap and its relation to the rolling recorder; recording continues independently under DEC-042.
-6. Layer output bus versus master output channel mapping.
-7. Bypass, panic and FX-tail behavior.
+`PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` §6–8 now defines the recommended R1 engineering defaults, pending owner review and host/UX validation:
+1. Live input enters each layer before its FX chain; mono input is centered across the stereo layer path under DEC-040.
+2. Proposed voice order: Granular/Sampler source sum → sub-oscillator mix → voice filter → amp envelope → pan → layer sum.
+3. No separate direct/dry live-input-to-master bypass by default.
+4. Per-layer recording and layer output taps: post-FX, pre-layer-fader; stems ignore fader/mute/solo.
+5. Master recording/output: final stereo master after layer fader/mute/solo, immediately before host/device output.
+6. Freeze snapshots the source region defined by DEC-042; this source tap is distinct from the post-FX recording tap. Recording continues independently.
+7. Panic and FX-tail behavior follow DEC-042 and the DSP/acceptance specifications.
 
-The product-level Freeze semantics are approved. This list specifies only engineering tap/routing detail and must not reopen DEC-042.
+These are engineering proposals, not new approved product decisions. The remaining gate is to review and validate the proposed semantics in Standalone and target AU/VST3 hosts; it must not reopen approved DEC-040 or DEC-042 behavior.
 
 ## 5. Validation obligations by interface
 
@@ -100,4 +100,4 @@ The existing 124-row traceability table remains the authoritative inventory reco
 - UI and controller workflows: IF-02, IF-04, IF-09.
 - Non-functional requirements: all interfaces, especially IF-01/03/04/06/07/11/12.
 
-**Audit status:** 12 cross-domain interfaces are defined at contract level. Exact C++ API/class signatures, queue capacities, state container encoding, bus topology, signal-flow tap positions, and numeric resource budgets remain open. No implementation-readiness claim is made.
+**Audit status:** 12 cross-domain interfaces are defined at contract level. Candidate C++ API/class signatures and the proposed signal-flow/tap semantics are documented in `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md`; they still require owner review and host/UX validation. Queue capacities, state container encoding, final host bus exposure and numeric resource budgets remain open. No implementation-readiness claim is made.
