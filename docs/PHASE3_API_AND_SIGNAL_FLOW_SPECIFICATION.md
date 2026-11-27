@@ -300,7 +300,7 @@ Contract:
 - Modulation, envelopes, LFOs, MIDI, sequencer, shared transport, layer FX and effect tails continue.
 - Recording continues independently at its defined tap.
 - Thaw crossfades to the prior live/rolling source.
-- Global Freeze is represented by one bounded transaction payload containing four per-layer preparation outcomes; it must not be split into four independently queued layer commands. At one safe point, all ready layers switch together; failed layers retain their prior source and expose per-layer failure. A transaction-publication failure changes no layer. The UI reports partial failure and never reports full global success unless all four switched.
+- Global Freeze is represented by one bounded transaction payload containing four per-layer preparation outcomes; it must not be split into four independently queued layer commands. At one safe point, all ready layers switch together; failed layers retain their prior source and expose per-layer failure. A transaction-publication failure changes no layer. The UI reports partial failure and never reports full global success unless all four switched. **Owner review required:** the proposed behavior applies the successful subset when one or more layer preparations fail; DEC-042 requires visible partial failure but does not explicitly choose successful-subset versus all-or-nothing switching.
 - Static library samples do not incur redundant copies.
 - Snapshot persistence follows DEC-025. Memory exhaustion or missing source preserves the previous valid source.
 - This interface implements DEC-042; it does not reopen Freeze product semantics. Exact crossfade duration, memory budget and copy algorithm remain engineering values to validate.
