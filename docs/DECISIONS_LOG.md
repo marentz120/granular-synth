@@ -50,6 +50,11 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-037 | Sampler Env Pile-up defaults OFF in R1; users may enable it per layer | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). The benchmark recommends OFF for Sampler; the toggle remains available. |
 
+
+| DEC-038 | R1 MPE per-note pitch-bend range is 48 semitones | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27), matching GS-MID-002 and the benchmark reference. Zone negotiation and host/controller compatibility remain Phase 3. |
+| DEC-039 | Standalone MIDI Clock Start resets the shared sequencer transport to its start; Continue resumes; Stop halts at the current position; loss of clock pulses for two expected beat intervals stops clock-dependent sequencer progression at the current position | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). Song Position Pointer is ignored in R1 unless later explicitly added; clock-loss handling must not free-run or jump position. |
+| DEC-040 | Mono live input is centered and available to both sides of stereo layer processing; explicit LL/RR duplication is not the default | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). This is product routing behavior; exact channel mapping and signal tap implementation remain Phase 3. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
