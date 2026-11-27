@@ -2,7 +2,7 @@
 
 **Version:** 0.1 — Phase 2 working specification  
 **Status:** Product behavior approved for Phase 2; DEC-024, DEC-031 and DEC-032 settle the relevant product semantics. This document does not authorize DSP implementation.  
-**Authority:** R1_PRODUCT_SPECIFICATION.md, GRANULAR_SYNTH_REQUIREMENTS.md GS-MOD-001…012, DEC-015…021.  
+**Authority:** R1_PRODUCT_SPECIFICATION.md, GRANULAR_SYNTH_REQUIREMENTS.md GS-MOD-001…012, DEC-015…024 and DEC-031/032.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §10.1–10.4. Manual-derived behavior is identified as benchmark reference, not automatically a product requirement.
 
 ## 1. Purpose and scope
@@ -112,7 +112,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 | ID | Question | Status / handling |
 |---|---|---|
 | Q-M11 | Are LFOs per-voice or per-layer? | **ANSWERED — DEC-024:** per-LFO Poly/Mono switch; default Mono (shared per-layer phase), Poly uses independent per-voice phase. |
-| MAC-07 | Is 20-macro support required? | R1 remains 10. Do not promote to 20 absent approval. |
+| MAC-07 | Is 20-macro support required? | R1 remains 10; twenty are not required in R1 (DEC-036). |
 | MAC-04 | Are macro modulation values per-voice or shared? | **ANSWERED — DEC-031:** base macro value is shared per layer patch; per-note sources may produce per-voice modulated destinations. DSP evaluation order Phase 3. |
 | MTX-03 | Exact curve equation and taper | Needs a precise product definition; manual provides qualitative behavior only. |
 | MTX-04 | XY pad coordinate and source normalization | **ANSWERED — DEC-032:** each axis normalized 0.0–1.0; saved patch recall position defaults to center (0.5, 0.5). UI details Phase 4. |
