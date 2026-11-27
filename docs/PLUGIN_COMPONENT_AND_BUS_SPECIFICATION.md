@@ -100,6 +100,45 @@ A host/format cell is not considered supported until all required tests for that
 - Host parameter gestures and automation must preserve identical semantic values across Standalone/AU/VST3.
 - Host-specific unsupported operations must be surfaced rather than silently ignored.
 
+## 6.1 Normalized host-process contract (adapter boundary)
+
+Every format adapter must translate its host callback into one framework-independent process description. This is a proposed core contract, not a final C++ ABI:
+
+| Field | Normalized meaning | Required handling |
+|---|---|---|
+| Frame count | Current callback's valid frame range | Accept negotiated variable sizes; zero-frame lifecycle/flush calls must not be mistaken for audio blocks |
+| Sample rate | Current processing rate | Detect changes and request non-RT reconfiguration; never rebuild DSP graphs in the callback |
+| Input/output bus map | Bus identity, activation, channel count and buffer validity for this call | Inactive/unconnected buses are explicit; never infer activity from a non-null pointer alone |
+| Event view | Borrowed host MIDI/parameter/transport events with timestamps | Copy only required event data into bounded engine-owned records before callback return |
+| Transport snapshot | One coherent host transport observation for this block | Missing/invalid fields are flagged; adapters do not fabricate tempo/PPQ |
+| Process mode | Realtime, offline, pre-roll, suspended or host-specific mode | Map explicitly; deterministic engine behavior receives mode as input |
+| Lifecycle generation | Adapter generation for start/stop/reconfigure/restore transitions | Stale prepared configurations cannot activate after a newer lifecycle generation |
+
+The adapter owns host SDK objects and host callback buffers. The shared core receives only normalized views and engine-owned bounded event records; no host SDK type crosses into `core/` or `engine/`.
+
+### Bus activation and routing rules
+
+1. Treat bus identity separately from bus activation. A declared optional bus may be inactive, have zero channels, or be represented by absent/null buffers depending on host/API; each case has an explicit normalized state.
+2. Build the per-call routing map from the negotiated bus arrangement. Never assume bus index equals layer index unless the adapter's stable mapping explicitly establishes it.
+3. The master output is the primary stereo output. Layer 1–4 outputs are independent optional outputs; an inactive layer output must not disable that layer's contribution to the master.
+4. If a host cannot expose a layer output, the layer still contributes once to the master. Do not emulate an unavailable output by adding a second copy into the master.
+5. If the live-input bus is unavailable or unconnected, the adapter supplies an explicit unavailable-input state; the core does not read a null/uninitialized buffer. Live-input-dependent features report unavailable while the instrument path remains usable.
+6. Channel layouts are validated before rendering. Mono input follows DEC-040 centering; unsupported channel counts must be rejected or mapped by an explicitly documented adapter policy, never guessed.
+7. Bus arrangement changes are structural lifecycle changes. Prepare new routing state off-thread and publish at a safe point; do not resize buffers or allocate in the process callback.
+
+### Clock and transport authority by format
+
+- **AU/VST3:** valid host transport is the authoritative transport source while supplied by the host. MIDI Clock arriving through plugin MIDI input must not become a second active master. If host transport is absent/invalid, the adapter reports that condition; fallback policy must be explicit per format/host and must not silently switch clocks mid-playback.
+- **Standalone:** exactly one selected authority advances shared transport at a time: internal clock, external MIDI Clock or Ableton Link. Switching authority is an explicit control/lifecycle event with deterministic phase policy; no two clocks advance transport concurrently.
+- The engine receives a single normalized transport snapshot/clock authority and does not arbitrate host SDK objects itself.
+- DEC-039 MIDI Clock Start/Continue/Stop/timeout behavior applies to the MIDI Clock authority; it does not override valid host transport in plugin contexts.
+
+### State and lifecycle callback rules
+
+- Host state callbacks may be synchronous and may be called while processing is stopped or active. The adapter must follow the actual format/host contract and use the immutable state snapshot protocol; it must not wait for audio quiescence or perform disk I/O in a realtime callback.
+- Start/stop, suspend/resume, sample-rate change, buffer-size change, bus-arrangement change, state restore and device loss each advance or validate a lifecycle generation. A stale prepared graph/configuration cannot be published after a newer transition.
+- On shutdown, stop accepting new work, preserve ownership of pending commands and recordings, drain/retire resources on non-RT executors, and only then destroy the shared core. The host callback must not synchronously join a worker that may wait on audio.
+
 ## 7. Required prototype and validation work
 
 Before choosing the final AU/VST3 component topology:
