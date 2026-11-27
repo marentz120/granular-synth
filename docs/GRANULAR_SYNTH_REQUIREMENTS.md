@@ -141,16 +141,16 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-CHD-006 | Microtonal scales (n-TET > 12). | L2 | PQ-02 |
 | GS-CHD-007 | Scala (.scl/.kbm) import and MTS-ESP support. | OPT | PQ-06 [PROP] |
 
-### 3.5 Granular Slice engine (SLC)
+### 3.5 Granular Slice engine (SLC) — deferred from R1
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-SLC-001 | Slice engine: granular playback confined to a slice; chromatic mapping from a configurable root (default C-2 per benchmark). | R1 | SLC-01, SLC-02; root note configurable = [PROP] |
-| GS-SLC-002 | Manual add / delete / delete-all / drag slices (mouse and keyboard). | R1 | SLC-03, SLC-05, SLC-06 |
-| GS-SLC-003 | Auto-slice by transient detection with sensitivity, previewed before commit, non-blocking for audio. | R1 | SLC-04 (benchmark is offline and may crackle → we must not) |
+| GS-SLC-001 | Slice engine: granular playback confined to a slice; chromatic mapping from a configurable root (default C-2 per benchmark). | L2 | SLC-01, SLC-02; root note configurable = [PROP] |
+| GS-SLC-002 | Manual add / delete / delete-all / drag slices (mouse and keyboard). | L2 | SLC-03, SLC-05, SLC-06 |
+| GS-SLC-003 | Auto-slice by transient detection with sensitivity, previewed before commit, non-blocking for audio. | L2 | SLC-04 (benchmark is offline and may crackle → we must not) |
 | GS-SLC-004 | Filter cutoff per slice option. | L2 | SLC-07 |
 | GS-SLC-005 | WAV cue/marker import as slices. | L2 | SLC-08 |
-| GS-SLC-006 | Slice count ≥ 128. | R1 | SLC-11 [UNV] — our spec |
+| GS-SLC-006 | Slice count ≥ 128. | L2 | SLC-11 [UNV] — our spec |
 
 ### 3.6 Sampler engine (SMP)
 
