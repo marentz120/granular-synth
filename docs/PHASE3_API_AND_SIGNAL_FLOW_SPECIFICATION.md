@@ -372,7 +372,7 @@ public:
 
 Contract:
 - Four layer processors are independent; the central sequencer and shared transport remain instance-level.
-- R1 layer FX list/order is the approved seven effects: Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator, Compressor (DEC-023). The actual per-patch ordering and slot count must reconcile with the Effects Specification before implementation; this document does not invent a new effect order.
+- R1 provides four independent serial FX slots per layer (AC-FX-001), with user reordering (AC-FX-002), and seven available effect types approved by DEC-023: Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator and Compressor. Four slots are the chain capacity; seven is the effect-type inventory. Per-effect algorithms, parameter ranges and tail behavior remain subject to the Effects Specification and validation.
 - Layer output and master output must be deterministic and must not alias unsafely.
 - FX tails continue through Freeze; All Sound Off silences voices/effect tails without thawing source.
 - Live-input routing and dry monitoring path must be explicit. Mono live input is centered and available to both sides of stereo layer processing (DEC-040); explicit LL/RR duplication is not the default.
@@ -598,7 +598,7 @@ These are obligations, not evidence of passing tests. No benchmark code, product
 | Layer output tap position | Proposed post-FX/pre-fader tap | Validate host buses, stems and Standalone live workflow |
 | Queue capacities and retirement bounds | Open | Derive from burst analysis and tests; do not invent numeric limits |
 | State container/chunking and maximum size | Open | Host evidence and DEC-025-compliant serialization design |
-| FX order/slot count | Open | Reconcile Effects Specification and DSP graph; preserve DEC-023 seven effects |
+| FX slots and inventory | Four serial slots per layer (AC-FX-001/002); seven effect types (DEC-023) | Validate per-effect algorithms, parameter ranges, tail semantics and signal routing; no unresolved slot-count conflict |
 
 ## 12. Phase 3 exit impact
 
