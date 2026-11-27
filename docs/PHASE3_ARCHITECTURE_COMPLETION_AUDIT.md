@@ -191,7 +191,7 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 | `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` v1.0 | Loading, recording, sample handles, embedded unsaved buffers, external references, save/restore and recovery | DEC-025 fully reflected; failure cases and size handling specified |
 | `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` v1.0 | Standalone/AU/VST3 components, input/output buses, MIDI, host capabilities and fallback behavior | Host/format matrix and unresolved compatibility evidence explicit |
 | `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 | Capture boundary, freeze/thaw state machine, interactions and failure behavior | Product behavior approved and mapped to GS-SMG-021 acceptance |
-| `PHASE3_ARCHITECTURE_TRACEABILITY.md` | Every R1 requirement → module/interface → validation evidence | 100% of 124 R1 rows mapped; no orphan requirements |
+| `PHASE3_ARCHITECTURE_TRACEABILITY.md` + `PHASE3_INTERFACE_CONTRACTS.md` | Every R1 requirement → module/interface → validation obligation; cross-domain contracts define ownership, timing, failure and validation | 124/124 domain mapping plus IF-01…IF-12 contract set; remaining per-requirement class/API traceability explicitly closed or deferred |
 | Updated `OPEN_QUESTIONS.md` and `DECISIONS_LOG.md` | Final status of Q-T01…Q-T17 and related decisions | Each question Approved, Rejected or explicitly deferred with a phase and rationale |
 
 ---
@@ -201,13 +201,14 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 1. Reconcile architecture document against Phase 2 decisions (DEC-022…DEC-041) and remove stale policy statements.
 2. Decide framework and platform target after current SDK/host/licence verification.
 3. Specify plugin components, buses and live-input strategy; validate with the selected host matrix.
-4. Freeze parameter schema and stable host ID strategy before any public automation IDs exist.
-5. Specify sample, recording and plugin-state lifecycle, implementing DEC-025 without changing its policy.
-6. Define threading, queue capacities, ownership and overload behavior.
-7. Verify that the architecture and validation plan fully preserve the already-approved Freeze semantics (DEC-042); close only the remaining engineering details (recording tap, snapshot memory/admission, publication/retirement, transition work and serialization). Do not reopen product behavior.
-8. Define resource accounting and deterministic overload policy; separately plan the benchmark needed to set numeric budgets.
-9. Complete requirement-to-architecture traceability and independent review.
-10. Submit Phase 3 completion PR for owner review. Do not begin production implementation until Phase 3 is approved and Phase 4/5 gates are satisfied.
+4. Define and cross-check every cross-module contract (host process, parameter registry, commands, snapshots, sample assets, recording, Freeze, transport, MIDI, audio routing, state and deterministic render).
+5. Freeze parameter schema and stable host ID strategy before any public automation IDs exist.
+6. Specify sample, recording and plugin-state lifecycle, implementing DEC-025 without changing its policy.
+7. Define threading, queue capacities, ownership and overload behavior.
+8. Verify that the architecture and validation plan fully preserve the already-approved Freeze semantics (DEC-042); close only the remaining engineering details (recording tap, snapshot memory/admission, publication/retirement, transition work and serialization). Do not reopen product behavior.
+9. Define resource accounting and deterministic overload policy; separately plan the benchmark needed to set numeric budgets.
+10. Complete requirement-to-architecture traceability and independent review.
+11. Submit Phase 3 completion PR for owner review. Do not begin production implementation until Phase 3 is approved and Phase 4/5 gates are satisfied.
 
 ---
 
