@@ -7,7 +7,7 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 | DEC-001 | Use Tasty Chips GR-MEGA as primary functional benchmark | Approved | Owner-directed; does not authorize copying proprietary implementation. |
 | DEC-002 | Use `marentz120/granular-synth` as shared project record | Approved | Repository supplied by owner. |
 | DEC-003 | Separate reference research/planning from production implementation | Approved | Requirements and architecture review before production coding. |
-| DEC-004 | Target macOS standalone, AU and VST3 | Proposed | Initial intent; validate framework and formats. |
+| DEC-004 | Target macOS standalone, AU and VST3 | **Approved** | Product format scope confirmed by DEC-026; exact AU/VST3 component, bus and host integration remain Phase 3 technical work. |
 | DEC-005 | Select JUCE/C++ | Proposed | Candidate only; compare options before approval. |
 | DEC-006 | Determine first-release engines and layer/voice limits | **Approved** | Product scope resolved by DEC-017/DEC-018 under the owner's explicit product-management delegation (2026-11-27); numeric voice/grain/resource budgets remain technical Phase 3/5 work. |
 | DEC-007 | Evidence tag [RN] (manufacturer release notes) is a supplemental source marker on top of the four canonical CLAUDE.md classes, never a standalone fifth class | Proposed | Issue #1; clarified per owner review of PR #2 (2026-11-27, item 1). Every [RN] occurrence in GR_MEGA_FEATURE_MAP.md now carries one of the four canonical tags (typically written `[MC via RN]`). |
