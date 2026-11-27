@@ -168,7 +168,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMP-001 | One play head per voice (up to 12 with chord), pitch = speed; spray, pan spray, direction and scan behave as documented. | R1 | SMP-01…05 |
 | GS-SMP-002 | Loop flags confine playback; one-shot / loop / ping-pong; looped release: ON continues looping through the voice release; OFF exits at the next valid loop boundary and continues toward Stop. | R1 | SMP-06, EDT-07; product behavior DEC-030 (not a claim about verified benchmark behavior) |
 | GS-SMP-003 | High-quality (polyphase/windowed-sinc) interpolation option. | R1 | SMP-09 |
-| GS-SMP-004 | Env pile-up option. | R1 | SMP-10 |
+| GS-SMP-004 | Env pile-up option, default OFF for Sampler; user may enable per layer. | R1 | SMP-10; DEC-037 |
 | GS-SMP-005 | Long samples up to 60 min (disk-streamed or RAM, per Q-T05). | L2 | SMP-07 |
 | GS-SMP-006 | Loop crossfade and zero-crossing snapping. | L2 | EDT-P1 [PROP] |
 | GS-SMP-007 | SFZ multisample import (incl. velocity layers — beyond benchmark). | L3 | SMP-11 |
