@@ -89,7 +89,7 @@ granular-synth/
 ├── sample/          # SampleBuffer, decoding, SRC, analysis (peaks, onsets, centroid map), recorder
 ├── engine/
 │   ├── grain/       # Grain, GrainPool, GrainScheduler, WindowBank
-│   ├── engines/     # GranularEngine, SliceEngine, SamplerEngine, TapeEngine, SpectralEngine
+│   ├── engines/     # GranularEngine, SamplerEngine (R1); SliceEngine (L2), TapeEngine (L2), SpectralEngine (L3)
 │   ├── voice/       # Voice, VoiceAllocator, chord/arp, quantizer, sub-osc
 │   ├── mod/         # ModSource registry, ModMatrix, Macros, per-voice ModState
 │   ├── fx/          # FX slot host + effect implementations
@@ -358,12 +358,12 @@ Every parameter is declared once with: stable string ID (`L1.grain.size`), numer
 
 ### 9.3 Modulation evaluation
 
-- Control rate: every **16–32 samples** sub-block, per voice (and per layer for mono sources).
+- Control rate: proposed 16-sample sub-block (Q-T13), subject to measurement and approval; per voice for polyphonic sources and per layer for shared sources.
 - `effective = curve(base + Σ (srcᵢ · amountᵢ · polarityᵢ · curveᵢ) + macro contributions)`, clamped to range.
 - Audio-class destinations interpolate linearly across the sub-block.
 - Spawn-class destinations are read at grain birth from the latest sub-block value.
-- Matrix: 50 rows; sources registry as benchmark (25) + our additions (XY pad); destinations = all modulatable parameters (≥149).
-- Macros (10, scalable to 20): each macro = level (automatable) + list of (destination, start, end, curve); macros are mod sources *and* destinations (benchmark "polyphonic macro modulation").
+- Matrix: 50 rows; sources registry as benchmark (25) + our additions (XY pad); destinations = R1 modulatable parameters.
+- Macros: exactly ten per patch in R1 (DEC-036); each macro = shared per-layer base value plus destination mappings. Per-note sources may produce per-voice destination values under DEC-031. Macros are host-automatable and may be modulation sources/destinations where specified.
 
 ### 9.4 Host exposure (⚑ Q-T12)
 
@@ -396,8 +396,8 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 |---|---|
 | Shared core | Identical `Engine` object in all formats; format code only adapts buses, MIDI, parameters, state |
 | Buses | Main stereo out + 4 optional stereo layer outs; required live-input capability (VST3 input bus; AU component/bus strategy to be validated — Q-P06) |
-| MIDI | Notes, CC, MPE, pitch bend, program change (where host delivers it); MIDI out only where format/host support it |
-| State | Versioned, self-describing state blob; sample references + optional embedded audio (Q-P08) |
+| MIDI | Notes, CC, MPE, pitch bend and Program Change where host delivers it; R1 MIDI Clock input in Standalone; MIDI feedback, clock output and sequencer MIDI output are not R1 commitments |
+| State | Versioned, self-describing state; unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect (DEC-025) |
 | Latency | 0 for granular/sampler/tape; spectral latency reported when it processes live input (Q-T10) |
 | Sample rate / block size | Fully variable; all time constants in seconds; `prepare()` rebuilds rate-dependent tables off the RT path |
 | Offline render | Deterministic; uses same code paths; respects host "realtime vs offline" flag only for quality-tier boosts (optional) |
@@ -448,7 +448,7 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 |---|---|---|---|
 | R-01 | Worst-case grain load exceeds one core | Dropouts | Global budget, quality tiers, optional workgroup threading |
 | R-02 | Parameter-ID scheme changed after release | Breaks user automation/presets | Freeze ID scheme in Phase 3 (Q-T12) |
-| R-03 | Plugin state size with embedded recordings (100+ MB) | Slow DAW saves, host limits | Reference + "collect" by default; embed opt-in (Q-P08) |
+| R-03 | Plugin state size with embedded unsaved recordings (potentially large) | Slow DAW saves, host limits, host state-size constraints | Implement DEC-025: unsaved recording buffers are embedded; define bounded serialization, chunking/failure behavior and save/restore tests; library assets remain references |
 | R-04 | AU live-input requirement | Two AU variants, Logic UX differences | Decide early (Q-P06) |
 | R-05 | Spectral engine CPU/latency | Dropouts with multiple layers | Defer to L3; per-instance limit; latency reporting |
 | R-06 | Window/parameter modulation clicks | Quality complaints | Spawn-sampled params, window snapshots, smoothing classes |
@@ -475,7 +475,7 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 | Q-T11 | PV overlap/window | Hann, 4× overlap baseline |
 | Q-T12 | Parameter ID scheme & host exposure | Stable string IDs, expose all, grouped by layer |
 | Q-P06 | Plugin audio input / AU type | VST3 input bus + AU `aumu` and `aumf` variants |
-| Q-P08 | Sample storage in plugin state | Reference + collect; embed opt-in |
+| Q-P08 / DEC-025 | Unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect |
 | Q-P02 | Plugin formats | AU + VST3 (R1); CLAP optional |
 | Q-P03 | Distribution, signing, notarization | Decide before Phase 6 |
 | Q-P20 | First-release engines | Granular + Slice + Sampler; Tape L2; Spectral L3 |
