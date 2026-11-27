@@ -221,6 +221,6 @@ flowchart TD
 
 ### 2026-11-27 routing-default refinement
 - Added a consistent recommended R1 signal-flow contract across API, DSP, sample/state and plugin bus documents.
-- Recommended layer stems and layer outputs are post-FX/pre-fader; per-layer recording ignores fader/mute/solo; master capture is post-mix/pre-host-output; live input enters each layer before FX; no parallel dry-to-master path by default.
-- Voice ordering proposal: engine source sum → sub-oscillator → voice filter → amp envelope → pan → layer sum.
+- Recommended layer stems and layer outputs are post-FX/pre-fader; per-layer recording ignores fader/mute/solo; master capture is post-mix/pre-host-output; live input enters each layer before FX and also follows the required parallel dry-to-master path (GS-ARC-007).
+- Voice chain: engine + sub-oscillator → LPF → HPF (GS-ARC-007); amp-envelope/pan placement remains a validation detail.
 - These defaults remain architecture proposals pending host/UX validation; no product decision or implementation authorization is implied.
