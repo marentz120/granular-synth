@@ -1,6 +1,6 @@
 # Phase 3 API and Signal-Flow Specification
 
-**Version:** 0.2 — consolidated signal-flow defaults  
+**Version:** 0.3 — Freeze snapshot concurrency contract added  
 **Status:** Proposed for owner/architecture review. This document does not approve a framework, public C++ ABI, plugin topology, numeric queue capacity, DSP implementation or benchmark work.  
 **Baseline:** Phase 2 merged baseline; DEC-015…DEC-042; IF-01…IF-12.  
 **Companion documents:** `PHASE3_INTERFACE_CONTRACTS.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`.
@@ -294,11 +294,13 @@ public:
 
 Contract:
 - Snapshot preparation copies or references the exact valid source region off-thread and publishes an immutable handle.
+- A committed-frame count is a validity boundary, not a lifetime guarantee for a rolling ring. Before an off-thread copy, the coordinator must acquire a bounded retention lease that prevents the selected pages from being overwritten. Recording continues into a separate writable region; the audio thread never waits or copies the source. If a lease/spare capacity is unavailable, preparation fails before source publication and the previous source/recorder state remain unchanged.
+- The snapshot carries and validates source generation, first frame and committed range; stale or overwritten generations are rejected rather than read concurrently.
 - The audio thread switches source at a safe logical boundary. Existing grains/voices continue; new MIDI/sequencer events use the frozen snapshot.
 - Modulation, envelopes, LFOs, MIDI, sequencer, shared transport, layer FX and effect tails continue.
 - Recording continues independently at its defined tap.
 - Thaw crossfades to the prior live/rolling source.
-- Global Freeze applies to all four layers at one logical boundary. A partial failure must be visible and must not report global success.
+- Global Freeze is represented by one bounded transaction payload containing four per-layer preparation outcomes; it must not be split into four independently queued layer commands. At one safe point, all ready layers switch together; failed layers retain their prior source and expose per-layer failure. A transaction-publication failure changes no layer. The UI reports partial failure and never reports full global success unless all four switched.
 - Static library samples do not incur redundant copies.
 - Snapshot persistence follows DEC-025. Memory exhaustion or missing source preserves the previous valid source.
 - This interface implements DEC-042; it does not reopen Freeze product semantics. Exact crossfade duration, memory budget and copy algorithm remain engineering values to validate.
@@ -572,7 +574,7 @@ No command may require the audio thread to allocate, decode, copy a large buffer
 | Ownership | No RT allocation/lock/destruction; queue saturation; retire-queue saturation; replacement failure preserves active graph |
 | Sample lifecycle | Large-file decode, immutable handle lifetime, replacement during active grains, missing/corrupt assets |
 | Recording | Each tap independently verified with impulse/routing fixtures; committed-frame boundary; overrun; save during active recording |
-| Freeze | Source snapshot region, active voices continue, new notes use snapshot, concurrent recording, global boundary, partial failure, thaw crossfade and state restore |
+| Freeze | Source snapshot region, active voices continue, new notes use snapshot, rolling-ring retention lease and ring-wrap safety, concurrent recording, one global transaction boundary with mixed per-layer outcomes, partial failure, thaw crossfade and state restore |
 | Routing | Four layer stems plus master; no double count; mute/solo/fader semantics; direct input monitor; FX tails |
 | State | Embedded unsaved audio, external relink, corrupt chunks, interrupted save, unsupported schema, host size limits |
 | Determinism | Same fixture/seed gives repeatable render; standalone/plugin equivalence within declared boundary |
