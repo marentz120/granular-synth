@@ -1,6 +1,6 @@
 # Phase 3 API and Signal-Flow Specification
 
-**Version:** 0.3 — Freeze snapshot concurrency contract added  
+**Version:** 0.4 — render-capacity and logical input routing clarified  
 **Status:** Proposed for owner/architecture review. This document does not approve a framework, public C++ ABI, plugin topology, numeric queue capacity, DSP implementation or benchmark work.  
 **Baseline:** Phase 2 merged baseline; DEC-015…DEC-042; IF-01…IF-12.  
 **Companion documents:** `PHASE3_INTERFACE_CONTRACTS.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`.
@@ -62,8 +62,8 @@ struct ConstAudioBusView {
 struct ProcessBlock {
     AudioBusView mainOutput;
     AudioBusView layerOutput[4];       // inactive/unconnected buses are explicit
-    ConstAudioBusView mainInput;
-    ConstAudioBusView layerInput[4];   // only where host/device topology supplies it
+    std::span<const ConstAudioBusView> inputBuses; // negotiated physical host/device inputs
+    ConstAudioBusView layerInput[4];   // logical per-layer routes; views may alias inputBuses
     FrameCount frames;
     SampleRateHz sampleRate;
     const struct BlockContext* context; // borrowed; valid only during process()
@@ -91,6 +91,20 @@ struct BlockContext {
 **Lifetime rule:** all host buffers, spans and pointers in `ProcessBlock` and `BlockContext` are borrowed for the duration of `process()` only. An implementation must copy any event or data needed after the callback into bounded owned storage. No callback pointer may be retained.
 
 The exact representation of optional buses, channel counts, sample formats and host-specific event payloads is delegated to the adapter specification and host validation.
+
+### 3.1 Render capacity and physical-to-logical input routing
+
+The active engine configuration owns an immutable prepared render capacity `B` for its lifecycle generation. The host/device supplies the actual frame count `N` on each render call; the engine validates `N <= B` before accessing any workspace. `B` comes from AU `maximumFramesToRender`, VST3 `ProcessSetup::maxSamplesPerBlock`, or the Standalone device maximum. A new maximum/sample rate/bus arrangement requires off-thread preparation and the appropriate host/device lifecycle; the process callback never resizes or allocates.
+
+`inputBuses` represents the negotiated physical host/device input bus views for this call. `layerInput[4]` represents logical per-layer source routes after adapter routing. A logical route may reference/alias a physical input bus and may be shared read-only by several layers; four layer routes do not imply four physical host input buses or four copied buffers. This preserves DEC-020's per-layer live-source capability without introducing a product-level input-channel cap. The host may expose fewer physical inputs than the product can route; availability remains explicit and host/device-specific.
+
+The output views are also borrowed for the current call. The five product output buses (stereo master plus four optional stereo layer outputs) contain ten output channels when all are exposed, but those host buffers are not engine-owned scratch. Only actual internal working planes and staging copies are charged to the render scratch ledger.
+
+For float32 staging, the conditional full-copy equation is `B × 4 × (C_in_staged + C_out_staged)` bytes. Copying all five stereo output buses would be `40 × B` bytes; one stereo input staging copy adds `8 × B`. Direct host-buffer use and read-only fan-out do not incur these copies. Use checked wide byte arithmetic and verify conversion to `size_t` before allocation. The 32-bit width of `float` or `FrameCount` is not a statement about process pointer width; Q-T03 remains open and no 32-bit macOS target is approved or implied.
+
+A VST3 parameter-flush process call with no audio buses is not passed to the engine as a fabricated audio block. It may update bounded parameter state but must not touch render scratch or advance audio/transport.
+
+See `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md` for the full accounting model and validation obligations.
 
 ## 4. Candidate service interfaces
 
