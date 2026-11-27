@@ -1,8 +1,8 @@
 # Open Questions
 
-**Version:** 0.3 (owner-decisions revision, 2026-11-27). Recommendations below are proposals only; nothing is decided until recorded as *Approved* in DECISIONS_LOG.md.
+**Version:** 0.4 (R1 product-scope decisions, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
 
-**Change summary (v0.2 → v0.3):** Q-P19 is now **ANSWERED** (DEC-015: both studio and live performance are primary). A new core requirement, controller-only live operability, is recorded as **DEC-016** and detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; Q-P12 (specific controller target/template) is updated to reflect that baseline but remains open. No other question's status changed. See docs/DECISIONS_LOG.md for both decision records.
+**Change summary (v0.3 → v0.4):** Q-P04, Q-P05, Q-P06, Q-P12 and Q-P20 are now answered under the owner's explicit delegation to ChatGPT as product manager. The resulting R1 scope is recorded in DEC-017…DEC-021 and docs/R1_PRODUCT_SPECIFICATION.md. Technical implementation details (framework, AU/VST3 component/bus design, resource budgets, parameter exposure) remain open for later gates.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -33,20 +33,26 @@ Every item from the v0.1 list is kept and mapped:
 
 ---
 
-## 0. The six questions that block Phase 2 (answer these first)
+## 0. Product-scope decisions resolved for R1
 
-| # | Question | Why it blocks | Recommendation |
-|---|---|---|---|
-| 1 | **Q-P04** — Ship 4 multitimbral layers in the first release? | Drives the state model, UI layout, CPU budget and plugin bus layout | **Yes**: the layer abstraction is cheap if designed in from day one, costly to retrofit |
-| 2 | **Q-P05** — Is the step sequencer required for the first release? | Largest single feature after the engines | Recommendation unchanged, reassessed under DEC-015 (both studio **and** live use are now confirmed primary — not a hypothetical): **No** (L2) for the full step sequencer. DAW hosts sequence already for studio use; R1's other controller-reachable performance controls (docs/LIVE_PERFORMANCE_SPECIFICATION.md §1) cover standalone live use without it. See that document §"Sequencer reassessment" for the trade-offs this raises — non-binding |
-| 3 | **Q-P06** — Must the *plugin* granulate live audio input (not just the standalone)? | Determines AU component type(s) and bus layout | **Yes** for VST3 + AU music-effect variant; it is a core GR-MEGA workflow |
-| 4 | **Q-P02** — Confirm plugin formats: AU + VST3 only? (AAX / CLAP?) | Framework choice, test matrix | AU + VST3 for R1; CLAP optional; AAX not planned |
-| 5 | **Q-T01** — Approve C++20 + JUCE 8 with a framework-free DSP core | Every later assignment depends on it | Approve (subject to JUCE EULA review, Q-L04) |
-| 6 | **Q-P13** — Do we have access to a physical GR-MEGA for A/B reference? | Many behaviors are undocumented (§D); without a unit they become our own design | Strongly recommended; otherwise owner accepts "inspired-by" behavior for undocumented areas |
+The owner explicitly delegated remaining open product decisions to ChatGPT as product manager on 2026-11-27, with the constraint that no decision may contradict an already-approved owner decision. The following product questions are now answered and recorded in DECISIONS_LOG.md:
 
-**Q-P19 is now answered** (DEC-015: both studio and live performance are primary; the instrument must be a genuine performance tool, not merely a plugin wrapper). This informs, but does not by itself decide, #1–#3 above — it also establishes **DEC-016** (controller-only live operability is a core R1 requirement; see docs/LIVE_PERFORMANCE_SPECIFICATION.md) and prompts a reassessment of #2 (Q-P05, step sequencer) in that document, without approving a tier change. Q-P20 (first-release engines) remains open and still shapes answers #1–#3.
+| ID | Resolution | Decision |
+|---|---|---|
+| Q-P04 | **ANSWERED** | Exactly four independent Granular layers in R1 (DEC-017). |
+| Q-P05 | **ANSWERED** | Full central performance-oriented step sequencer in R1 (DEC-019), not L2. |
+| Q-P06 | **ANSWERED** | Live input to each layer in Standalone and plug-in contexts; format-specific AU/VST3 implementation remains Phase 3 work (DEC-020). |
+| Q-P12 | **ANSWERED** | Generic class-compliant MIDI controller support, MIDI Learn + manual CC/channel/Note mapping; no named-controller template or MIDI feedback in R1 (DEC-021). |
+| Q-P20 | **ANSWERED** | Granular + Sampler in R1; Granular Slice deferred; Tape later (L2), Spectral later (L3) (DEC-018). |
 
----
+These answers establish the product baseline; they do **not** close Phase 2, approve a framework, set measured performance budgets, or authorize implementation.
+
+### Remaining gates
+
+- **Phase 2:** finalize the complete R1 requirement/tier matrix, including effect set, library/preset behavior, supported host formats and any exclusions.
+- **Phase 3:** resolve Q-P02 (AU/VST3 and any other formats), Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), and the format-specific implementation of live input.
+- **Evidence/research:** Q-P13 (physical GR-MEGA access), Q-I15 (firmware roadmap 1.9–1.12), remaining manual ambiguities and undocumented behaviors.
+- **Legal/release:** Q-L01…Q-L07, product naming and distribution questions before release.
 
 ## A. Product decisions (Owner)
 
