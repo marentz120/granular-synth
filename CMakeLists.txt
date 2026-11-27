@@ -11,6 +11,25 @@
 #
 cmake_minimum_required(VERSION 3.22)
 
+# ---------------------------------------------------------------------------
+# Apple architecture / deployment target: UNSET BY DEFAULT ON PURPOSE.
+#
+# CMake initializes the Apple toolchain during project()/enable_language(), so these
+# caller-configurable cache inputs must be applied BEFORE project(). Q-T03 remains open:
+# empty values make no Universal 2 or minimum-macOS commitment.
+# ---------------------------------------------------------------------------
+set(GS_OSX_ARCHITECTURES "" CACHE STRING
+    "Apple architectures to build (e.g. 'arm64;x86_64'). EMPTY = host only; no Universal 2 claim. Q-T03 open.")
+set(GS_OSX_DEPLOYMENT_TARGET "" CACHE STRING
+    "macOS deployment target (e.g. '12.0'). EMPTY = host default; no supported-OS claim. Q-T03 open.")
+
+if(GS_OSX_ARCHITECTURES)
+    set(CMAKE_OSX_ARCHITECTURES "${GS_OSX_ARCHITECTURES}" CACHE STRING "" FORCE)
+endif()
+if(GS_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "${GS_OSX_DEPLOYMENT_TARGET}" CACHE STRING "" FORCE)
+endif()
+
 project(GranularSynth
     VERSION 0.0.1
     DESCRIPTION "GRANULAR SYNTH — framework-free core (Milestone A0 skeleton)"
@@ -33,21 +52,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# ---------------------------------------------------------------------------
-# Apple architecture / deployment target: UNSET BY DEFAULT ON PURPOSE.
-#
-# Q-T03 (minimum macOS, Universal 2 vs arm64-only) is an OPEN owner decision, and the A0
-# authorization explicitly forbids committing to a deployment target or Universal 2. These
-# cache variables exist so the choice is configurable without being baked in. When they are
-# empty, CMake builds for the host architecture against the host SDK and makes no claim.
-# ---------------------------------------------------------------------------
-set(GS_OSX_ARCHITECTURES "" CACHE STRING
-    "Apple architectures to build (e.g. 'arm64;x86_64'). EMPTY = host only; no Universal 2 claim. Q-T03 open.")
-set(GS_OSX_DEPLOYMENT_TARGET "" CACHE STRING
-    "macOS deployment target (e.g. '12.0'). EMPTY = host default; no supported-OS claim. Q-T03 open.")
-
 if(GS_OSX_ARCHITECTURES)
-    set(CMAKE_OSX_ARCHITECTURES "${GS_OSX_ARCHITECTURES}" CACHE STRING "" FORCE)
     message(STATUS "GS: CMAKE_OSX_ARCHITECTURES set by caller to '${GS_OSX_ARCHITECTURES}' "
                    "(caller-supplied; not an approved Q-T03 decision)")
 else()
@@ -55,7 +60,6 @@ else()
 endif()
 
 if(GS_OSX_DEPLOYMENT_TARGET)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "${GS_OSX_DEPLOYMENT_TARGET}" CACHE STRING "" FORCE)
     message(STATUS "GS: CMAKE_OSX_DEPLOYMENT_TARGET set by caller to '${GS_OSX_DEPLOYMENT_TARGET}' "
                    "(caller-supplied; not an approved Q-T03 decision)")
 else()
