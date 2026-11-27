@@ -13,14 +13,7 @@
 
 ## 2. Design problem
 
-“Freeze” could mean materially different things:
-- latch/capture the current live input or rolling recording buffer;
-- stop recording-buffer writes while existing grains continue;
-- hold existing grain/voice state and stop transport/modulation;
-- freeze the post-FX audio output;
-- capture a new immutable sample snapshot and continue normal note/sequence playback from it.
-
-These behaviors are not interchangeable. The product must choose one semantic contract and specify its interactions with recording, transport, MIDI, modulation, voices and effects.
+These alternatives were evaluated during product definition. The owner selected **Option A — Source Snapshot Freeze**, and DEC-042 records that decision. The alternatives below are retained as design history only; they are not open choices for R1. Remaining work concerns engineering details and validation, not product semantics.
 
 ## 3. Approved R1 behavior — source snapshot Freeze
 
