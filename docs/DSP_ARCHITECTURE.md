@@ -378,7 +378,7 @@ Every parameter is declared once with: stable string ID (`L1.grain.size`), numer
 
 ### 9.4 Host exposure (⚑ Q-T12)
 
-Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Proposal: expose **all** automatable parameters with stable IDs, grouped by layer (VST3 Units / AU parameter groups), plus 20 global macro/performance parameters at the top of the list for quick DAW mapping. Structural parameters (sample, FX type) are not host-automatable.
+Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Proposal: expose **all** automatable parameters with stable IDs, grouped by layer (VST3 Units / AU parameter groups), with the ten R1 macros per patch (DEC-036) and approved performance controls prioritized in discoverable groups for quick DAW mapping. Structural parameters (sample, FX type) are not host-automatable.
 
 ---
 
