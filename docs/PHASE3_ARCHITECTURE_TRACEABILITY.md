@@ -1,6 +1,6 @@
 # Phase 3 R1 Architecture Traceability
 
-**Version:** 0.3 — Phase 3 proposal  
+**Version:** 0.4 — Phase 3 proposal, acceptance traceability reconciled  
 **Status:** Initial 124-row mapping against `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0. This is an architecture coverage proposal, not evidence that the modules are implemented or tested.  
 **Baseline:** DEC-041 and `R1_RELEASE_SCOPE_MATRIX.md`.
 
@@ -225,49 +225,53 @@ The following expansion maps each approved R1 row individually to its primary mo
 **Audit result:** 124/124 approved R1 requirements have individual proposed module/interface/validation-family assignments, and the cross-domain contract set IF-01…IF-12 is documented. This is not yet concrete C++ class/API design and does not show that tests pass. Implementation readiness remains blocked by open technical decisions, host evidence, signal-flow details and measured resource limits.
 
 
-## 8. R1 acceptance-criterion cross-check — 2026-11-27
+## 8. R1 acceptance-criterion cross-check — corrected 2026-11-27
 
-A mechanical cross-check compared the 124 requirement IDs in §6 against the requirement references present in `R1_ACCEPTANCE_CRITERIA.md`. This is a **trace-link coverage check**, not a judgment that an unreferenced requirement is unimportant or that a referenced criterion has passed.
+A mechanical reconciliation compared the 124 canonical R1 requirement IDs against the fully expanded requirement references in `R1_ACCEPTANCE_CRITERIA.md`. This is a **trace-link coverage check**, not evidence that a criterion has passed.
 
-| Area | R1 requirements | Explicitly referenced by current AC | No explicit AC reference |
-|---|---:|---:|---:|
-| PLT | 4 | 2 | 2 |
-| ARC | 8 | 1 | 7 |
-| GRN | 20 | 0 | 20 |
-| CHD | 5 | 0 | 5 |
-| SMP | 4 | 4 | 0 |
-| VOI | 9 | 0 | 9 |
-| SMG | 16 | 7 | 9 |
-| MOD | 9 | 6 | 3 |
-| SEQ | 9 | 1 | 8 |
-| MID | 7 | 7 | 0 |
-| FX | 4 | 4 | 0 |
-| PRS | 9 | 7 | 2 |
-| UI | 7 | 0 | 7 |
-| NFR | 13 | 8 | 5 |
-| **Total** | **124** | **47** | **77** |
+The previous 47/77 count did not expand shorthand references consistently. The AC table now spells out each referenced requirement ID. The corrected inventory is:
 
-The 77 IDs without an explicit acceptance-criterion reference are:
+| Area | R1 requirements | Direct AC-table references | Additional §7 release-gate links | Existing links | No explicit link |
+|---|---:|---:|---:|---:|---:|
+| PLT | 4 | 1 | 1 | 2 | 2 |
+| ARC | 8 | 1 | 0 | 1 | 7 |
+| GRN | 20 | 0 | 0 | 0 | 20 |
+| CHD | 5 | 0 | 0 | 0 | 5 |
+| SMP | 4 | 4 | 0 | 4 | 0 |
+| VOI | 9 | 0 | 0 | 0 | 9 |
+| SMG | 16 | 9 | 0 | 9 | 7 |
+| MOD | 9 | 9 | 0 | 9 | 0 |
+| SEQ | 9 | 1 | 0 | 1 | 8 |
+| MID | 7 | 7 | 0 | 7 | 0 |
+| FX | 4 | 4 | 0 | 4 | 0 |
+| PRS | 9 | 8 | 0 | 8 | 1 |
+| UI | 7 | 0 | 0 | 0 | 7 |
+| NFR | 13 | 5 | 3 | 8 | 5 |
+| **Total** | **124** | **49** | **4** | **53** | **71** |
+
+The four additional §7 cross-domain release-gate links, which are not individual AC table rows, are: `GS-PLT-004`, `GS-NFR-002`, `GS-NFR-006` and `GS-NFR-007`.
+
+The **71 IDs without either a direct AC-table reference or a separate §7 release-gate link** are:
 
 - **PLT:** GS-PLT-002, GS-PLT-003
 - **ARC:** GS-ARC-001, GS-ARC-002, GS-ARC-003, GS-ARC-004, GS-ARC-006, GS-ARC-007, GS-ARC-008
 - **GRN:** GS-GRN-001…020
 - **CHD:** GS-CHD-001…005
 - **VOI:** GS-VOI-001…006, GS-VOI-008…010
-- **SMG:** GS-SMG-002…007, GS-SMG-010, GS-SMG-011, GS-SMG-019
-- **MOD:** GS-MOD-002, GS-MOD-005, GS-MOD-007
+- **SMG:** GS-SMG-002…007, GS-SMG-019
 - **SEQ:** GS-SEQ-001…004, GS-SEQ-008, GS-SEQ-009, GS-SEQ-011, GS-SEQ-012
-- **PRS:** GS-PRS-008, GS-PRS-009
+- **PRS:** GS-PRS-009
 - **UI:** GS-UI-001…007
 - **NFR:** GS-NFR-004, GS-NFR-005, GS-NFR-009, GS-NFR-011, GS-NFR-013
 
-**Interpretation and next gate:** the current acceptance document is a partial product-level criteria draft, not a complete 124-row acceptance matrix. The source document itself assigns detailed acceptance criteria and test design to Phase 5. Therefore this finding is recorded as a Phase 5 traceability deliverable, not silently filled with invented pass conditions in Phase 3. Before Phase 5 test implementation, every one of the 124 R1 IDs must link to either (a) one or more explicit acceptance/test IDs, or (b) a documented rationale for being validated through a cross-cutting criterion. Existing criteria are not evidence of passing tests.
+**Mechanical result:** 124 unique R1 requirements; 49 have direct AC-table references, four additional IDs have §7 release-gate links, 53/124 have an existing acceptance/release-gate link, and 71/124 remain unlinked. No requirement tier or approved product behavior changed.
 
-**Mechanical result:** 124 unique R1 traceability rows; 47 have an explicit requirement reference somewhere in the current acceptance document; 77 do not. No requirement tier or approved product behavior is changed by this audit.
-
+This is a Phase 5 traceability deliverable, not a Phase 3 product-scope defect. Phase 5 must add explicit AC/test links or document precise cross-cutting rationale for all 71. Existing criteria are not evidence of passing tests.
 
 ## 9. Candidate API-symbol traceability — 2026-11-27
 
-The 124 individual requirement rows now have a second-level candidate symbol/operation assignment in PHASE3_API_SYMBOL_TRACEABILITY.md, linked to the existing IF-01…IF-12 contracts and the current acceptance-criteria references. This is a proposed symbol vocabulary only; no final C++ signatures, ABI, implementation or public parameter IDs are approved. The current acceptance cross-check remains 47/124 explicit links and 77 gaps; the new symbol mapping does not fabricate test IDs or close Phase 5 acceptance work.
+The 124 individual requirement rows have candidate symbol/operation assignments in `PHASE3_API_SYMBOL_TRACEABILITY.md`, linked to IF-01…IF-12. The symbol vocabulary remains proposed: no final C++ signatures, ABI, implementation or public parameter IDs are approved.
 
-The candidate symbol catalogue is in PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md §14. Framework, AU component strategy, host bus layout, AR-01/AR-02, Q-T03/Q-T12, numeric resource limits and DEC-042 mixed-failure semantics remain open as recorded in the decision register.
+The corrected acceptance cross-check is 53/124 linked and 71/124 unlinked. The requirement-level Phase 5 planning backlog is recorded in `PHASE5_TEST_DESIGN_BACKLOG.md`; it assigns candidate test intent and evidence types but does not invent AC IDs, pass thresholds or test results.
+
+Framework, AU component strategy, host bus layout, AR-01/AR-02, Q-T03/Q-T12, numeric resource limits and DEC-042 mixed-failure semantics remain open as recorded in the decision register.
