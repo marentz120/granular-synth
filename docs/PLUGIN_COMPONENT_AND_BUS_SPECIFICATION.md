@@ -65,6 +65,8 @@ Do not ship both components solely because the API has both types. Choose based 
 
 The release host matrix proposed in Q-P09 is Logic Pro, Ableton Live, Bitwig and Reaper. Exact versions and minimum supported versions remain to be set.
 
+**Evidence status:** the public-documentation cross-check is maintained in `PHASE3_HOST_CAPABILITY_EVIDENCE_MATRIX.md`. It distinguishes multi-output routing from full live-audio source input and documents format applicability (notably, Bitwig does not support AU). Vendor documentation is not a host test for GRANULAR SYNTH; no host/format cell is certified until the prototype evidence described in that matrix exists.
+
 For every host × format, test:
 
 | Capability | Required evidence |
