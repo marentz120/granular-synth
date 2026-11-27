@@ -57,18 +57,27 @@ flowchart LR
 
 ## Phase 2 — Requirements and release scope
 
-**Scope (v0.1):** Define first-release features, priorities, supported formats, performance targets and acceptance criteria.
+**Scope (v1.0):** Freeze the R1 product requirements and release tiers; complete functional specifications for Modulation, Effects, Sampler, Presets/Library, MIDI and Audio/I/O; distinguish product decisions from later technical gates; and draft testable product-level acceptance criteria.
 
-**Depends on:** Phase 1 exit and approved product baseline DEC-015…DEC-021; Phase 2 still finalizes remaining R1 tiers, format scope and exclusions.
+**Depends on:** Phase 1 exit and approved product baseline DEC-015…DEC-021; remaining product decisions are resolved under the owner's explicit delegation and recorded in DEC-022…DEC-041.
 
-**Deliverables:** GRANULAR_SYNTH_REQUIREMENTS.md v1.0 (tiers approved), PRODUCT_VISION.md updated with use-case priority, DECISIONS_LOG entries.
+**Deliverables:**
+- `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0 with all 168 GS requirement rows assigned approved tiers.
+- `R1_PRODUCT_SPECIFICATION.md` with consolidated product decisions.
+- Domain specifications: `MODULATION_SPECIFICATION.md`, `EFFECTS_SPECIFICATION.md`, `SAMPLER_SPECIFICATION.md`, `PRESET_LIBRARY_SPECIFICATION.md`, `MIDI_SPECIFICATION.md`, `AUDIO_IO_SPECIFICATION.md`.
+- `R1_RELEASE_SCOPE_MATRIX.md` and `R1_ACCEPTANCE_CRITERIA.md`.
+- Updated `OPEN_QUESTIONS.md` and `DECISIONS_LOG.md`.
 
 **Measurable exit criteria**
-1. Every GS-* requirement has an **approved** tier (R1 / L2 / L3 / OPT / rejected) — 0 "proposed" left in R1.
-2. DEC-004 (formats) and DEC-006 (first-release engines, layer/voice limits) moved to *Approved* or *Rejected*.
-3. Performance targets for R1 stated numerically (reference machine Q-P10, sample-rate/buffer range Q-T17, CPU budget for a named reference patch).
-4. Requirements document tagged `requirements-v1.0`.
+1. Every GS-* requirement has exactly one approved tier (R1 / L2 / L3 / OPT); no pending/Other tier remains.
+2. Product decisions needed to freeze R1 scope are answered or explicitly deferred outside Phase 2. DEC-004 (AU/VST3 target) and DEC-006 (R1 engine/layer scope) are approved.
+3. Six domain specifications cover R1 behavior, edge cases, dependencies and unresolved technical details without contradicting DEC-015…DEC-041.
+4. R1 scope matrix reconciles to the 168-row inventory: 124 R1, 27 L2, 9 L3, 8 OPT, 0 Other.
+5. Every R1 requirement in the six completed domains has at least one observable product-level acceptance criterion; architecture-dependent and numeric performance tests are explicitly carried to Phase 3/5.
+6. Requirements document is versioned 1.0. Create the repository tag `requirements-v1.0` only after the owner approves and merges the Phase 2 PR.
 
+**Explicitly deferred:** reference machine and host matrix (Q-P09/Q-P10), sample-rate/buffer feasibility (Q-T17), CPU/RAM/latency budgets (Q-T07 and related), framework/parameter/host-bus architecture (Q-T01…Q-T16), Freeze semantics and implementation. These are not Phase 2 blockers.
+  
 ---
 
 ## Phase 3 — DSP / application architecture
