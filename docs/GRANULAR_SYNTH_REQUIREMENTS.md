@@ -8,10 +8,10 @@
 
 Corrections only — no decision status or R1 scope changed beyond what DEC-017…DEC-021 already approved:
 - GS-UI-007: removed the controller-feedback clause from its R1 text (DEC-021 excludes MIDI feedback from R1); the requirement itself is unchanged otherwise, still Approved.
-- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's already-approved scope — the only new requirement added.
+- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's already-approved scope — the only new requirement added. Per PR #4 review, its wording is deliberately neutral: it states per-layer and global availability only, and defers freeze semantics to Phase 3.
 - GS-ARC-001: fixed a stale citation (cited Q-P04 as open; it is ANSWERED via DEC-017) and cross-referenced GS-ARC-005.
 - GS-MID-007 and GS-SEQ-005 cross-reference each other instead of independently restating MIDI-Clock sync — no ID removed, no tier changed.
-- §6 Requirement summary fully recounted against §3 (see note there) — corrects stale Slice/Sequencer/MIDI counts and the grand total.
+- §6 Requirement summary fully recounted against §3/§4 and restructured per PR #4 review into an explicit counting method (§6.1), a plain-integer table that reconciles row-by-row and column-by-column (§6.2), and footnotes listing the split-tier, "Other" and Approved rows (§6.3). Corrects stale Slice/Sequencer/MIDI counts and the grand total (164 → 168).
 
 ## Change summary (v0.3 → v0.4)
 
@@ -230,7 +230,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-018 | Tuning reference tone. | L2 | EDT-11 |
 | GS-SMG-019 | Maximum granular sample length ≥ 6 minutes stereo at 48 kHz per layer (exceeds benchmark 5m49s). | R1 | SMG-08, C-02 |
 | GS-SMG-020 | Record each layer independently and record the stereo master mix; save/export captured audio for later sample use. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3 |
-| GS-SMG-021 | Freeze: an independently switchable per-layer Freeze, plus a global Freeze across all layers, holding current playback/grain state for sustained performance use. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. Exact DSP semantics (what state is held — position, grain cloud, modulation) are Phase 3 architecture work; this row only fixes the product-level requirement and tier. |
+| GS-SMG-021 | Freeze: provide an independently switchable per-layer Freeze and a global Freeze across all layers. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. **Exact freeze semantics are a Phase 3 architecture decision** — this row fixes only the product-level requirement (per-layer + global availability) and its tier, and deliberately makes no claim about what Freeze holds, suspends or continues. |
 
 ### 3.11 Modulation (MOD)
 
@@ -356,28 +356,46 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 ## 6. Requirement summary
 
-**Recount note (this revision):** the table below was fully recounted against §3 (every row counted exactly once; a row split across two tiers, e.g. "R1/L", is counted once under its primary/R1 bucket and annotated). Three areas were stale and are now corrected: **Slice (SLC)** — all 6 items are L2 (Granular Slice deferred, DEC-018), not 4 R1/2 L2; **Sequencer (SEQ)** — now 12 rows (SEQ-001…012) reflecting the R1 central sequencer (DEC-019), not the pre-DEC-019 10-row count; **MIDI (MID)** — GS-MID-007 moved L2→R1 under DEC-019. **Samples/recording (SMG)** also grew by one row (GS-SMG-021, Freeze, DEC-020).
+### 6.1 Counting method
 
-| Area | R1 | L2 | L3 | OPT | Other |
-|---|---|---|---|---|---|
-| Platform (PLT) | 4 | — | — | 2 | — |
-| Architecture (ARC) | 8 (1 split R1/L) | 1 | — | 1 | — |
-| Granular (GRN) | 20 | 3 | — | — | — |
-| Chord/quantization (CHD) | 5 | 1 | — | 1 | — |
-| Slice (SLC) | — | 6 | — | — | — |
-| Sampler (SMP) | 4 | 2 | 1 | — | — |
-| Tape (TAP) | — | 2 | — | — | — |
-| Spectral (SPC) | — | — | 5 | 1 | — |
-| Voice/env/filter (VOI) | 9 | 1 | — | — | — |
-| Samples/recording (SMG) | 16 (1 split R1/L2; incl. GS-SMG-021 Freeze) | 5 | — | — | — |
-| Modulation (MOD) | 9 | 1 | 1 | 1 | — |
-| Sequencer/performance (SEQ) | 9 | 1 | 1 | — | 1 pending Q-M12 |
-| MIDI (MID) | 7 (1 Approved: GS-MID-008) | 1 | — | — | — |
-| Effects (FX) | 4 | 2 | 1 | 1 | — |
-| Presets/state (PRS) | 9 | — | — | 1 | — |
-| UI (UI) | 7 (1 Approved: GS-UI-007) | — | — | — | — |
-| Non-functional (NFR) | 13 | — | — | — | — |
-| **Total (168)** | **124** (2 Approved, 122 still Proposed) | **26** | **9** | **8** | **1** |
+The table in §6.2 is derived mechanically from the requirement rows in §3 and §4, not maintained by hand:
+
+1. **Unit of count:** one table row whose first cell is exactly a `GS-<AREA>-<NNN>` id. Prose mentions, dependency-table references (§7) and exclusion-table rows (§5) are not counted.
+2. **One row → exactly one bucket.** A row's tier cell is normalised by its leading token: `R1…` → **R1**, `L2…` → **L2**, `L3…` → **L3**, `OPT…` → **OPT**, anything else → **Other**. Trailing qualifiers do not change the bucket (`R1 — Approved`, `R1 — product scope approved`, `R1 (for R1 features)` all count as one R1 row).
+3. **Split-tier rows are counted once**, under their primary (R1) tier, and are listed explicitly in §6.3 instead of being written as an inline "+1" annotation. No row is counted in two buckets, so **every area's buckets sum to that area's row count, and the area rows sum to the grand total.**
+4. **Zero is written `0`**, not `—`, so each row and column can be added up directly.
+
+**Reconciliation:** 124 + 26 + 9 + 8 + 1 = **168**, and the 17 area row-counts (6+10+23+7+6+7+2+6+10+21+12+12+8+8+10+7+13) also total **168**. The two agree, and both match the number of `GS-*` rows actually present in §3/§4.
+
+### 6.2 Requirement counts
+
+| Area | R1 | L2 | L3 | OPT | Other | Rows |
+|---|---|---|---|---|---|---|
+| Platform (PLT) | 4 | 0 | 0 | 2 | 0 | 6 |
+| Architecture (ARC) | 8 | 1 | 0 | 1 | 0 | 10 |
+| Granular (GRN) | 20 | 3 | 0 | 0 | 0 | 23 |
+| Chord/quantization (CHD) | 5 | 1 | 0 | 1 | 0 | 7 |
+| Slice (SLC) | 0 | 6 | 0 | 0 | 0 | 6 |
+| Sampler (SMP) | 4 | 2 | 1 | 0 | 0 | 7 |
+| Tape (TAP) | 0 | 2 | 0 | 0 | 0 | 2 |
+| Spectral (SPC) | 0 | 0 | 5 | 1 | 0 | 6 |
+| Voice/env/filter (VOI) | 9 | 1 | 0 | 0 | 0 | 10 |
+| Samples/recording (SMG) | 16 | 5 | 0 | 0 | 0 | 21 |
+| Modulation (MOD) | 9 | 1 | 1 | 1 | 0 | 12 |
+| Sequencer/performance (SEQ) | 9 | 1 | 1 | 0 | 1 | 12 |
+| MIDI (MID) | 7 | 1 | 0 | 0 | 0 | 8 |
+| Effects (FX) | 4 | 2 | 1 | 1 | 0 | 8 |
+| Presets/state (PRS) | 9 | 0 | 0 | 1 | 0 | 10 |
+| UI (UI) | 7 | 0 | 0 | 0 | 0 | 7 |
+| Non-functional (NFR) | 13 | 0 | 0 | 0 | 0 | 13 |
+| **Total** | **124** | **26** | **9** | **8** | **1** | **168** |
+
+### 6.3 Footnotes to the counts
+
+- **Split-tier rows (3), each counted once under R1:** `GS-ARC-005` (R1/L — Granular + Sampler in R1, Slice/Tape/Spectral later), `GS-SMG-005` (R1 waveform / L2 spectrogram), `GS-MOD-004` (R1 sources; CV and Draw X/Y later).
+- **"Other" (1):** `GS-SEQ-010` — tier pending Q-M12.
+- **Rows whose tier cell is marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). The remaining 122 R1 rows are proposed tiers awaiting the Phase 2 tier approval; product *scope* for layers, engines, sequencer, live input/Freeze and controller operation is separately approved in DEC-017…DEC-021.
+- **Corrections applied in this revision (v0.5):** SLC is now 0 R1 / 6 L2 (Granular Slice deferred, DEC-018 — previously shown 4 R1 / 2 L2); SEQ is now 12 rows (previously shown as 10, predating the DEC-019 sequencer rows); MID is now 7 R1 / 1 L2 (GS-MID-007 moved L2→R1 under DEC-019); SMG gained `GS-SMG-021` (Freeze, DEC-020). The former grand total of 164 was also arithmetically stale and is corrected to 168.
 
 ## 7. Dependencies between requirement areas
 
@@ -393,11 +411,11 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | MOD-008 macros | MOD-003 | Macros are matrix sources and destinations |
 | SEQ | Transport abstraction (Arch §11), MOD (mod lanes, p-locks) | p-locks override registered parameters |
 | SMG-008…012 (live input) | Q-P06 (plugin input bus), ARC-006/007 | Bus layout and AU component type |
-| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Freeze holds per-layer or global playback/grain state; exact state held is Phase 3 architecture work |
+| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Freeze is switchable per layer and globally; its semantics are a Phase 3 architecture decision and are not specified at requirement level |
 | FX | Parameter registry, ARC-007 | Slot host + registered FX params |
 | PRS | Parameter registry, SMG (sample refs), Q-P07/Q-P08 | Serialization of every registered parameter + sample references |
 | MID | Parameter registry, VOI (MPE voice mapping) | MIDI learn binds to parameter IDs; MPE binds to voices |
-| GS-MID-008, GS-UI-007 (live performance) | GS-MID-003 (MIDI learn), parameter registry, UI | Controller mapping/feedback binds to registered parameters; see docs/LIVE_PERFORMANCE_SPECIFICATION.md |
+| GS-MID-008, GS-UI-007 (live performance) | GS-MID-003 (MIDI learn), parameter registry, UI | Controller mapping binds to registered parameters (controller feedback is not R1 — DEC-021); see docs/LIVE_PERFORMANCE_SPECIFICATION.md |
 | UI | Everything above | UI reads state snapshots only |
 
 ## 8. Traceability

@@ -43,7 +43,7 @@ R1 essential-operation set (product baseline; detailed acceptance criteria remai
 | Sequencer transport, pattern selection/chain, step/event editing, event/layer assignment | GS-SEQ-001…012 | All sequencer operations are essential and controller-accessible; physical ergonomics depend on the controller |
 | Fill intensity/toggle and layer/event Mute | GS-SEQ-011 | Fill is latched and continuous; Mute is immediate |
 | Pattern save/draft/undo/redo actions | GS-SEQ-012 | Must be reachable without keyboard/mouse during performance when needed |
-| Freeze: per-layer and global | GS-SMG-021 | Independently switchable per-layer Freeze plus a global Freeze (DEC-020); a core live-performance control, controller-reachable under GS-MID-008 |
+| Freeze: per-layer and global | GS-SMG-021 | Independently switchable per-layer Freeze plus a global Freeze (DEC-020), controller-reachable under GS-MID-008. Freeze semantics are a Phase 3 architecture decision and are not specified here |
 | MIDI Learn entry/exit and mapping recall | GS-MID-003, GS-UI-007 (new, this document) | The mechanism itself must be controller-reachable or at minimum not *require* mouse/keyboard mid-set once mappings exist |
 
 This is the approved product-level operation set. Phase 4 defines the UI and mapping workflows; Phase 5 defines pass/fail acceptance tests for every operation. Any action genuinely needed mid-set remains controller-reachable under DEC-016, even if it can also be prepared in advance.
