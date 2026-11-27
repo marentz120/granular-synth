@@ -1,7 +1,7 @@
 # R1 Product Specification
 
 **Status:** Product scope baseline approved under the owner's explicit delegation to ChatGPT as product manager on 2026-11-27. This document records product decisions only. It does not approve DSP architecture, framework selection, implementation, or release.
-**Version:** 1.0 (product decisions consolidated, 2026-11-27)
+**Version:** 1.1 (Phase 2 product decisions consolidated, 2026-11-27)
 **Authority:** Owner decisions in this conversation plus delegated product-management decisions explicitly identified below.
 **Reference:** GR-MEGA is a functional benchmark only. GRANULAR SYNTH must use original implementation, interaction design, presets and assets; do not copy proprietary firmware, source code, artwork or protected trade dress.
 
