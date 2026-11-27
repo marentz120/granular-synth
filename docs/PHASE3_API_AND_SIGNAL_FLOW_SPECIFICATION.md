@@ -232,8 +232,10 @@ public:
 Contract:
 - Decoding, resampling/preparation, peak analysis and allocation occur off-thread.
 - Published sample assets are immutable for their entire lifetime.
-- Active sample replacement is atomic at an audio safe point; previous valid source remains active until replacement is ready.
-- The engine retains an explicit lifetime handle while any voice, grain, sampler head or Freeze snapshot references the asset.
+- Active sample replacement is atomic at an audio safe point; previous valid source remains active until replacement is ready. Each slot uses a monotonically increasing request generation so stale asynchronous completions cannot overwrite a newer request.
+- Publication transfers payload ownership only on successful bounded-queue acceptance; rejection leaves cleanup with the producer. Active voices, grains and sampler heads retain independent lifetime handles until they stop reading the old asset.
+- Retirement queue saturation must apply bounded backpressure before another swap can create an unretirable object; the audio thread never overwrites retirement entries, blocks or performs final destruction.
+- Memory admission reserves peak coexistence (active + pending + readers + retirement + required staging), not merely the final sample payload; actual budgets and capacities remain measured engineering gates.
 - The R1 granular duration target remains at least six minutes stereo at 48 kHz subject to measured feasibility and safe memory (DEC-028); this document does not claim feasibility.
 - Long-file streaming for Sampler remains a proposed L2 strategy (Q-T05), not an R1 implementation decision.
 
