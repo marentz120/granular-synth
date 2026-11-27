@@ -47,7 +47,7 @@ flowchart LR
 **Deliverables:** GR_MEGA_FEATURE_MAP.md, refined GRANULAR_SYNTH_REQUIREMENTS.md, DSP_ARCHITECTURE.md options, OPEN_QUESTIONS.md, this roadmap, PHASE1_REFERENCE_SUMMARY.md (Issue #1).
 
 **Measurable exit criteria**
-1. Every feature-map row has an evidence class (MC / INT / PROP / UNV / RN); every MC row cites page and section — 0 exceptions.
+1. Every feature-map row has one of the four canonical evidence classes (Manual-confirmed / Interpretation / Proposal / Unverified); [RN] is only a supplemental source marker, never a standalone class. Every Manual-confirmed row cites page and section — 0 exceptions.
 2. All manual chapters relevant to the instrument (pp. 11–164) are represented in the feature map; hardware-only chapters are listed as N/A.
 3. All detected manual inconsistencies are logged with page references (feature map §15) and mirrored as OPEN_QUESTIONS §C items.
 4. ChatGPT review comments on the Issue #1 PR are resolved or explicitly deferred.
