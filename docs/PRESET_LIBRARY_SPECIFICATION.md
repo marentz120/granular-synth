@@ -33,7 +33,7 @@ The existing requirements use “Patch”, “Preset”, “Multi” and “Proj
 - Provide templates that contain parameter state without sample audio and allow applying a template to the current patch (GS-PRS-003).
 - Search/filter operations must not interrupt audio processing.
 - Factory content, if included, is write-protected; user content remains editable.
-- The precise distinction between global library, project-local organization and performance set-list is still an open product definition item (Q-P07).
+- The conceptual model is settled by DEC-022: the searchable desktop library is the canonical storage/discovery model; performance banks index library objects and Performance Sets preserve ordered references.
 
 ## 4. Save and recall semantics
 
@@ -61,7 +61,7 @@ The existing requirements use “Patch”, “Preset”, “Multi” and “Proj
 - Provide a collect-samples export bundle that includes all external sample dependencies required by the selected project/preset/performance set.
 - Relinking must verify asset identity using the stored content hash; a file with a different hash must not be silently substituted.
 - Missing assets must not crash the host; the user must be told what is missing (GS-NFR-012).
-- Whether samples are embedded in DAW plugin state or referenced externally remains Q-P08 / Phase 3. Product behavior must support full restoration, including recorded unsaved buffers, as required by GS-PRS-006.
+- DEC-025 settles the product policy: unsaved recording buffers are embedded in DAW plugin state; existing library samples remain external references with relink/collect support. Exact serialization and state-size handling remain Phase 3.
 - The product must not assume that an external path remains available after a project is moved to another machine.
 
 ## 7. Versioning and migration
@@ -95,9 +95,9 @@ The existing requirements use “Patch”, “Preset”, “Multi” and “Proj
 
 | ID | Question | Status |
 |---|---|---|
-| Q-P07 | Exact conceptual and UX distinction among Patch, Preset, Multi, Project and global Library | OPEN; product owner review needed |
-| Q-P08 | Embed versus reference recorded buffers and samples in plugin state | Phase 3 technical decision; full restore is already an R1 requirement |
-| GS-PRS-006 | Plugin state includes recorded unsaved buffers | R1 requirement; exact persistence mechanism unresolved |
+| Q-P07 | Exact conceptual and UX distinction among Patch, Preset, Multi, Project and global Library | **ANSWERED — DEC-022**; UI details remain Phase 4 |
+| Q-P08 | Embed versus reference recorded buffers and samples in plugin state | **Product policy ANSWERED — DEC-025**; serialization and size policy Phase 3 |
+| GS-PRS-006 | Plugin state includes recorded unsaved buffers | R1 product policy: embed unsaved buffers (DEC-025); exact mechanism Phase 3 |
 | GS-PRS-009 | Patch comments | Requirement currently proposed R1; benchmark has 100-character limit but product limit unapproved |
 | GS-PRS-010 / Q-L01 | GR-1/GR-MEGA import | Optional and legally blocked; excluded from R1 |
 | Q-T12 | Host parameter IDs/exposure | Phase 3 |
