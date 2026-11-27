@@ -1,7 +1,7 @@
 # Modulation Specification
 
 **Version:** 0.1 — Phase 2 working specification  
-**Status:** Proposed; subject to owner review. This document does not authorize DSP implementation.  
+**Status:** Product behavior approved for Phase 2; DEC-024, DEC-031 and DEC-032 settle the relevant product semantics. This document does not authorize DSP implementation.  
 **Authority:** R1_PRODUCT_SPECIFICATION.md, GRANULAR_SYNTH_REQUIREMENTS.md GS-MOD-001…012, DEC-015…021.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §10.1–10.4. Manual-derived behavior is identified as benchmark reference, not automatically a product requirement.
 
