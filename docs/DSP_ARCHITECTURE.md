@@ -252,11 +252,23 @@ Per render block, per voice:
 5. **Spawn modes** on note-on: Gradual (start scheduler at phase 0), Direct (pre-populate `round(density)` grains with randomized window phases so the cloud is already "full"), Direct reset (same, but all positions within the spray range), Recycle (revive the last voice's grain set).
 6. **Idle shutdown:** a voice with no active grains and no gate stops scheduling (no CPU), mirroring SCH-06.
 
-### 6.3 Grain stealing (benchmark: click-free, shortens grains)
+### 6.3 Grain and voice stealing (R1 architecture proposal; algorithm not approved)
 
-When `active ≥ capacity × (1 − threshold·k)`: select the *oldest* (or longest-remaining) grains and switch them to a **short release ramp** (e.g. 2–10 ms, raised-cosine) instead of truncating. Threshold 0 = no stealing (scheduler skips spawns when full, reproducing the benchmark's "bunching"). Exact law is undocumented (U-02) and will be tuned by listening tests.
+**Requirement boundary:**
+- Voice allocation must prefer released, non-sustained, oldest voices and use a fast fade rather than abrupt truncation (GS-VOI-001).
+- The global grain budget must degrade gracefully, click-free and deterministically when exceeded (GS-ARC-004).
+- These are separate resource domains: choosing a voice to steal is not the same operation as choosing individual grains to retire.
 
-A second, **global** budget (GS-ARC-004) applies the same mechanism across voices/layers, preferring to steal from voices in release.
+**Candidate deterministic selection policy (proposal only):**
+1. For voice stealing, rank eligible voices by: released before gated; non-sustained before sustain-held; then oldest note-on sequence. Use a monotonically assigned voice/note sequence, never pointer or container order. If all voices are held, apply a separately documented fallback rather than silently changing the ranking.
+2. For global grain-budget reclamation, prefer grains belonging to voices already in release; within the same eligibility class, choose the oldest grain spawn sequence. Break ties by stable layer index, voice allocation sequence, then grain sequence.
+3. Retire a selected grain through a precomputed bounded fade envelope; never hard-stop its sample contribution. The fade duration/window shape are unapproved engineering values and must be validated for audible continuity.
+4. When no safe retirement capacity is available, reject/defer new grain spawns deterministically and count the event; never exceed the admitted budget.
+5. Seeded random spawn behavior remains deterministic, but random selection is not proposed as the default overload tie-break.
+
+**Unresolved specification items:** the prior expression `active ≥ capacity × (1 − threshold·k)` is not executable as written because `k` is undefined and no units/range are specified for `threshold`. The alternatives “oldest” versus “longest-remaining” also produce different results and are not interchangeable. Threshold 0 / spawn-skipping behavior must be defined independently from the mandatory deterministic overload behavior. No threshold, fade duration or budget value is fixed here.
+
+The global budget applies across all four layers (GS-ARC-004); the voice policy remains per the voice allocator (GS-VOI-001). This proposal does not claim click-free performance: it requires deterministic selection and a fade, with audibility verified in Phase 5/7. No benchmark or implementation was run.
 
 ### 6.4 Windows
 
