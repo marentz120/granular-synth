@@ -1,7 +1,7 @@
 # Freeze Behavior Specification
 
-**Version:** 0.1 — Phase 3 decision proposal  
-**Status:** Open product behavior decision. Availability is approved by DEC-020/GS-SMG-021; the behavior below is a proposal and must not be implemented until approved.  
+**Version:** 1.0 — Approved R1 product behavior  
+**Status:** **Approved by owner on 2026-11-27 (DEC-042).** Product semantics are approved; detailed DSP implementation and resource validation remain Phase 3/5 work.  
 **Authority:** DEC-020, GS-SMG-021, GS-MID-008, DEC-016/021, Audio/I/O Specification §8.
 
 ## 1. What is already approved
@@ -24,7 +24,7 @@ These behaviors are not interchangeable. The product must choose one semantic co
 
 ## 3. Recommended R1 behavior — source snapshot Freeze
 
-**Recommendation:** Freeze should latch the current source audio for the selected layer, not freeze the whole instrument's transport or DSP clock.
+**Approved behavior (Option A — Source Snapshot Freeze):** Freeze latches the current source audio for the selected layer; it does not freeze the whole instrument's transport or DSP clock.
 
 When a layer Freeze is engaged:
 1. Capture a stable snapshot of the layer's current active source region/buffer at a defined capture boundary.
@@ -92,7 +92,7 @@ Proposed rule: Freeze does not stop an independently armed recorder. The recorde
 - A second Freeze/Thaw command while a transition is pending is coalesced to the latest requested target state.
 - Device loss or invalid source does not invalidate the frozen snapshot; the layer continues from the last valid frozen data until thaw is requested.
 
-## 7. Acceptance criteria to add after approval
+## 7. Approved acceptance criteria
 
 - Per-layer Freeze captures a stable source snapshot with no audio callback allocation or blocking.
 - Global Freeze transitions all four layers at the same defined logical boundary.
@@ -105,8 +105,8 @@ Proposed rule: Freeze does not stop an independently armed recorder. The recorde
 - State save/restore preserves the approved Freeze state and snapshot policy.
 - Controller-only Freeze/Thaw operation works in Standalone.
 
-## 8. Decision required
+## 8. Approval and implementation boundary
 
-Approve Option A as written, or choose a different semantic model. The source region/duration rule, static-sample behavior, recording interaction and persistence rule in §5 must be approved together; otherwise the term “Freeze” remains underspecified.
+The owner approved Option A as written on 2026-11-27. The approval includes the source-region rule, static-sample behavior, independent recording behavior, memory-failure handling, controller mapping, state persistence and panic behavior described above. Recorded in **DEC-042**.
 
-**No implementation authorization:** this proposal must be converted into an approved product decision and acceptance criteria before any Freeze code is written.
+This approval settles product behavior only. It does not approve a numeric snapshot-size limit, memory budget, buffer duration, copy algorithm, crossfade duration or implementation. Those are engineering details requiring Phase 3/5 specification and validation. Production Freeze code remains gated by architecture approval.
