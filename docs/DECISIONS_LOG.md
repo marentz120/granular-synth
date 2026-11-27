@@ -48,6 +48,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 | DEC-035 | R1 granular grain-size range is 0.1–5000 ms | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27), resolving Q-M01. This chooses the documented lower bound candidate and preserves the existing 5-second upper bound; parameter scaling/taper is Phase 3. |
 | DEC-036 | R1 includes ten macros per patch; twenty macros are not required in R1 | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27), resolving Q-M06 and MAC-07. Any expansion beyond ten requires a later scope decision. |
 
+| DEC-037 | Sampler Env Pile-up defaults OFF in R1; users may enable it per layer | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). The benchmark recommends OFF for Sampler; the toggle remains available. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
