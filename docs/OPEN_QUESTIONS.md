@@ -13,8 +13,8 @@ Every item from the v0.1 list is kept and mapped:
 
 | v0.1 item | v0.2 ID | State |
 |---|---|---|
-| Owner: Relationship to GR-MEGA (parity / inspired-by / baseline + differentiation) | Q-P15 | OPEN — recommendation given |
-| Owner: Confirm formats | Q-P02 | OPEN — recommendation given |
+| Owner: Relationship to GR-MEGA (parity / inspired-by / baseline + differentiation) | Q-P15 | **ANSWERED — DEC-027** |
+| Owner: Confirm formats | Q-P02 | **ANSWERED — DEC-026** |
 | Owner: Layer model (4 fixed, more, configurable) | Q-P04 | **ANSWERED — DEC-017** |
 | Owner: First-release engines | Q-P20 | **ANSWERED — DEC-018** |
 | Owner: Approve framework after comparison | Q-T01 (comparison in DSP_ARCHITECTURE.md §2) | OPEN |
@@ -115,8 +115,8 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-M04 | Scan modes count / "kill" | "four modes" lists 3 (p.58); spec "Bounce, wrap, kill" (p.162) | One-shot = kill/stop; implement 3 modes; verify on unit | OPEN |
 | Q-M05 | Looped release ON/OFF semantics | p.58–59 vs p.102–103 contradict | GRANULAR SYNTH behavior: ON continues looping through voice release; OFF exits at the next valid loop boundary and continues toward Stop. This is our product behavior, not a verified benchmark claim. | **ANSWERED — DEC-030** |
 | Q-M06 | Number of macros | 10 (p.23) vs 20 NRPNs (p.150) | Ten macros are R1; 20 are not required in R1 | **ANSWERED — DEC-036** |
-| Q-M07 | Mod source count (24/25/26) | p.78, p.157–158, p.163 | Use table (25 + None) as reference | ANSWERED-candidate |
-| Q-M08 | Mod destination count (140/149/150) | p.23, p.76, p.78, p.158–161 | Use enumerated 149 as parity target | ANSWERED-candidate |
+| Q-M07 | Mod source count (24/25/26) | p.78, p.157–158, p.163 | Use enumerated source table (25 + None) as reference | **RESOLVED-EVIDENCE** |
+| Q-M08 | Mod destination count (140/149/150) | p.23, p.76, p.78, p.158–161 | Use enumerated destination table (149) as benchmark reference; GRANULAR SYNTH implements only destinations for R1 parameters | **RESOLVED-EVIDENCE** |
 | Q-M09 | Grain-count normalization law | Only "max volume at density 17" (p.33) | Energy-preserving 1/√density beyond d0; match level at density 17 by measurement | OPEN |
 | Q-M10 | Tape chord: tracking head = first or lowest note | p.48 "TBV" | Lowest note (consistent with p.53 rule "lowest chord note matches the played note") | PROPOSED |
 | Q-M11 | LFO scope: per voice or per layer | p.79 "each layer has its own LFOs"; key sync Legato | Per-LFO Poly/Mono mode; default Mono (shared per-layer phase), Poly uses per-voice phase | **ANSWERED — DEC-024** |
