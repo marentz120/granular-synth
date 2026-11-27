@@ -77,7 +77,7 @@ The R1 mapping includes the R1 portion of split-tier requirements:
 
 - No R1 requirement is intentionally left unmapped in this initial pass.
 - The mapping is by domain and module boundary, not yet by individual class/API. Class-level design belongs in the architecture specification.
-- Freeze requirements are mapped to the sample/I/O domain but remain behaviorally underspecified until `FREEZE_BEHAVIOR_SPECIFICATION.md` is approved.
+- Freeze product behavior is approved by DEC-042 and specified in `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0; engineering validation still requires sample/I/O, RT ownership, state persistence and host integration evidence.
 - Numeric acceptance criteria, host-specific validation, measured budgets and test implementations remain Phase 5/7 deliverables.
 - The 124 count is reconciled to the approved R1 inventory; this table does not reclassify tiers.
 
