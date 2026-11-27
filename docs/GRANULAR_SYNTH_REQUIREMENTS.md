@@ -1,8 +1,17 @@
 # GRANULAR SYNTH Requirements
 
-**Status:** Draft; detailed acceptance criteria and technical feasibility remain subject to architecture and test review. Product scope for four layers, R1 engines, the R1 sequencer, live input and controller-only performance is approved in DECISIONS_LOG.md (DEC-015…DEC-021) and docs/R1_PRODUCT_SPECIFICATION.md. Other requirement tiers remain proposals unless explicitly approved.
-**Version:** 0.5 (consistency pass on the R1 product-scope decisions, 2026-11-27)
+**Status:** Phase 2 requirement inventory and release-tier classification approved by DEC-041. Technical feasibility, numeric resource budgets and architecture remain subject to Phase 3/5 validation.
+**Version:** 1.0 (Phase 2 scope and specification completion, 2026-11-27)
 **Inputs:** GR_MEGA_FEATURE_MAP.md (manual 1.8.d + fw 1.8.x release notes), PRODUCT_VISION.md, CLAUDE.md.
+
+## Change summary (v0.5 → v1.0)
+
+- Approved the release-tier classification for all 168 requirement rows under DEC-041.
+- Resolved product-level questions Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16 and relevant manual ambiguities through DEC-022…DEC-040.
+- Moved GS-SEQ-010 (Patch spray/bias) to L2; benchmark semantics remain unverified and it is not an R1 dependency.
+- Added six detailed domain specifications, the consolidated R1 Release Scope Matrix and product-level R1 Acceptance Criteria.
+- Reconciled requirement totals: 124 R1, 27 L2, 9 L3, 8 OPT, 0 Other (168 total).
+- Numeric technical targets, architecture choices, measured resource limits and implementation remain gated to later phases.
 
 ## Change summary (v0.4 → v0.5)
 
@@ -88,7 +97,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-PLT-001 | The product shall ship as a standalone macOS app and as AU and VST3 plugins built from one shared DSP/state core. | R1 | Refines REQ-PLAT-001…003; DEC-004 (Proposed); Q-P02 |
+| GS-PLT-001 | The product shall ship as a standalone macOS app and as AU and VST3 plugins built from one shared DSP/state core. | R1 | Refines REQ-PLAT-001…003; DEC-026; exact component/bus design Phase 3 |
 | GS-PLT-002 | Native Apple Silicon and Intel (Universal 2) binaries. | R1 | Q-T03 |
 | GS-PLT-003 | Operate at any host sample rate 44.1–192 kHz and any buffer size 16–4096, including variable block sizes. | R1 | Proposed values for REQ-AUD-005 (Q-T17); GR-MEGA is fixed 48 kHz (ARCH-09) |
 | GS-PLT-004 | Plugin and standalone shall produce bit-identical output for identical state, input, MIDI and sample rate (excluding device I/O). | R1 | Refines QA-003 |
@@ -115,7 +124,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
 | GS-GRN-001 | Grain rate 0.1–1000 grains/s per voice. | R1 | GRN-01 |
-| GS-GRN-002 | Grain size range ≥ 5–5000 ms; lower bound down to 0.1 ms pending Q-M01. | R1 | GRN-02, C-01 |
+| GS-GRN-002 | Grain size range 0.1–5000 ms. | R1 | GRN-02, C-01; Q-M01 resolved by DEC-035 |
 | GS-GRN-003 | Live display of density = rate × size. | R1 | GRN-03 |
 | GS-GRN-004 | Position with ≥ 14-bit resolution (we will use double-precision internally). | R1 | GRN-04 |
 | GS-GRN-005 | Spray (0 → full sample) with bipolar / +unipolar / −unipolar polarity. | R1 | GRN-05, GRN-06 |
@@ -166,9 +175,9 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
 | GS-SMP-001 | One play head per voice (up to 12 with chord), pitch = speed; spray, pan spray, direction and scan behave as documented. | R1 | SMP-01…05 |
-| GS-SMP-002 | Loop flags confine playback; one-shot / loop / ping-pong; looped release. | R1 | SMP-06, EDT-07 (semantics per Q-M05) |
+| GS-SMP-002 | Loop flags confine playback; one-shot / loop / ping-pong; looped release: ON continues looping through the voice release; OFF exits at the next valid loop boundary and continues toward Stop. | R1 | SMP-06, EDT-07; product behavior DEC-030 (not a claim about verified benchmark behavior) |
 | GS-SMP-003 | High-quality (polyphase/windowed-sinc) interpolation option. | R1 | SMP-09 |
-| GS-SMP-004 | Env pile-up option. | R1 | SMP-10 |
+| GS-SMP-004 | Env pile-up option, default OFF for Sampler; user may enable per layer. | R1 | SMP-10; DEC-037 |
 | GS-SMP-005 | Long samples up to 60 min (disk-streamed or RAM, per Q-T05). | L2 | SMP-07 |
 | GS-SMP-006 | Loop crossfade and zero-crossing snapping. | L2 | EDT-P1 [PROP] |
 | GS-SMP-007 | SFZ multisample import (incl. velocity layers — beyond benchmark). | L3 | SMP-11 |
@@ -237,13 +246,13 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
 | GS-MOD-001 | 4 LFOs per layer: 0–50 Hz free or tempo-synced; waveforms sine/tri/saw/−saw/square/random (S&H); phase; amplitude quantization; polarity (4 modes); key sync Off/On/Legato. | R1 | LFO-01…08 |
-| GS-MOD-002 | LFO scope (per-voice vs per-layer) defined explicitly; we propose a per-LFO "Poly/Mono" switch. | R1 | LFO-11 [UNV] → Q-M11 |
+| GS-MOD-002 | Each LFO has a selectable Poly/Mono phase mode: Mono shares phase per layer (default); Poly has independent phase per voice. | R1 — approved product behavior | LFO-11 [UNV] → Q-M11; DEC-024; MODULATION_SPECIFICATION.md §2.1 |
 | GS-MOD-003 | Modulation matrix with ≥ 50 rows: enable, source, curve, amount, polarity, destination. | R1 | MTX-01…03 |
 | GS-MOD-004 | Sources (R1): LFO1–4, mod wheel, key track, velocity, pitch bend, channel/poly aftertouch, MPE timbre, release velocity, aux env, Random1–4 (per note, independent streams), XY performance pad (replaces "Pos X/Pos Y"), seq mod lanes (once sequencer exists), envelope follower (input and layers). CV inputs and Draw X/Y later. | R1 (CV, Draw: L) | MTX-04, MTX-11, RN-13, RN-19 |
 | GS-MOD-005 | Destinations: every continuous engine, envelope, filter, LFO, FX and macro parameter; parity with the benchmark's 149 destinations at minimum. | R1 (for R1 features) | MTX-05 |
 | GS-MOD-006 | Hold-and-turn style quick assignment (UI: modifier + drag on any control), and direct per-LFO destination routing. | R1 | MTX-07, LFO-09, LFO-10 |
 | GS-MOD-007 | Copy/paste/delete matrix rows. | R1 | MTX-09 |
-| GS-MOD-008 | 10 macros per patch (scalable to 20 — Q-M06), multi-destination with start/end range, curve, invert; macros themselves modulatable; exposed to host automation. | R1 | MAC-01…07 |
+| GS-MOD-008 | 10 macros per patch in R1; multi-destination with start/end range, curve, invert; macros themselves modulatable; exposed to host automation. 20 macros are not an R1 requirement. | R1 | MAC-01…07; Q-M06 resolved by DEC-036 |
 | GS-MOD-009 | Display summed modulation on controls (ring/arc) and a "recent destinations" monitor. | R1 | MTX-14 [PI: on-control display] |
 | GS-MOD-010 | Drawn trajectory modulator (Draw X/Y). | L3 | MTX-12 [UNV] |
 | GS-MOD-011 | CV-in via DC-coupled audio input channels. | OPT | HW-03 [PROP] |
@@ -262,7 +271,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SEQ-007 | Record MIDI into sequencer. | L2 | SEQ-11 |
 | GS-SEQ-008 | Play/drone mode per layer (latching continuous note) and panic. | R1 | MID-13 |
 | GS-SEQ-009 | Layer mix and per-layer position performance controls. | R1 | PRF-01 |
-| GS-SEQ-010 | Patch spray / bias equivalent. | Pending Q-M12 | PRF-02 |
+| GS-SEQ-010 | Patch spray / bias equivalent. | L2 | PRF-02; Q-M12 resolved for R1 tier by DEC-029; benchmark semantics remain unverified |
 | GS-SEQ-011 | Automatic latched granular Fill with continuous intensity control, plus immediate layer and step/event Mute. | R1 | DEC-019; R1_PRODUCT_SPECIFICATION.md §4.3 |
 | GS-SEQ-012 | Pattern editing during playback; edits apply at bar end; explicit save, temporary draft on pattern switch, full Undo/Redo and latest-saved-version-only persistence. | R1 | DEC-019; R1_PRODUCT_SPECIFICATION.md §4.5 |
 
@@ -284,7 +293,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
 | GS-FX-001 | 4 reorderable FX slots per layer; each slot dry/wet; audio-in send and synth send (−100…+24 dB). | R1 | FX-01…03, FX-10 |
-| GS-FX-002 | R1 effect set: Delay, Ping-pong delay, Reverb, Chorus, EQ3, Saturator, Compressor. | R1 | FX-T01…04, T06, T08, T13 |
+| GS-FX-002 | R1 effect set: Delay, Ping-pong delay, Reverb, Chorus, EQ3, Saturator, Compressor. | R1 — approved | FX-T01…04, T06, T08, T13; Q-P11 answered by DEC-023; EFFECTS_SPECIFICATION.md §2 |
 | GS-FX-003 | L effect set: Large reverb, Resonator (MBR), Flanger, Vibrato, Ring mod (incl. AM), Reducer, Distortion. | L2 | FX-T05, T07, T09–T12, T14 |
 | GS-FX-004 | All FX parameters automatable and modulatable. | R1 | FX-07 |
 | GS-FX-005 | FX chain presets and single-FX presets. | L2 | FX-05, FX-06 |
@@ -296,12 +305,12 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-PRS-001 | Data model: Sample → Patch (sample reference + all parameters, incl. slices, flags, matrix, macros, FX) → Multi (4 layers + mix) → Project/Library. | R1 | PRS-01, PRS-02; Q-P07 |
-| GS-PRS-002 | Preset browser with banks/tags/search, favourites, init patch from user-selectable default template. | R1 | PRS-03, PRS-07 [PI: tags/search] |
+| GS-PRS-001 | Data model: Sample → Patch (sample reference + all parameters, incl. flags, matrix, macros, FX) → Multi (4 layers + mix) → Project/Library; Pattern Library remains independent. | R1 | PRS-01, PRS-02; DEC-022 |
+| GS-PRS-002 | Searchable desktop library with banks/tags/search, favourites, init patch from user-selectable default template and optional performance-bank recall view. | R1 — approved product behavior | PRS-03, PRS-07 [PI: tags/search]; DEC-022; PRESET_LIBRARY_SPECIFICATION.md §§2–4 |
 | GS-PRS-003 | Templates (parameter set without sample) and "apply template" to current patch. | R1 | PRS-07 |
 | GS-PRS-004 | Human-readable, versioned preset format with forward migration; parameter scaling versioned so presets never change sound across releases. | R1 | PRS-13, RN-10 [PROP]; Q-T15 |
 | GS-PRS-005 | Portable sample referencing (relative path + content hash + relink dialog); "collect samples" export bundle. | R1 | PRS-12 → PRS-P1 [PROP] |
-| GS-PRS-006 | Plugin state restores fully in the DAW, including recorded (unsaved) buffers — embed or reference per Q-P08. | R1 | — |
+| GS-PRS-006 | Plugin state restores fully in the DAW, including unsaved recording buffers embedded in state; existing library samples may remain external references with relink/collect support. | R1 — approved product policy; technical serialization Phase 3 | DEC-025; PRESET_LIBRARY_SPECIFICATION.md §6 |
 | GS-PRS-007 | Undo/redo of parameter and edit actions (deeper than the benchmark's revert-to-save). | R1 | PRF-05 [PROP] |
 | GS-PRS-008 | Copy/paste of patches, layers, matrix rows, FX slots. | R1 | PRF-04 |
 | GS-PRS-009 | Comments per patch. | R1 | PRS-08 |
@@ -382,20 +391,20 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 | Voice/env/filter (VOI) | 9 | 1 | 0 | 0 | 0 | 10 |
 | Samples/recording (SMG) | 16 | 5 | 0 | 0 | 0 | 21 |
 | Modulation (MOD) | 9 | 1 | 1 | 1 | 0 | 12 |
-| Sequencer/performance (SEQ) | 9 | 1 | 1 | 0 | 1 | 12 |
+| Sequencer/performance (SEQ) | 9 | 2 | 1 | 0 | 0 | 12 |
 | MIDI (MID) | 7 | 1 | 0 | 0 | 0 | 8 |
 | Effects (FX) | 4 | 2 | 1 | 1 | 0 | 8 |
 | Presets/state (PRS) | 9 | 0 | 0 | 1 | 0 | 10 |
 | UI (UI) | 7 | 0 | 0 | 0 | 0 | 7 |
 | Non-functional (NFR) | 13 | 0 | 0 | 0 | 0 | 13 |
-| **Total** | **124** | **26** | **9** | **8** | **1** | **168** |
+| **Total** | **124** | **27** | **9** | **8** | **0** | **168** |
 
 ### 6.3 Footnotes to the counts
 
 - **Split-tier rows (3), each counted once under R1:** `GS-ARC-005` (R1/L — Granular + Sampler in R1, Slice/Tape/Spectral later), `GS-SMG-005` (R1 waveform / L2 spectrogram), `GS-MOD-004` (R1 sources; CV and Draw X/Y later).
-- **"Other" (1):** `GS-SEQ-010` — tier pending Q-M12.
-- **Rows whose tier cell is marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). The remaining 122 R1 rows are proposed tiers awaiting the Phase 2 tier approval; product *scope* for layers, engines, sequencer, live input/Freeze and controller operation is separately approved in DEC-017…DEC-021.
-- **Corrections applied in this revision (v0.5):** SLC is now 0 R1 / 6 L2 (Granular Slice deferred, DEC-018 — previously shown 4 R1 / 2 L2); SEQ is now 12 rows (previously shown as 10, predating the DEC-019 sequencer rows); MID is now 7 R1 / 1 L2 (GS-MID-007 moved L2→R1 under DEC-019); SMG gained `GS-SMG-021` (Freeze, DEC-020). The former grand total of 164 was also arithmetically stale and is corrected to 168.
+- **"Other" (0):** every requirement row now has an approved tier; `GS-SEQ-010` is L2 by DEC-029/DEC-041.
+- **Rows whose tier cell is explicitly marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). DEC-041 approves the tier classification for all 168 rows; numeric technical values tied to Q-Txx remain proposals until their architecture/validation gates.
+- **Phase 2 reconciliation (v1.0):** all 168 requirement rows have exactly one approved tier; `GS-SEQ-010` is L2 (DEC-029). Totals reconcile to 124 R1 + 27 L2 + 9 L3 + 8 OPT + 0 Other = 168. Split-tier rows are counted once under their primary R1 tier per §6.1.
 
 ## 7. Dependencies between requirement areas
 
@@ -434,3 +443,19 @@ Current coverage:
 | Acceptance criteria | **Gap — Phase 5 deliverable** (TESTING_STRATEGY.md + per-milestone acceptance tests) |
 
 *End of GRANULAR_SYNTH_REQUIREMENTS.md*
+
+
+## 9. Phase 2 domain specifications and acceptance
+
+The following documents expand behavior, edge cases and acceptance coverage without changing the GS requirement inventory or its §6 count:
+
+- `MODULATION_SPECIFICATION.md` — GS-MOD-001…012; DEC-024 resolves Q-M11.
+- `EFFECTS_SPECIFICATION.md` — GS-FX-001…008; DEC-023 resolves Q-P11.
+- `SAMPLER_SPECIFICATION.md` — GS-SMP-001…007; Q-M05 remains open pending evidence.
+- `PRESET_LIBRARY_SPECIFICATION.md` — GS-PRS-001…010; DEC-022 resolves Q-P07 and DEC-025 resolves the product policy in Q-P08.
+- `MIDI_SPECIFICATION.md` — GS-MID-001…008; preserves DEC-016/021 and the controller-only operation set.
+- `AUDIO_IO_SPECIFICATION.md` — GS-SMG-001…021 and relevant GS-PLT/GS-NFR requirements; Freeze semantics remain Phase 3.
+- `R1_RELEASE_SCOPE_MATRIX.md` — consolidated tier view; pending owner approvals are called out explicitly.
+- `R1_ACCEPTANCE_CRITERIA.md` — testable product-level pass conditions; numeric performance thresholds and implementation-level test design remain Phase 3/5.
+
+No GS requirement IDs were added or removed by this Phase 2 specification pass; §6 totals remain based on the existing 168 requirement rows.

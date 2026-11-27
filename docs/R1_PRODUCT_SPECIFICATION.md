@@ -1,7 +1,7 @@
 # R1 Product Specification
 
 **Status:** Product scope baseline approved under the owner's explicit delegation to ChatGPT as product manager on 2026-11-27. This document records product decisions only. It does not approve DSP architecture, framework selection, implementation, or release.
-**Version:** 1.0 (product decisions consolidated, 2026-11-27)
+**Version:** 1.1 (Phase 2 product decisions consolidated, 2026-11-27)
 **Authority:** Owner decisions in this conversation plus delegated product-management decisions explicitly identified below.
 **Reference:** GR-MEGA is a functional benchmark only. GRANULAR SYNTH must use original implementation, interaction design, presets and assets; do not copy proprietary firmware, source code, artwork or protected trade dress.
 
@@ -106,9 +106,33 @@ The following remain technical, legal, or later-phase decisions and must not be 
 - Exact AU/VST3 component types, bus layout, host-specific live-input support details and MIDI output behavior.
 - macOS minimum version, CPU baseline, sample-rate/buffer matrix, measured grain budget, memory budget and maximum safe recording duration.
 - Parameter-ID scheme and exact host automation exposure.
-- Preset serialization, embedded versus linked sample policy and migration format.
+- Preset serialization format, migration implementation and embedded-buffer size handling; product policy is DEC-025.
 - Detailed UI layouts, screen workflows and controller mapping UX.
 - Legal review, product name, branding, factory content and distribution model.
 - Numeric acceptance thresholds and test plans (Phase 5).
+
+## 8. Additional Phase 2 product decisions
+
+The following product decisions extend the approved baseline under the owner's explicit delegation to ChatGPT as product manager. They do not approve architecture or implementation:
+
+- DEC-022: searchable desktop library with tags/favourites; performance banks index library items; no fixed benchmark storage caps.
+- DEC-023: R1 effects are Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator and Compressor.
+- DEC-024: each LFO offers Poly/Mono phase mode; Mono is default.
+- DEC-025: unsaved recording buffers are embedded in plugin state; existing library samples remain references with relink/collect support.
+- DEC-026: R1 plugin formats are AU and VST3; CLAP is optional.
+- DEC-027: improve benchmark limitations by default; preserve artifacts only when deliberately selectable and musically useful.
+- DEC-028: R1 granular sample duration target is at least six minutes stereo per layer at 48 kHz, subject to measured feasibility and safe memory use.
+- DEC-029: patch spray/bias is deferred to L2.
+- DEC-030: Sampler Loop Release ON continues looping through voice release; OFF exits at the next valid loop boundary toward Stop.
+- DEC-031: macro base values are shared per layer patch; per-note sources may modulate destinations per voice.
+- DEC-032: XY pad axes are normalized 0.0–1.0, centered at 0.5/0.5 for a new patch, with saved recall position.
+- DEC-033: Program Change recalls explicit assignments in the active performance bank; unmapped values are ignored.
+- DEC-034: multiple layers assigned to the same MIDI channel all receive matching incoming events.
+- DEC-035: R1 grain size range is 0.1–5000 ms.
+- DEC-036: ten macros per patch are R1; twenty are not required in R1.
+- DEC-037: Sampler Env Pile-up defaults OFF; user may enable per layer.
+- DEC-038: MPE per-note pitch-bend range is 48 semitones.
+- DEC-039: MIDI Clock Start resets transport, Continue resumes, Stop halts; clock loss after two expected beat intervals stops progression; SPP is ignored in R1.
+- DEC-040: mono live input is centered; explicit LL/RR duplication is not the default.
 
 *End of R1_PRODUCT_SPECIFICATION.md*
