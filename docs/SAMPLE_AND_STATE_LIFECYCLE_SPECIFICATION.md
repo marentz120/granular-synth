@@ -83,7 +83,7 @@ States:
 
 Per-layer recorders and the stereo master recorder are separate assets. Recording is written into preallocated buffers/rings; disk writing and WAV export happen off-thread. A buffer-full or resource-exhaustion condition stops capture safely, preserves valid frames and informs the user.
 
-Recommended architecture defaults (proposal pending owner review and host validation): per-layer capture is post-FX and pre-layer-fader, independent of layer fader/mute/solo; a muted or solo-isolated layer continues recording its own stem when armed. Master capture is the final stereo master mix after layer faders/mute/solo and before host output, including live input routed through the layer graph. No separate dry-to-master bypass is enabled by default. These tap positions are engineering recommendations, not new approved product requirements. Exact start modes, stop semantics and loop/scroll behavior remain to be specified and tested.
+Recommended architecture defaults (proposal pending owner review and host validation): per-layer capture is post-FX and pre-layer-fader, independent of layer fader/mute/solo; a muted or solo-isolated layer continues recording its own stem when armed. Master capture is the final stereo master mix after layer faders/mute/solo and before host output, including both the wet layer-routed live input and the required parallel dry live-input path. The parallel dry live-input path to the master is required by GS-ARC-007; the master recording tap must include it. These tap positions are engineering recommendations, not new approved product requirements. Exact start modes, stop semantics and loop/scroll behavior remain to be specified and tested.
 
 ## 7. Plugin state and persistence — DEC-025 implementation
 
