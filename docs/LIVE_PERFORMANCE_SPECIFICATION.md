@@ -11,16 +11,19 @@
 
 | Decided here (by reference to DECISIONS_LOG.md) | Not decided here — remains open/proposed |
 |---|---|
-| DEC-015: studio and live performance are both primary | Layer count (Q-P04) |
-| DEC-016: standalone essential live operations must be fully MIDI-controller-operable | Engine scope / first-release engines (Q-P20) |
-| | Step sequencer release tier (Q-P05) — §10 gives a recommendation, not an approval |
-| | Live audio input in plugins (Q-P06) |
+| DEC-015: studio and live performance are both primary | AU/VST3 component types and bus layout |
+| DEC-016: standalone essential live operations must be fully MIDI-controller-operable | Framework (Q-T01) |
+| DEC-017: four independent layers in R1 | Parameter exposure scope/scheme (Q-T12) |
+| DEC-018: Granular + Sampler in R1; Slice deferred | Numeric performance budgets and acceptance thresholds |
+| DEC-019: full central sequencer in R1 | Detailed UI and controller-mapping UX |
+| DEC-020: live input, Freeze and recording across layers | Legal, naming and distribution decisions |
+| DEC-021: generic MIDI controller, full sequencer editing; no R1 feedback/template |
 | | AU/VST3 component types (Q-P06, DSP_ARCHITECTURE.md §5.6) |
 | | Framework (Q-T01) |
 | | Parameter exposure scope/scheme (Q-T12) |
 | | The specific target MIDI controller or a dedicated hardware template (Q-P12) |
 
-Per CLAUDE.md governance: the human owner is the only source of product-decision approval; this document (Claude Chat/Code deliverable) prepares analysis and recommendations only.
+The owner explicitly delegated resolution of remaining product questions to ChatGPT as product manager on 2026-11-27, provided decisions do not contradict prior owner decisions. DEC-015…DEC-021 record the resulting approved product baseline. Technical and implementation decisions remain gated.
 
 ---
 
@@ -28,7 +31,7 @@ Per CLAUDE.md governance: the human owner is the only source of product-decision
 
 GS-MID-008 requires that every **essential live-performance operation** be reachable from a MIDI controller alone, without keyboard or mouse. §8 draws a setup-time/performance-time boundary to make "essential" testable — that boundary exists to keep the term precise, **not** to narrow DEC-016: any operation a performer genuinely needs *during* a set is essential and must be controller-reachable, full stop, regardless of whether it could also be prepared in advance.
 
-Proposed essential-operation set for R1 (derived from GRANULAR_SYNTH_REQUIREMENTS.md §3, tiers unchanged by this document):
+R1 essential-operation set (product baseline; detailed acceptance criteria remain Phase 5 work):
 
 | Operation | Source requirement | Notes |
 |---|---|---|
@@ -39,15 +42,18 @@ Proposed essential-operation set for R1 (derived from GRANULAR_SYNTH_REQUIREMENT
 | Core 8-knob engine section per layer | GS-UI-002 | Already R1; benchmark-parity knob layout is itself controller-friendly |
 | Scan/position, pitch | GS-GRN-004, GS-GRN-009, GS-GRN-010 | Primary "performance" grain controls per the benchmark's own workflow (feature map §11) |
 | Chord hold/record | GS-CHD-004 | Already R1 |
+| Sequencer transport, pattern selection/chain, step/event editing, event/layer assignment | GS-SEQ-001…012 | All sequencer operations are essential and controller-accessible; physical ergonomics depend on the controller |
+| Fill intensity/toggle and layer/event Mute | GS-SEQ-011 | Fill is latched and continuous; Mute is immediate |
+| Pattern save/draft/undo/redo actions | GS-SEQ-012 | Must be reachable without keyboard/mouse during performance when needed |
 | MIDI Learn entry/exit and mapping recall | GS-MID-003, GS-UI-007 (new, this document) | The mechanism itself must be controller-reachable or at minimum not *require* mouse/keyboard mid-set once mappings exist |
 
-This table is a **working proposal**, not a final acceptance list — it is an input to Phase 4/5, where GRANULAR_SYNTH_REQUIREMENTS.md §8 traceability already schedules acceptance criteria. It does not add new tiers or reclassify any requirement; every row already cites an existing R1 requirement.
+This is the approved product-level operation set. Phase 4 defines the UI and mapping workflows; Phase 5 defines pass/fail acceptance tests for every operation. Any action genuinely needed mid-set remains controller-reachable under DEC-016, even if it can also be prepared in advance.
 
 ---
 
 ## 2. MIDI mapping architecture
 
-Proposed, consistent with DSP_ARCHITECTURE.md §9 (parameter registry) and §12a (added in this revision):
+R1 product requirements: generic class-compliant MIDI controller support; MIDI Learn plus manual CC, channel and Note assignment; all sequencer operations including editing are controller-accessible. Detailed mapping architecture below is a design direction for Phase 3/4, consistent with DSP_ARCHITECTURE.md §9 and §12a:
 
 - Every mappable control is a registered parameter (stable string ID, per the existing registry — Q-T12 still decides *how many* parameters are exposed, not whether mapping exists).
 - A **mapping** is a record `{controller-event-source (channel + CC/NRPN/note), target parameter ID, scaling/curve, soft-takeover flag}`. This mirrors the existing MIDI Learn requirement (GS-MID-003: "14-bit CC and NRPN input; soft-takeover (pickup) option") — no new MIDI data model is introduced, only a place to store many such bindings and group them.
@@ -88,9 +94,9 @@ Precedence proposal: preset-specific mapping overrides global mapping for the sa
 
 ---
 
-## 6. Controller feedback where supported
+## 6. Controller feedback — deferred beyond R1
 
-- Scope: **optional**, gated on controller capability — not all MIDI controllers accept feedback (motorized faders, LED rings/displays via MIDI out).
+- MIDI feedback to motorized faders, LED rings or controller displays is **not an R1 requirement**. It may be considered later; it must not be treated as a prerequisite for R1 operation.
 - When supported, feedback keeps the physical controller's visual/haptic state in sync with the current parameter value (e.g., after a preset change moves a mapped value, a motorized fader should follow). This is Message/UI-thread work (DSP_ARCHITECTURE.md §12a) — never audio-thread-driven, never a source of audio-thread blocking.
 - No specific controller or feedback protocol is targeted by this document (Q-P12 remains open). The requirement is architectural readiness (bidirectional MIDI I/O in the standalone shell — DSP_ARCHITECTURE.md §12a), not a committed feature list.
 
@@ -98,10 +104,10 @@ Precedence proposal: preset-specific mapping overrides global mapping for the sa
 
 ## 7. Dedicated versus flexible controls
 
-Two complementary approaches, not a forced choice between them:
+R1 uses generic flexible controls only. A dedicated named-controller template is deferred beyond R1.
 
 - **Flexible (R1, required by GS-MID-008/GS-UI-007):** generic MIDI Learn against *any* class-compliant MIDI controller. This is what actually satisfies DEC-016 for R1 — it requires no assumption about which hardware the performer owns.
-- **Dedicated (proposed for later, not R1):** a named-controller template (e.g., a specific control surface's physical layout pre-mapped to the 8-knob engine section and macros) would improve out-of-box experience but requires committing to a specific controller (Q-P12, OPEN) and is not necessary to satisfy DEC-016. **Recommendation:** treat dedicated templates as an L2+ enhancement layered on top of the flexible system, once a target controller is chosen; do not block R1 on it.
+- **Dedicated (proposed for later, not R1):** a named-controller template (e.g., a specific control surface's physical layout pre-mapped to the 8-knob engine section and macros) would improve out-of-box experience but requires committing to a specific controller (Q-P12, OPEN) and is not necessary to satisfy DEC-016. **R1 decision:** dedicated templates are not required; the flexible MIDI Learn/manual mapping system is the supported baseline.
 
 This recommendation does not decide Q-P12 — it only argues that Q-P12's resolution is not a prerequisite for satisfying DEC-016.
 
@@ -122,7 +128,7 @@ This boundary is a **recommendation**, meant to make "essential" testable; per t
 
 ---
 
-## 9. Performance acceptance criteria (proposed; not numerically finalized)
+## 9. Performance acceptance criteria (product scope approved; tests not yet finalized)
 
 Consistent with the gap already noted in GRANULAR_SYNTH_REQUIREMENTS.md §8 (acceptance criteria are a Phase 5 deliverable) and DEVELOPMENT_ROADMAP.md Phase 5, these are **proposed** criteria, to be finalized alongside other R1 acceptance tests, not approved here:
 
