@@ -320,3 +320,18 @@ A focused adapter review found that the prior host specification listed required
 - generation-checked off-thread lifecycle reconfiguration and non-RT shutdown/retirement.
 
 `PHASE3_INTERFACE_CONTRACTS.md` §3.4 carries the same invariants across the shared-core boundary. This is a documentation-level adapter contract only. AU component choice, actual host behavior, callback timing and bus activation still require the explicitly authorized minimal host prototypes; no SDK code or host test was run.
+
+
+## Acceptance traceability count correction and Phase 5 backlog — 2026-11-27
+
+A second-pass reconciliation expanded shorthand requirement references in the AC tables instead of counting only fully repeated IDs. This found six valid direct links that the API symbol matrix had previously marked as missing: GS-MOD-002 (AC-MOD-002), GS-MOD-005 (AC-MOD-004), GS-MOD-007 (AC-MOD-003), GS-PRS-008 (AC-PRS-009), and GS-SMG-010/011 (AC-AUD-008). The AC table now spells out all requirement IDs in those trace cells to avoid ambiguity.
+
+The corrected baseline is:
+- 124 unique R1 requirements.
+- 49 unique requirement IDs directly referenced by AC table rows.
+- Four additional requirements referenced by cross-domain release gates in R1_ACCEPTANCE_CRITERIA.md §7: GS-PLT-004, GS-NFR-002, GS-NFR-006 and GS-NFR-007.
+- 53 requirements with an existing acceptance/release-gate link; 71 without one.
+
+This supersedes the earlier 47/77 arithmetic. No requirement tier, product behavior or approved decision changed. The 71 remaining requirements are now enumerated in PHASE5_TEST_DESIGN_BACKLOG.md with candidate test intent, evidence type and dependencies. No AC IDs, pass thresholds, test results or performance claims were invented. The backlog is planning only; Phase 5 owns final test design and acceptance wording.
+
+No code, Plugin Shell, host prototype, benchmark or merge was performed.
