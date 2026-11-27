@@ -1,6 +1,6 @@
 # Phase 3 R1 Cross-Module Interface Contracts
 
-**Version:** 0.3 — AU/VST3 process and bus normalization refined  
+**Version:** 0.4 — render-capacity and input fan-out contract added  
 **Status:** Proposed contracts for owner review. No public API, framework choice, numeric capacity, or production implementation is approved by this document.  
 **Baseline:** `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0; DEC-017…DEC-042; companion Phase 3 specifications.
 
@@ -19,7 +19,7 @@ Every interface must define its producer, consumer, data ownership, execution co
 
 | Interface ID | Producer → consumer | Data contract | Ownership / lifetime | Timing and failure contract | Requirement coverage |
 |---|---|---|---|---|---|
-| IF-01 Host process → Engine render | AU/VST3/Standalone adapter → shared engine | Audio input/output channel views, sample rate, frame count, transport context, timestamped MIDI/parameter events, active-bus map | Host owns callback buffers; engine borrows them only for the current call | No retention after callback; support negotiated variable block sizes; inactive/unconnected buses handled explicitly; invalid context produces safe silence/status rather than out-of-bounds access | GS-PLT-001…004, GS-ARC-006, GS-MID-001…008, GS-SMG-020 |
+| IF-01 Host process → Engine render | AU/VST3/Standalone adapter → shared engine | Negotiated physical input-bus views, logical per-layer source routes, master/four optional layer output views, sample rate, actual frame count and prepared maximum capacity, transport context, timestamped MIDI/parameter events, active-bus map | Host owns callback buffers; engine borrows them only for the current call | No retention after callback; support negotiated variable block sizes; inactive/unconnected buses handled explicitly; invalid context produces safe silence/status rather than out-of-bounds access | GS-PLT-001…004, GS-ARC-006, GS-MID-001…008, GS-SMG-020 |
 | IF-02 Parameter registry → runtime/host/UI/state | Immutable registry → all domains | Canonical string ID, host ID if exposed, type, units, plain/normalized mapping, default, curve, smoothing class, scope and capability flags | Registry immutable after initialization; runtime values have one declared writer or atomic publication rule | Unknown IDs ignored with compatibility status; duplicate IDs or invalid metadata fail registry validation; host IDs never renumber or recycle | GS-PLT-004, GS-MOD-003…009, GS-MID-003, GS-PRS-001…009 |
 | IF-03 UI/loader/state → audio structural command | Non-RT producer → audio consumer | Bounded command kind + fully prepared immutable payload + generation/version + completion token | Producer owns until successful publication; audio owns active payload after safe-point swap; replaced payload retired off RT | Fixed queue capacity; no allocation/build/destruction in callback; overflow rejects/coalesces by command class with visible status; commands applied in deterministic order at defined safe point | GS-SMG-003/004/020/021, GS-FX-001/002/004/006, GS-PRS-001…009 |
 | IF-04 Audio → UI observation | Audio runtime → UI | Fixed-size versioned snapshot: meters, playheads, record positions, freeze/record state and counters | Audio publishes; UI reads a copy/snapshot; UI never receives mutable runtime pointers | Latest-value semantics; UI may skip stale frames; no wait or lock in audio callback | GS-UI-001…007, GS-SMG-005/020/021, GS-NFR-001/005 |
@@ -127,3 +127,17 @@ The generic rules in §3.4 are refined by the official format contracts:
 - **VST3 state callbacks:** offline getState/setState may run on the same thread as process; the state contract must not assume UI-thread-only invocation.
 
 These details refine the normalized bus/process representation and validation obligations; they do not change DEC-020/026 or select Q-P06/Q-P09. See PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md §10 and PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md §8.
+
+### 3.6 Render-capacity and transient-memory contract — IF-01 / IF-10
+
+- Every active render-resource generation has a prepared maximum frame capacity `B`. AU derives it from `maximumFramesToRender`, VST3 from `ProcessSetup::maxSamplesPerBlock`, and Standalone from the configured device maximum.
+- Each actual audio render supplies `N`; validate `N <= B` before any workspace access. No allocation, deallocation, resize or capacity mutation is allowed in the render callback. An over-capacity call is a bounded adapter/configuration failure, not a request to grow memory.
+- Physical host input buses are represented separately from the four logical per-layer source routes. A route may alias a read-only physical input view, including a view shared by multiple layers. This does not imply four physical buses or four input copies.
+- Master and layer output buffers are borrowed host views. The five stereo output buses represent ten channels when all are exposed, but they are not automatically engine-owned scratch. The memory ledger charges only actual internal working planes and staging copies.
+- For float32 staging, `M = B × 4 × (C_in_staged + C_out_staged)`. Five stereo output copies conditionally cost `40 × B` bytes; one stereo input copy adds `8 × B`. This is an accounting example, not a required copy topology.
+- Byte arithmetic uses checked wide values and validates conversion to `size_t` before allocation. Float32 sample width and 32-bit frame-count types do not imply a 32-bit process. Q-T03 remains open.
+- VST3 zero-bus parameter flush is not an audio render and does not access scratch or advance audio/transport.
+- Reconfiguration prepares a complete next capacity/bus generation off-thread, publishes only under the format/device lifecycle contract, and retires the previous generation after no callback can reference it.
+
+Detailed equations, assumptions, conditional examples and planned tests are in `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md`. No numeric memory budget, maximum block size or input-channel maximum is approved.
+
