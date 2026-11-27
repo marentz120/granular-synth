@@ -1,6 +1,6 @@
 # Phase 3 Platform and Plugin Research
 
-**Research date:** 2026-11-27  
+**Research date:** 2026-11-27 (official AU/VST3 callback cross-check added 2026-11-27)  
 **Status:** Evidence note. This document does not approve a framework, deployment target, plugin component set or host compatibility claim.
 
 ## 1. JUCE 8 licensing — current public terms
@@ -87,3 +87,55 @@ Sources:
 - No legal review has established whether JUCE Starter/Indie/Pro terms fit the intended product entity and commercial plan.
 
 **Conclusion:** current public documentation supports JUCE as a serious candidate and confirms the relevant AU/VST3 extension points. It does not remove the need for licensing review and host validation. No framework or component architecture is approved by this note.
+
+## 8. Official AU/VST3 process, bus and callback constraints — 2026-11-27
+
+This pass cross-checked the proposed normalized host contract against Apple's current Audio Toolbox documentation and Steinberg's VST3 3.8 API/developer documentation. The findings refine adapter requirements; they do not establish that a target DAW supports the proposed topology.
+
+### 8.1 Apple Audio Unit
+
+- AUAudioUnit exposes inputBusses and outputBusses, an internalRenderBlock, render-resource allocation/deallocation, host transport/musical-context callbacks and an MPE capability property.
+- The host sets maximumFramesToRender before allocating render resources. Apple explicitly says it cannot be changed while render resources are allocated. Buffer capacity must therefore be prepared before rendering; changes require a lifecycle transition.
+- The host should fetch/cache renderBlock before realtime rendering.
+- scheduleParameterBlock is documented as safe from any thread context, including realtime render threads, and schedules events for delivery to the internal render block. The adapter must still preserve bounded work and the engine's event ordering contract.
+- An AURenderPullInputBlock error means the input data should be treated as invalid. This supports an explicit per-call unavailable-input state.
+- The generic AU API can bridge AUv2 and AUv3 components and can instantiate an AUv3 component in-process or in a separate extension process. The shared core must not assume pointer-sharing across that boundary.
+- These APIs do not prove that an aumu instrument receives live audio input in every host or that all optional output buses are exposed. Q-P06/Q-P09 remain open.
+
+**Official Apple sources:**
+- AUAudioUnit: https://developer.apple.com/documentation/audiotoolbox/auaudiounit
+- maximumFramesToRender: https://developer.apple.com/documentation/audiotoolbox/auaudiounit/maximumframestorender
+- renderBlock: https://developer.apple.com/documentation/audiotoolbox/auaudiounit/renderblock
+- scheduleParameterBlock: https://developer.apple.com/documentation/audiotoolbox/auaudiounit/scheduleparameterblock
+- AURenderPullInputBlock: https://developer.apple.com/documentation/audiotoolbox/aurenderpullinputblock
+
+### 8.2 Steinberg VST3
+
+- ProcessSetup establishes sample rate and maximum samples per block; ProcessData supplies the actual block size, process mode, bus counts/arrays, parameter changes, events and optional process context. Actual audio block sizes may vary up to the configured maximum.
+- Steinberg's Processing FAQ states that sample rate and maximum block size cannot change while the component is active. A change requires stopping processing and deactivating before setupProcessing(), then reactivating/restarting.
+- The host may call IAudioProcessor::process() without audio buffers to flush parameters; the FAQ describes this as numInputs = 0 and numOutputs = 0. This must be normalized as a parameter-flush call, not mistaken for an audio render.
+- ProcessData bus arrays are per-call. AudioBusBuffers requires channel-buffer arrays for entries that are present, but inactive bus sample pointers may be null. Steinberg's FAQ also states that trailing inactive buses may be omitted; the adapter must check numInputs/numOutputs before indexing and must not equate declared bus count with current array length.
+- kDefaultActive is a request rather than a guarantee. The host may activate only a subset of the declared buses. This reinforces the approved fallback: the primary stereo master remains usable even when optional layer outputs are not activated.
+- ProcessData::processContext is optional. VST3 3.7+ provides IProcessContextRequirements to request required context flags; without it, Steinberg warns the host may provide no process context. Returned validity flags must still be checked.
+- VST3 sample-accurate parameter queues provide event sample offsets; preserve these offsets and source order. The cross-source precedence remains AR-01.
+- Steinberg documents process() and setProcessing() as possible audio-thread calls. In realtime contexts state callbacks normally occur on the UI thread, but offline getState()/setState() may occur on the same thread as process().
+
+**Official Steinberg sources:**
+- ProcessData: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/structSteinberg_1_1Vst_1_1ProcessData.html
+- AudioBusBuffers: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/structSteinberg_1_1Vst_1_1AudioBusBuffers.html
+- IAudioProcessor: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IAudioProcessor.html
+- Processing FAQ: https://steinbergmedia.github.io/vst3_dev_portal/pages/FAQ/Processing.html
+- Multiple Dynamic I/O: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Change%2BHistory/3.0.0/Multiple%2BDynamic%2BIO.html
+- Parameter automation: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Parameters%2BAutomation/Index.html
+- IProcessContextRequirements: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Change%2BHistory/3.7.0/IProcessContextRequirements.html
+
+### 8.3 Architecture consequences and remaining evidence gaps
+
+1. The normalized process model must distinguish declared bus identity, per-call array presence, host activation/connection, channel arrangement and sample-pointer validity. One nullable pointer or one active flag is insufficient.
+2. Process kind must distinguish an audio render from a VST3 parameter-flush call with no audio buses.
+3. AU maximum render frames and VST3 maximum block size/sample rate are lifecycle configuration values, not mutable render-time capacities.
+4. AU parameter scheduling can enter from any thread; VST3 process/setProcessing may be audio-thread calls. Adapter queue topology must be explicit before selecting SPSC/MPSC/mailbox primitives.
+5. VST3 process context is optional and must be requested/validated; AU host context callbacks may also be absent or invalid.
+6. No host prototype was run. The behavior of Logic Pro, Ableton Live, Bitwig and Reaper for the proposed live-input and five-output layout remains unverified. Q-P06/Q-P09 are still open.
+
+No framework, component subtype, bus activation default, deployment target or host compatibility claim is approved by this research update. No code, prototype or benchmark was performed.
