@@ -148,6 +148,6 @@ Numeric capture duration, memory budget, copy strategy, crossfade duration and s
 | Host state callback threading/size constraints | Open — AU/VST3 prototype |
 | Exact per-layer/master record tap | Open — signal-flow decision |
 | Recording buffer capacity and overflow | Open — measured and bounded |
-| Freeze interaction with recording | Open — Freeze spec |
+| Freeze interaction with recording | **Answered — DEC-042**; recorder continues at its defined tap, frozen snapshot remains immutable. Exact tap definition remains open in signal-flow design |
 
-**Status:** This proposal reflects DEC-025 and defines the lifecycle to be completed. It does not approve a memory ceiling or a serialization container.
+**Status:** Proposed engineering specification aligned with approved product policies DEC-025 and DEC-042. It does not approve a memory ceiling or a serialization container.
