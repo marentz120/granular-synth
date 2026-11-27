@@ -1,0 +1,19 @@
+# Milestone A0 baseline. Intentionally conservative: this configuration exists so that
+# static analysis is wired up from the first commit, not so that it can be claimed as a
+# real-time-safety proof. Checks will be tightened as real code appears in later milestones.
+---
+Checks: >
+  -*,
+  bugprone-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -misc-non-private-member-variables-in-classes
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '(src|tests)/.*\.(h|hpp)$'
+FormatStyle: file

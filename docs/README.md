@@ -16,4 +16,6 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [DECISIONS_LOG.md](DECISIONS_LOG.md) | Decision records and approval status | Living |
 | [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Owner decisions, technical decisions, evidence gaps | Living, v0.4 |
 | [R1_REQUIREMENTS_MAPPING.md](R1_REQUIREMENTS_MAPPING.md) | Initial audit mapping requirements against R1_PRODUCT_SPECIFICATION.md; findings and non-binding recommendations | Initial pass, findings addressed 2026-11-27 |
-| [TESTING_STRATEGY.md](TESTING_STRATEGY.md) | Test approach and release validation | Initial principles (Phase 5) |
+| [TESTING_STRATEGY.md](TESTING_STRATEGY.md) | Test approach and release validation | Initial principles (Phase 5) + A0 harness record |
+| [BUILD_AND_TOOLCHAIN_RECORD.md](BUILD_AND_TOOLCHAIN_RECORD.md) | What the build actually is, observed toolchain, recorded deviations, and what is explicitly not validated | Milestone A0 v0.1 |
+| [DEPENDENCY_AND_LICENCE_MANIFEST.md](DEPENDENCY_AND_LICENCE_MANIFEST.md) | Every dependency and its licence; currently zero third-party dependencies | Living, v0.1 (Q-L05 open) |
