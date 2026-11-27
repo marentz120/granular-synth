@@ -109,6 +109,29 @@ For each render block, define and test a deterministic order:
 
 The exact ordering of host automation, MIDI mapping, sequencer overrides and modulation must be specified per parameter class. This proposed order is a starting point; no event may be applied at an imprecise offset if the requirement promises sample-accurate timing.
 
+## 6.1 Event-time execution contract — refinement
+
+The following constraints refine §6 without selecting a product-level precedence policy that remains open:
+
+1. **Block-relative time:** every timestamped event is represented by a validated sample offset in the half-open interval `[0, frameCount)`. Events outside the current block are rejected or retained by the adapter according to the host contract; they are never silently clamped to a different musical time.
+2. **Stable merge:** host MIDI, host automation, device MIDI and sequencer events are merged by sample offset. Preserve source-local order for events with the same offset. Cross-source same-offset ordering must use an explicit deterministic tie-break field; the field must not depend on pointer address, thread arrival race or container iteration order.
+3. **No invented precedence:** the ordering between simultaneous host automation, MIDI-mapped writes, sequencer parameter locks and UI-originated parameter changes is parameter-class-specific and remains an open design decision. The engine must not let whichever producer happens to enqueue last become an accidental precedence rule.
+4. **Segmented render:** when a parameter/event requires sample-accurate application, render the block in bounded segments ending at the next event offset, apply the event at that exact boundary, then continue. If an event class is intentionally block-rate or control-rate, its declared update class must say so and acceptance criteria must not claim sample accuracy.
+5. **Base value versus modulation:** base parameter writes and modulation contributions are distinct inputs to parameter evaluation. Apply the approved shared-per-layer macro base and per-voice modulation semantics (DEC-031); do not let a per-voice contribution overwrite the shared base value.
+6. **Structural work:** sample/patch/FX graph replacement remains a safe-point structural command, not an ordinary sample-offset parameter event. Its transition must be bounded and its retirement remains non-RT.
+7. **Overload:** event capacity and per-block work are finite. Preserve host-provided event order and account for every rejected/dropped event; panic/All Sound Off uses its reserved bounded path. Numeric capacity and exact recovery remain Phase 5 measurement/acceptance work.
+
+| Event/source | Required time handling | Precedence status |
+|---|---|---|
+| Host automation | Preserve host-provided sample offset where exposed; otherwise apply at declared block/control boundary | Source-specific interaction with other writers remains open |
+| Host MIDI / MPE | Preserve event offset and source-local order; retain note identity/zone context | Same-offset cross-source tie-break must be explicit |
+| Internal sequencer | Generate deterministic offsets from shared transport and pattern timing; preserve step/event ordering | Parameter-lock interaction with host automation/MIDI remains open |
+| Device MIDI | Timestamp/copy into bounded owned records; do not use thread arrival order as musical order | Clock timestamp quality and same-offset merge policy require host/device validation |
+| Modulation | Evaluate from current base values and source state at the declared update class; per-voice sources remain voice-scoped under DEC-031 | Modulation sum/order and smoothing are parameter-class rules, not event queue arrival order |
+| UI gestures | Publish bounded parameter updates; continuous values may coalesce only under the documented parameter policy | Never silently outrank sample-accurate host/sequencer events |
+
+**Implementation gate:** before implementation, define the deterministic same-offset tie-break and per-parameter writer precedence matrix, then test block-boundary offsets (0 and final valid sample), simultaneous note-on/note-off, automation plus MIDI, parameter-lock plus automation, and variable block sizes. Do not infer these policies from the illustrative processing sequence in §6.
+
 ## 7. Reset and lifecycle behavior
 
 The architecture must define bounded behavior for:
