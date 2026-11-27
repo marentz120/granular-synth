@@ -382,20 +382,20 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 | Voice/env/filter (VOI) | 9 | 1 | 0 | 0 | 0 | 10 |
 | Samples/recording (SMG) | 16 | 5 | 0 | 0 | 0 | 21 |
 | Modulation (MOD) | 9 | 1 | 1 | 1 | 0 | 12 |
-| Sequencer/performance (SEQ) | 9 | 1 | 1 | 0 | 1 | 12 |
+| Sequencer/performance (SEQ) | 9 | 2 | 1 | 0 | 0 | 12 |
 | MIDI (MID) | 7 | 1 | 0 | 0 | 0 | 8 |
 | Effects (FX) | 4 | 2 | 1 | 1 | 0 | 8 |
 | Presets/state (PRS) | 9 | 0 | 0 | 1 | 0 | 10 |
 | UI (UI) | 7 | 0 | 0 | 0 | 0 | 7 |
 | Non-functional (NFR) | 13 | 0 | 0 | 0 | 0 | 13 |
-| **Total** | **124** | **26** | **9** | **8** | **1** | **168** |
+| **Total** | **124** | **27** | **9** | **8** | **0** | **168** |
 
 ### 6.3 Footnotes to the counts
 
 - **Split-tier rows (3), each counted once under R1:** `GS-ARC-005` (R1/L — Granular + Sampler in R1, Slice/Tape/Spectral later), `GS-SMG-005` (R1 waveform / L2 spectrogram), `GS-MOD-004` (R1 sources; CV and Draw X/Y later).
-- **"Other" (1):** `GS-SEQ-010` — tier pending Q-M12.
-- **Rows whose tier cell is marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). The remaining 122 R1 rows are proposed tiers awaiting the Phase 2 tier approval; product *scope* for layers, engines, sequencer, live input/Freeze and controller operation is separately approved in DEC-017…DEC-021.
-- **Corrections applied in this revision (v0.5):** SLC is now 0 R1 / 6 L2 (Granular Slice deferred, DEC-018 — previously shown 4 R1 / 2 L2); SEQ is now 12 rows (previously shown as 10, predating the DEC-019 sequencer rows); MID is now 7 R1 / 1 L2 (GS-MID-007 moved L2→R1 under DEC-019); SMG gained `GS-SMG-021` (Freeze, DEC-020). The former grand total of 164 was also arithmetically stale and is corrected to 168.
+- **"Other" (0):** every requirement row now has an approved tier; `GS-SEQ-010` is L2 by DEC-029/DEC-041.
+- **Rows whose tier cell is explicitly marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). DEC-041 approves the tier classification for all 168 rows; numeric technical values tied to Q-Txx remain proposals until their architecture/validation gates.
+- **Phase 2 reconciliation (v1.0):** all 168 requirement rows have exactly one approved tier; `GS-SEQ-010` is L2 (DEC-029). Totals reconcile to 124 R1 + 27 L2 + 9 L3 + 8 OPT + 0 Other = 168. Split-tier rows are counted once under their primary R1 tier per §6.1.
 
 ## 7. Dependencies between requirement areas
 
