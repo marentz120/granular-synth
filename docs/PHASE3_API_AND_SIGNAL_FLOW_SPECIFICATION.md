@@ -448,7 +448,7 @@ This ordering is a candidate deterministic contract. Sample-accurate events spli
 
 ## 6. Candidate voice and layer signal flow
 
-The current DSP architecture describes grain summation before voice filters and layer FX after layer synthesis. The following preserves that proposed topology while making unresolved nodes visible.
+The current DSP architecture describes grain summation before voice filters and layer FX after layer synthesis. The following is the recommended R1 topology for review. It preserves grain summation before the voice filter and places live input inside each layer's FX path.
 
 ```text
 MIDI / Sequencer / Note Events
@@ -468,33 +468,41 @@ Granular Voice                 Sampler Voice
                      |
              Voice Filter Stage
                      |
-            Amp Envelope / Pan
+              Amp Envelope
                      |
-              Layer Voice Sum <------ Layer Live Input
-                     |                    |
-             [Layer Input Gain]     [Input Monitor Gain]
-                     |                    |
-                     +---------?----------+
-                               |
-                      Layer FX Chain
-                               |
-                    Layer Output / Meter
-                               |
-                 +-------------+-------------+
-                 |                           |
-        Layer Recording Tap (?)      Master Layer Mixer
-                                             |
-                                    [Dry Input Path (?) ]
-                                             |
-                                        Master Output
-                                             |
-                                     Master Recording Tap (?)
+                  Voice Pan
+                     |
+              Layer Voice Sum
+                     |
+       +-------------+-------------------+
+       |                                 |
+Layer Live Input                    Synth Voices
+       |                                 |
+Input Gain / Mono Centering              |
+       +---------------+-----------------+
+                       |
+                 Layer Input Sum
+                       |
+                  Layer FX Chain
+                       |
+                Post-FX Layer Signal
+                       |
+          +------------+-------------------+
+          |                                |
+Layer Stem Output + Recording       Layer Fader / Mute / Solo
+(post-FX, pre-fader)                        |
+                                           +----> Master Mixer
+                                                      |
+                                               Stereo Master
+                                                      |
+                                        Master Output + Recording
+                                               (pre-output)
 ```
 
 Notes:
-- The diagram is a candidate topology, not an approved signal-flow decision.
+- This is the recommended topology for architecture review; numeric DSP behavior and framework-specific routing remain unapproved.
 - The current DSP architecture proposal places filters after grain summation at voice level; the exact ordering of sub-oscillator, filter, amp and pan needs one reconciled normative diagram.
-- Live input is per layer and must be available to the layer FX path; the independent dry monitoring path is still open.
+- Live input enters each layer before its FX chain, with input gain and DEC-040 mono-centering. No separate dry-to-master bypass is present by default; a separate bypass would duplicate signal and complicate Freeze/record taps.
 - Layer output buses and master output mapping must follow the negotiated plugin bus topology. The AU input/component strategy remains open (Q-P06).
 - Freeze captures the approved source snapshot for that layer. It does not freeze the FX chain, transport, modulation or recording process.
 
@@ -510,7 +518,7 @@ The recorder interface supports these candidate positions:
 | Layer Post-Layer-Gain | Final layer signal after gain/mute/solo logic | Matches what layer contributes to mix |
 | Master Pre-Output | Final master mix before host output | Captures complete mix, subject to dry path and master processing position |
 
-**Recommendation for review, not approved:** expose two explicit record sources per instance:
+**Recommended default for Phase 3 architecture (not a new product decision):** expose two explicit record sources per instance:
 - Per-layer recording: Layer Post-FX Pre-Layer-Gain, so a layer take includes its effect character but can be mixed later.
 - Stereo master recording: Master Pre-Output, so the recorded mix matches the master signal sent to the host.
 - Keep raw/input capture as a separately selectable source only if product requirements and UI scope justify it; do not silently add a third recorder mode.
@@ -533,7 +541,7 @@ Proposed output model:
 - Inactive/unconnected outputs are ignored safely; the engine must not write through null bus pointers.
 - Live-input dry monitoring must have one explicit route and gain control. It must not bypass the intended layer FX unless the owner approves a separate dry path.
 
-**Open:** whether each layer output is post-FX and pre-layer fader or post-fader. Recommendation: post-FX/pre-layer-fader to preserve stems for DAW mixing; master mixer applies layer gain/mute/solo. This recommendation must be reconciled with the product's expected standalone live behavior and host bus architecture before it becomes normative.
+**Recommended default:** each layer output is post-FX and pre-layer-fader, matching the per-layer recording tap and preserving independently mixable stems for DAW workflows. Master output applies layer fader/mute/solo. This remains a proposed architecture default pending host validation; it does not change the approved five-output product model.
 
 ## 9. Real-time ownership and safe-point sequence
 
@@ -601,3 +609,19 @@ Still required:
 8. Updated architecture audit and PR description after the above evidence is complete.
 
 **Audit statement:** this is a proposed API and signal-flow design artifact. It contains no implementation and makes no claim that the product is implementation-ready.
+
+
+## 13. Recommended routing defaults — consolidated
+
+For consistency across the engine, recorder and plugin adapters, the following defaults are recommended:
+
+| Signal | Recommended position | Fader / mute / solo effect |
+|---|---|---|
+| Per-layer recording | Post-FX, pre-layer fader | Not affected; muted/solo-isolated layer can still record its isolated stem |
+| Layer output bus | Post-FX, pre-layer fader | Not affected; host receives a mixable stem |
+| Master recording | Final stereo master, pre-host output | Includes layer faders, mute/solo and any live input routed through layers |
+| Live input | Per-layer input, before layer FX | Affects the layer FX and its stem/master contribution |
+| Separate dry input path | Not enabled by default | Avoids duplicate/phase-conflicting monitoring route |
+| Voice processing | Granular/Sampler sum → sub-osc mix → voice filter → amp envelope → pan → layer sum | Per-voice processing before layer FX |
+
+These are coherent engineering defaults, not changes to the approved product feature set. They require validation against Standalone monitoring latency, host bus behavior and the recording UX. If host constraints require a different AU/VST3 topology, adapters must preserve the same semantic signal taps where possible and document any limitation.
