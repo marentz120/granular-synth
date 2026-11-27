@@ -57,9 +57,9 @@ Every interface must define its producer, consumer, data ownership, execution co
 ## 4. Signal-flow proposal and validation gate
 
 `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` §6–8 now defines the recommended R1 engineering defaults, pending owner review and host/UX validation:
-1. Live input enters each layer before its FX chain; mono input is centered across the stereo layer path under DEC-040.
-2. Proposed voice order: Granular/Sampler source sum → sub-oscillator mix → voice filter → amp envelope → pan → layer sum.
-3. No separate direct/dry live-input-to-master bypass by default.
+1. Live input feeds each layer before its FX chain; mono input is centered across the stereo layer path under DEC-040.
+2. A parallel dry live-input path is summed before the master as required by GS-ARC-007; master capture includes it.
+3. Approved voice-chain order is engine + sub-oscillator → LPF → HPF; amp-envelope/pan placement remains a validation detail.
 4. Per-layer recording and layer output taps: post-FX, pre-layer-fader; stems ignore fader/mute/solo.
 5. Master recording/output: final stereo master after layer fader/mute/solo, immediately before host/device output.
 6. Freeze snapshots the source region defined by DEC-042; this source tap is distinct from the post-FX recording tap. Recording continues independently.
