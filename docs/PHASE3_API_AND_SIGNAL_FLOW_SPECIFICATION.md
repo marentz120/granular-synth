@@ -497,10 +497,7 @@ Input Gain / Mono Centering              |
           |                                |
 Layer Stem Output + Recording       Layer Fader / Mute / Solo
 (post-FX, pre-fader)                        |
-                                           +----> Master Mixer
-                                                      |                         Dry Live Input
-                       |                                |
-                       +----------------------------> Master Mixer
+                                           +----> Master Mixer <---- Dry Live Input
                                                       |
                                                Stereo Master
                                                       |
