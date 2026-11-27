@@ -409,7 +409,7 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 | Buses | Main stereo out + 4 optional stereo layer outs; required live-input capability (VST3 input bus; AU component/bus strategy to be validated — Q-P06) |
 | MIDI | Notes, CC, MPE, pitch bend and Program Change where host delivers it; R1 MIDI Clock input in Standalone; MIDI feedback, clock output and sequencer MIDI output are not R1 commitments |
 | State | Versioned, self-describing state; unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect (DEC-025) |
-| Latency | 0 for granular/sampler/tape; spectral latency reported when it processes live input (Q-T10) |
+| Latency | R1 Granular/Sampler: zero added algorithmic latency target; Spectral latency policy deferred to L3 (Q-T10) |
 | Sample rate / block size | Fully variable; all time constants in seconds; `prepare()` rebuilds rate-dependent tables off the RT path |
 | Offline render | Deterministic; uses same code paths; respects host "realtime vs offline" flag only for quality-tier boosts (optional) |
 | Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI Clock input, Ableton Link integration, file-based projects |
@@ -418,7 +418,7 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 
 ## 12a. Live-performance / controller-only operability (owner decisions DEC-015, DEC-016, 2026-11-27)
 
-Architectural implications of DEC-015 (both studio and live performance are primary) and DEC-016 (standalone must be fully operable for essential live operations via MIDI controller alone). Full behavioral specification is in docs/LIVE_PERFORMANCE_SPECIFICATION.md; this section only notes what falls out of it for §4 (threading) and §9 (parameter system). None of this changes the framework decision (Q-T01) or any engine/scope decision (DEC-008/009/010).
+Architectural implications of DEC-015 (both studio and live performance are primary) and DEC-016 (standalone must be fully operable for essential live operations via MIDI controller alone). Full behavioral specification is in docs/LIVE_PERFORMANCE_SPECIFICATION.md; this section only notes what falls out of it for §4 (threading) and §9 (parameter system). None of this changes the framework decision (Q-T01) or any engine/scope decision (DEC-017/018/019/020).
 
 - **Parameter registry (§9):** the registry should be able to flag a parameter as "performance-critical" / grouped for fast controller mapping, independent of its automatable/modulatable flags. This is a registry *capability*, not a decision about which parameters get flagged — that is Phase 4/5 work.
 - **MIDI Learn (GS-MID-003) → structural state:** global and per-preset controller mappings are structural data (like a patch), not audio-thread state — they follow the existing Command-object / Structural-smoothing-class path (§4.2, §9.2), not a new communication mechanism.
@@ -491,6 +491,6 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 | Q-P03 | Distribution, signing, notarization | Decide before Phase 6 |
 | Q-P20 | First-release engines | Granular + Sampler in R1; Granular Slice deferred; Tape L2; Spectral L3 (DEC-018) |
 
-All items from the v0.1 "Decisions required" list (framework/language; threading model; target macOS and CPU architectures; initial release engines; sample formats and streaming; measured CPU/memory budgets; plugin formats and distribution/signing) are covered by the rows above.
+All items from the v0.1 "Decisions required" list (framework/language; threading model; target macOS and CPU architectures; initial release engines; sample formats and streaming; measured CPU/memory budgets; plugin formats and distribution/signing) are covered by the rows above. R1 includes Granular and Sampler only; Slice is L2, Tape L2 and Spectral L3 (DEC-018).
 
 *End of DSP_ARCHITECTURE.md*
