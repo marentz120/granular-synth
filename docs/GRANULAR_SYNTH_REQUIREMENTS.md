@@ -88,7 +88,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-PLT-001 | The product shall ship as a standalone macOS app and as AU and VST3 plugins built from one shared DSP/state core. | R1 | Refines REQ-PLAT-001…003; DEC-004 (Proposed); Q-P02 |
+| GS-PLT-001 | The product shall ship as a standalone macOS app and as AU and VST3 plugins built from one shared DSP/state core. | R1 | Refines REQ-PLAT-001…003; DEC-026; exact component/bus design Phase 3 |
 | GS-PLT-002 | Native Apple Silicon and Intel (Universal 2) binaries. | R1 | Q-T03 |
 | GS-PLT-003 | Operate at any host sample rate 44.1–192 kHz and any buffer size 16–4096, including variable block sizes. | R1 | Proposed values for REQ-AUD-005 (Q-T17); GR-MEGA is fixed 48 kHz (ARCH-09) |
 | GS-PLT-004 | Plugin and standalone shall produce bit-identical output for identical state, input, MIDI and sample rate (excluding device I/O). | R1 | Refines QA-003 |
@@ -115,7 +115,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
 | GS-GRN-001 | Grain rate 0.1–1000 grains/s per voice. | R1 | GRN-01 |
-| GS-GRN-002 | Grain size range ≥ 5–5000 ms; lower bound down to 0.1 ms pending Q-M01. | R1 | GRN-02, C-01 |
+| GS-GRN-002 | Grain size range 0.1–5000 ms. | R1 | GRN-02, C-01; Q-M01 resolved by DEC-035 |
 | GS-GRN-003 | Live display of density = rate × size. | R1 | GRN-03 |
 | GS-GRN-004 | Position with ≥ 14-bit resolution (we will use double-precision internally). | R1 | GRN-04 |
 | GS-GRN-005 | Spray (0 → full sample) with bipolar / +unipolar / −unipolar polarity. | R1 | GRN-05, GRN-06 |
@@ -166,7 +166,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
 | GS-SMP-001 | One play head per voice (up to 12 with chord), pitch = speed; spray, pan spray, direction and scan behave as documented. | R1 | SMP-01…05 |
-| GS-SMP-002 | Loop flags confine playback; one-shot / loop / ping-pong; looped release. | R1 | SMP-06, EDT-07 (semantics per Q-M05) |
+| GS-SMP-002 | Loop flags confine playback; one-shot / loop / ping-pong; looped release: ON continues looping through the voice release; OFF exits at the next valid loop boundary and continues toward Stop. | R1 | SMP-06, EDT-07; product behavior DEC-030 (not a claim about verified benchmark behavior) |
 | GS-SMP-003 | High-quality (polyphase/windowed-sinc) interpolation option. | R1 | SMP-09 |
 | GS-SMP-004 | Env pile-up option. | R1 | SMP-10 |
 | GS-SMP-005 | Long samples up to 60 min (disk-streamed or RAM, per Q-T05). | L2 | SMP-07 |
@@ -243,7 +243,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MOD-005 | Destinations: every continuous engine, envelope, filter, LFO, FX and macro parameter; parity with the benchmark's 149 destinations at minimum. | R1 (for R1 features) | MTX-05 |
 | GS-MOD-006 | Hold-and-turn style quick assignment (UI: modifier + drag on any control), and direct per-LFO destination routing. | R1 | MTX-07, LFO-09, LFO-10 |
 | GS-MOD-007 | Copy/paste/delete matrix rows. | R1 | MTX-09 |
-| GS-MOD-008 | 10 macros per patch (scalable to 20 — Q-M06), multi-destination with start/end range, curve, invert; macros themselves modulatable; exposed to host automation. | R1 | MAC-01…07 |
+| GS-MOD-008 | 10 macros per patch in R1; multi-destination with start/end range, curve, invert; macros themselves modulatable; exposed to host automation. 20 macros are not an R1 requirement. | R1 | MAC-01…07; Q-M06 resolved by DEC-036 |
 | GS-MOD-009 | Display summed modulation on controls (ring/arc) and a "recent destinations" monitor. | R1 | MTX-14 [PI: on-control display] |
 | GS-MOD-010 | Drawn trajectory modulator (Draw X/Y). | L3 | MTX-12 [UNV] |
 | GS-MOD-011 | CV-in via DC-coupled audio input channels. | OPT | HW-03 [PROP] |
@@ -262,7 +262,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SEQ-007 | Record MIDI into sequencer. | L2 | SEQ-11 |
 | GS-SEQ-008 | Play/drone mode per layer (latching continuous note) and panic. | R1 | MID-13 |
 | GS-SEQ-009 | Layer mix and per-layer position performance controls. | R1 | PRF-01 |
-| GS-SEQ-010 | Patch spray / bias equivalent. | Pending Q-M12 | PRF-02 |
+| GS-SEQ-010 | Patch spray / bias equivalent. | L2 | PRF-02; Q-M12 resolved for R1 tier by DEC-029; benchmark semantics remain unverified |
 | GS-SEQ-011 | Automatic latched granular Fill with continuous intensity control, plus immediate layer and step/event Mute. | R1 | DEC-019; R1_PRODUCT_SPECIFICATION.md §4.3 |
 | GS-SEQ-012 | Pattern editing during playback; edits apply at bar end; explicit save, temporary draft on pattern switch, full Undo/Redo and latest-saved-version-only persistence. | R1 | DEC-019; R1_PRODUCT_SPECIFICATION.md §4.5 |
 
@@ -296,7 +296,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-PRS-001 | Data model: Sample → Patch (sample reference + all parameters, incl. slices, flags, matrix, macros, FX) → Multi (4 layers + mix) → Project/Library. | R1 | PRS-01, PRS-02; Q-P07 |
+| GS-PRS-001 | Data model: Sample → Patch (sample reference + all parameters, incl. flags, matrix, macros, FX) → Multi (4 layers + mix) → Project/Library; Pattern Library remains independent. | R1 | PRS-01, PRS-02; DEC-022 |
 | GS-PRS-002 | Searchable desktop library with banks/tags/search, favourites, init patch from user-selectable default template and optional performance-bank recall view. | R1 — approved product behavior | PRS-03, PRS-07 [PI: tags/search]; DEC-022; PRESET_LIBRARY_SPECIFICATION.md §§2–4 |
 | GS-PRS-003 | Templates (parameter set without sample) and "apply template" to current patch. | R1 | PRS-07 |
 | GS-PRS-004 | Human-readable, versioned preset format with forward migration; parameter scaling versioned so presets never change sound across releases. | R1 | PRS-13, RN-10 [PROP]; Q-T15 |
