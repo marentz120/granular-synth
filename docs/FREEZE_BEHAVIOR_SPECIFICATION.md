@@ -9,7 +9,7 @@
 - Each of the four layers has an independent Freeze control.
 - One global Freeze control acts across all four layers.
 - Freeze is a required R1 live-performance operation and must be controller reachable.
-- Freeze semantics were explicitly deferred to Phase 3; this document does not claim benchmark parity.
+- Freeze semantics were approved by the owner as Option A on 2026-11-27 (DEC-042); this document defines GRANULAR SYNTH behavior and does not claim benchmark parity.
 
 ## 2. Design problem
 
@@ -22,7 +22,7 @@
 
 These behaviors are not interchangeable. The product must choose one semantic contract and specify its interactions with recording, transport, MIDI, modulation, voices and effects.
 
-## 3. Recommended R1 behavior — source snapshot Freeze
+## 3. Approved R1 behavior — source snapshot Freeze
 
 **Approved behavior (Option A — Source Snapshot Freeze):** Freeze latches the current source audio for the selected layer; it does not freeze the whole instrument's transport or DSP clock.
 
@@ -50,10 +50,10 @@ Global Freeze is the atomic equivalent of engaging Freeze on all four layers at 
 | C — Post-FX output latch | Capture and loop/hold final layer output | Predictable output texture | Adds audio capture/looping stage, latency/phase concerns and bypasses source-level editing |
 | D — Full engine pause | Stop layer DSP/transport/modulation while frozen | Simplest conceptual “pause” | Breaks live performance, sequencer and controller expectations; not recommended |
 
-## 5. Questions that must be fixed in the approved contract
+## 5. Approved contract details
 
 ### 5.1 Capture region
-Proposed rule: capture the layer's currently addressable source region, respecting active sample/crop/loop bounds. For a rolling live/record buffer, capture the most recent valid region that satisfies the engine's minimum source requirement. Exact duration/region selection must be specified; never read uncommitted or out-of-bounds frames.
+Approved rule (DEC-042): capture the layer's current valid source region, respecting active crop/loop bounds and excluding uncommitted frames. For rolling buffers, capture only committed frames. Numeric duration and minimum-resource requirements remain engineering limits; never read out-of-bounds frames.
 
 ### 5.2 Source types
 The product must define behavior for:
@@ -64,10 +64,10 @@ The product must define behavior for:
 - missing/disconnected input;
 - mono versus stereo source.
 
-Proposed rule: Freeze is meaningful for live/rolling sources; for an already immutable library sample, the control reports “already static” or is disabled with a clear state rather than allocating a redundant full copy. This is a product UX choice and needs approval.
+Approved rule (DEC-042): for an already immutable library sample, report “already static” or disable redundant capture with a clear state; do not allocate a duplicate full copy.
 
 ### 5.3 Recording
-Proposed rule: Freeze does not stop an independently armed recorder. The recorder continues capturing at its defined tap; Freeze only changes the source consumed by that layer's engine. If the same rolling buffer is both source and recorder destination, writes continue to the recorder's live buffer while the engine reads the frozen snapshot.
+Approved rule (DEC-042): Freeze does not stop an independently armed recorder. Recording continues at its defined tap; Freeze changes only the source consumed by the layer engine. The frozen snapshot is immutable and must not be modified by ongoing recording writes.
 
 ### 5.4 Memory and failure
 - Snapshot storage must be allocated off the audio thread.
@@ -79,10 +79,10 @@ Proposed rule: Freeze does not stop an independently armed recorder. The recorde
 ### 5.5 Controller and state
 - Layer Freeze and global Freeze are mappable performance controls.
 - Global Freeze status must reflect all four layer states, including partial failure.
-- Save/restore behavior must define whether Freeze state and snapshot audio persist in plugin state. Proposed rule: Freeze state is saved; the frozen snapshot is embedded as an unsaved recording buffer under DEC-025, subject to the same state-size policy.
+- Approved rule (DEC-042): Freeze state and snapshot audio persist in plugin state; the frozen snapshot is embedded as an unsaved recording buffer under DEC-025, subject to the same unresolved state-size engineering policy.
 - Panic/All Sound Off must silence voices/effect tails as already required; it does not silently thaw a frozen source.
 
-## 6. State machine proposal
+## 6. State machine contract
 
 `Live/Static Source → Preparing Snapshot → Frozen → Preparing Thaw → Live/Static Source`
 
