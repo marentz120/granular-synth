@@ -59,7 +59,9 @@ R1 product requirements: generic class-compliant MIDI controller support; MIDI L
 - Mappings are **structural state** (§4.2 of DSP_ARCHITECTURE.md): built/edited on the Message/UI thread, applied to the audio thread via the existing command-queue mechanism. No new real-time path is required.
 - Mapping sets are serialized as part of the existing state/preset model (GS-PRS-001) — see §4 below for scope (global vs. per-preset).
 
-Open and explicitly **not** decided by this document: the exact wire format of a mapping record, how many simultaneous mappings are supported, and whether a specific third-party controller gets first-class auto-mapping (Q-P12).
+**Settled by DEC-021 — Q-P12 is ANSWERED, not open:** R1 requires generic MIDI Learn plus manual CC, channel and Note assignment against any class-compliant controller. Named-controller templates and first-class auto-mapping for a specific controller are **not** R1 requirements; they are deferred, and nothing in this section commits R1 to them (see §7).
+
+Still open and explicitly **not** decided by this document — technical items for Phase 3/4: the exact wire format of a mapping record, and how many simultaneous mappings are supported.
 
 ---
 
