@@ -62,3 +62,15 @@ The following are architecture/product decisions that should not be silently com
 Other numeric values remain conditional on measurement and must not be approved by document wording alone.
 
 **Status:** This register consolidates proposed technical decisions for a single owner review after evidence and prototypes are complete.
+
+
+## 5. Additional cross-cutting architecture questions (open)
+
+These questions were exposed by the Phase 3 event-time and overload audit. They are not new product-scope decisions and must be resolved before the relevant implementation contracts are frozen.
+
+| ID | Question | Candidate direction | Evidence required | Status |
+|---|---|---|---|---|
+| AR-01 | What deterministic tie-break and writer precedence apply when host automation, MIDI mapping, sequencer parameter locks and UI writes target the same parameter at the same sample offset? | Preserve source-local order; use an explicit stable cross-source ordering key; define precedence by parameter/update class rather than producer arrival time. Keep base parameter writes separate from modulation contributions under DEC-031. | Written per-parameter writer matrix; exact-offset tests for simultaneous sources; host automation/MIDI/sequence-lock tests across variable block sizes. | OPEN — no precedence selected |
+| AR-02 | What is the exact deterministic reclamation policy when voice or global grain capacity is exhausted? | Keep voice stealing and grain-budget reclamation separate. Candidate ordering: released/non-sustained/oldest voices for GS-VOI-001; release-voice grains then oldest spawn sequence with stable layer/voice/grain tie-break for GS-ARC-004. | Resolve eligibility/fallback when all voices are held; define spawn rejection accounting, fade envelope and thresholds; seeded overload tests and listening validation. Numeric budget requires separately authorized benchmark (Q-T07). | OPEN — candidate only |
+
+The current DSP proposal's former `threshold·k` expression is not a usable formula (`k` is undefined); “oldest” and “longest-remaining” are distinct policies. The updated DSP specification marks this ambiguity and records the candidate comparator without approving it. Neither AR-01 nor AR-02 authorizes implementation or benchmark work.
