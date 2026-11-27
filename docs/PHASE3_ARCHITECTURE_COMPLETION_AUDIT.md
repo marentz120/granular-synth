@@ -380,3 +380,22 @@ Updated companion documents:
 
 Open gates remain Q-T03, Q-T05, Q-T07, Q-T17, Q-P06/Q-P09, AR-01/AR-02 and the DEC-042 Global Freeze owner review. No code, host prototype, benchmark, numeric memory budget or product decision was added.
 
+
+
+## Target-host capability evidence matrix — 2026-11-28
+
+A documentation-only review of the proposed Q-P09 hosts was completed and recorded in `PHASE3_HOST_CAPABILITY_EVIDENCE_MATRIX.md`.
+
+The review distinguishes:
+- documented multi-output host routing from proof of the exact five-stereo-output plug-in layout;
+- a side-chain/detector path from the required full audio-source input to the granular engine;
+- host format applicability from product format scope;
+- vendor documentation from actual host certification evidence.
+
+Key findings:
+- Logic Pro documents multi-output AU instruments and aux routing, but its documented side-chain signal controls a plug-in rather than being processed by it; full `aumu` source input remains unverified.
+- Ableton Live documents up to 16 stereo plug-in outputs and third-party AU/VST side-chain routing; full granular source input remains unverified.
+- Bitwig documents multi-out VST chains and explicitly does not support AU. Bitwig therefore remains a VST3 host only in the R1 matrix.
+- REAPER documents AU/VST3 on macOS, multichannel track routing, plug-in pin connectors and a four-stereo-output VSTi example; the exact five-output plus live-instrument-input topology remains unverified.
+
+The matrix defines the minimum host prototype tests, session persistence checks, block/lifecycle checks and evidence fields. It does not certify any host/format cell. DEC-020, DEC-026 and GS-ARC-006 remain unchanged; Q-P06/Q-P09 remain open. No prototype, code or benchmark was performed.
