@@ -305,3 +305,18 @@ The Lifecycle, Threading and IF-11 API contracts now require:
 - atomic or recoverable final save publication.
 
 Open engineering gates remain: exact AU/VST3/Standalone callback strategy, state size and chunk limits, compression, snapshot deadlines, staging/lease capacities and recovery UX. No implementation, host prototype, benchmark or runtime test was performed.
+
+
+## Host adapter and format-boundary audit — 2026-11-27
+
+A focused adapter review found that the prior host specification listed required capabilities but did not fully normalize callback context, inactive/null bus handling, host-vs-MIDI-clock authority, lifecycle reconfiguration generations or shutdown ownership.
+
+`PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` now defines a framework-independent normalized process boundary and explicit rules for:
+- variable/zero-frame callbacks, sample-rate and process-mode context;
+- per-call bus identity versus activation, absent/null buffers and negotiated channel layouts;
+- master output remaining primary when optional layer outputs are inactive, without duplicate summing;
+- explicit unavailable live-input state while preserving the instrument path;
+- valid host transport as the plugin-context authority, with one selected clock authority in Standalone;
+- generation-checked off-thread lifecycle reconfiguration and non-RT shutdown/retirement.
+
+`PHASE3_INTERFACE_CONTRACTS.md` §3.4 carries the same invariants across the shared-core boundary. This is a documentation-level adapter contract only. AU component choice, actual host behavior, callback timing and bus activation still require the explicitly authorized minimal host prototypes; no SDK code or host test was run.
