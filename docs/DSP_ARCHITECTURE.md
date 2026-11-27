@@ -93,7 +93,7 @@ granular-synth/
 │   ├── voice/       # Voice, VoiceAllocator, chord/arp, quantizer, sub-osc
 │   ├── mod/         # ModSource registry, ModMatrix, Macros, per-voice ModState
 │   ├── fx/          # FX slot host + effect implementations
-│   ├── seq/         # Transport/clock abstraction, StepSequencer (L2)
+│   ├── seq/         # Transport/clock abstraction, StepSequencer (R1; central across four layers)
 │   └── layer/       # Layer = patch runtime + voices + mod + FX chain
 ├── state/           # Parameter registry (IDs, ranges, curves, smoothing class), patch/multi/library model, serialization, migration
 ├── host/            # Engine facade; plugin adapters (AU/VST3 via JUCE); standalone app shell
@@ -191,10 +191,10 @@ The previous sample keeps playing until the swap (GS-SMG-003). Analysis that is 
 - Feedback path (synth → record, L2) writes post-mix of the *previous* block to avoid an algebraic loop.
 - Background WAV writing via ring buffer to the housekeeping thread.
 
-### 5.6 Plugin input for live granulation (⚑ Q-P06)
+### 5.6 Plugin input for live granulation (product scope approved; implementation Q-P06)
 
 - **VST3:** instrument with an optional stereo audio input bus (main or sidechain) — widely supported.
-- **AU:** an instrument (`aumu`) has no main audio input in typical hosts, and side-chain support for instruments is host-dependent. The established route for a MIDI-played audio processor is the **music-effect** (`aumf`) type, which Logic Pro places in an audio-effect / MIDI-controlled-effect slot rather than the instrument slot. Option: ship both `aumu` and `aumf` variants of the same binary. Host behavior must be verified in Logic, Live and others before deciding (Q-P06).
+- **AU:** an instrument (`aumu`) has no main audio input in typical hosts, and side-chain support for instruments is host-dependent. The established route for a MIDI-played audio processor is the **music-effect** (`aumf`) type, which Logic Pro places in an audio-effect / MIDI-controlled-effect slot rather than the instrument slot. Option: ship both `aumu` and `aumf` variants of the same binary. Live input in plug-in contexts is an approved product requirement (DEC-020). The exact component/bus strategy remains an architecture decision: verify host behavior in Logic, Live and other target hosts before selecting the AU/VST3 implementation.
 
 ---
 
@@ -384,9 +384,9 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 
 ## 11. Transport, clock, sequencer
 
-- **Transport abstraction**: provides musical time (PPQ position, tempo, bar, playing state) per block from (a) host playhead (plugin), (b) internal clock (standalone), (c) MIDI clock in (standalone, L2).
+- **Transport abstraction**: provides musical time (PPQ position, tempo, bar, playing state) per block from (a) host playhead (plugin), (b) internal clock (standalone), (c) MIDI clock in (standalone, R1), and (d) Ableton Link (R1 product requirement; adapter design to be validated).
 - Sample-accurate events: tempo-synced grain spawns, LFO phase reset, sequencer steps computed from PPQ ranges within each block.
-- Sequencer (L2): per-layer pattern data in PatchRuntime; step events turned into internal note events + mod-lane values + p-lock overrides; p-lock overrides implemented as a per-parameter "override slot" above the base value, released on live tweak until the next lock (SEQ-06).
+- Sequencer (R1, DEC-019): one central pattern/step timeline controls all four layers; events are assigned to layers and turned into internal grain triggers, note events and parameter/modulation overrides. Pattern/event data is persistent state; runtime scheduling and parameter overrides must be bounded and real-time safe. Detailed behavior is in R1_PRODUCT_SPECIFICATION.md. Do not assume the sequencer is per-layer.
 
 ---
 
@@ -395,13 +395,13 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 | Topic | Plan |
 |---|---|
 | Shared core | Identical `Engine` object in all formats; format code only adapts buses, MIDI, parameters, state |
-| Buses | Main stereo out + 4 optional stereo layer outs; optional stereo input (VST3 sidechain/main; AU via `aumf` variant — Q-P06) |
+| Buses | Main stereo out + 4 optional stereo layer outs; required live-input capability (VST3 input bus; AU component/bus strategy to be validated — Q-P06) |
 | MIDI | Notes, CC, MPE, pitch bend, program change (where host delivers it); MIDI out only where format/host support it |
 | State | Versioned, self-describing state blob; sample references + optional embedded audio (Q-P08) |
 | Latency | 0 for granular/sampler/tape; spectral latency reported when it processes live input (Q-T10) |
 | Sample rate / block size | Fully variable; all time constants in seconds; `prepare()` rebuilds rate-dependent tables off the RT path |
 | Offline render | Deterministic; uses same code paths; respects host "realtime vs offline" flag only for quality-tier boosts (optional) |
-| Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI clock in/out, file-based projects |
+| Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI clock in/out, Ableton Link integration, file-based projects |
 
 ---
 
