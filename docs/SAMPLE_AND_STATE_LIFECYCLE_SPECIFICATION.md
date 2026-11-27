@@ -75,6 +75,22 @@ When a new sample or recording would exceed a safe measured budget:
 
 The actual budget, warning threshold and admission policy require reference-machine measurement in Phase 3/5. The arithmetic above is not a process-memory budget.
 
+### 5.1 Admission and reservation transaction
+
+Memory admission must account for peak coexistence, not only the steady-state size of the final asset. A replacement can temporarily require the active old asset, decoded/prepared new asset, guard/analysis data, voices or grains still reading the old asset, and retirement backlog at the same time.
+
+Use a non-RT reservation lifecycle:
+1. Estimate and reserve the operation's bounded worst-case payload categories before decode/copy begins; label estimates as estimates until exact sizes are known.
+2. Reconcile the reservation against actual decoded frame/channel/format sizes before publication. If the actual requirement exceeds the reservation or safe budget, reject the prepared result and preserve the active asset.
+3. Keep the reservation charged while the payload is pending publication, active, referenced by voices/grains, or awaiting retirement. Do not release accounting at pointer swap if readers still retain the old asset.
+4. On cancellation, supersession, decode failure or publication rejection, release the reservation only after the corresponding non-RT owner has disposed of the prepared payload.
+5. Never evict an asset that is active, referenced by a voice/grain, retained by Freeze, or required by an unsaved recording/state snapshot.
+6. If retirement backlog prevents safe admission, reject/defer the new operation with visible status; do not reuse memory whose lifetime has not ended.
+
+The reservation ledger must distinguish committed bytes from reserved-but-not-yet-materialized bytes and must avoid double-counting shared immutable library assets referenced by multiple layers. It must also distinguish logical ownership from physical copies: a shared handle is not a second sample payload, while a Freeze copy or serialization staging buffer is.
+
+No numeric headroom, warning threshold, maximum concurrent replacement count or fallback-slot count is set here. These require measured workload evidence and a bounded concurrency model before implementation.
+
 ## 6. Recording lifecycle
 
 States:
