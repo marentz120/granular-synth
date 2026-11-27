@@ -1,6 +1,6 @@
 # Phase 3 Architecture Decision Register
 
-**Version:** 0.1 — Review proposal  
+**Version:** 0.2 — AU component validation gate refined  
 **Status:** Recommendations for owner review. None of the proposed technical decisions below is approved by this document.  
 **Authority:** `OPEN_QUESTIONS.md` v0.6, `DSP_ARCHITECTURE.md` v0.5 candidate, and the Phase 3 supporting specifications.
 
