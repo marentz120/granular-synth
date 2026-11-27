@@ -1,8 +1,8 @@
 # Open Questions
 
-**Version:** 0.4 (R1 product-scope decisions, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 0.5 (Phase 2 product decisions, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
 
-**Change summary (v0.3 → v0.4):** Q-P04, Q-P05, Q-P06, Q-P12 and Q-P20 are now answered under the owner's explicit delegation to ChatGPT as product manager. The resulting R1 scope is recorded in DEC-017…DEC-021 and docs/R1_PRODUCT_SPECIFICATION.md. Technical implementation details (framework, AU/VST3 component/bus design, resource budgets, parameter exposure) remain open for later gates.
+**Change summary (v0.4 → v0.5):** Q-P07, Q-P08, Q-P11 and Q-M11 were resolved under the owner's explicit delegation to ChatGPT as product manager and recorded in DEC-022…DEC-025. Six Phase 2 domain specifications, the R1 Release Scope Matrix and draft acceptance criteria were added. Technical implementation details (framework, AU/VST3 component/bus design, resource budgets, parameter exposure) remain open for later gates.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -49,7 +49,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 
 ### Remaining gates
 
-- **Phase 2:** finalize the complete R1 requirement/tier matrix, including effect set, library/preset behavior, supported host formats and any exclusions.
+- **Phase 2:** complete the domain specifications, R1 requirement/tier matrix, traceability and product-level acceptance criteria. Q-P07, Q-P08 and Q-P11 are now answered; technical format/host decisions remain Phase 3.
 - **Phase 3:** resolve Q-P02 (AU/VST3 and any other formats), Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), and the format-specific implementation of live input.
 - **Evidence/research:** Q-P13 (physical GR-MEGA access), Q-I15 (firmware roadmap 1.9–1.12), remaining manual ambiguities and undocumented behaviors.
 - **Legal/release:** Q-L01…Q-L07, product naming and distribution questions before release.
@@ -64,11 +64,11 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-P04 | Layer model and R1 layer count | 4 fixed layers · more layers · configurable count | Exactly four independent Granular layers in R1 | Phase 2–3 | **ANSWERED — DEC-017** |
 | Q-P05 | Step sequencer tier | R1 vs L2; standalone live performance must not depend on a DAW | Full central performance-oriented step sequencer in R1 | Phase 2 | **ANSWERED — DEC-019** |
 | Q-P06 | Live-input granulation in plugins | Live input per layer is a core product workflow; AU/VST3 component and bus implementation is host-specific | Yes: live input per layer in Standalone and plug-in contexts; exact AU/VST3 implementation is Phase 3 | Phase 3 | **ANSWERED — DEC-020** |
-| Q-P07 | Library model | (a) Benchmark-style fixed slots: 50 projects × 128 presets × 128 multis; (b) desktop file library with browser, tags, favourites, plus an optional 128-slot "performance bank" view for MIDI program change | (b) with performance bank view | Phase 2/4 | PROPOSED |
-| Q-P08 | Recorded/edited samples in plugin state | (a) always embed audio in DAW project; (b) reference files + "collect" on save; (c) embed only unsaved recordings | (c) — embed unsaved recordings, reference library files | Phase 3 | PROPOSED |
+| Q-P07 | Library model | (a) Benchmark-style fixed slots: 50 projects × 128 presets × 128 multis; (b) desktop file library with browser, tags, favourites, plus an optional performance-bank view for MIDI Program Change | Searchable desktop library with tags/favourites; performance banks index library items and are not a fixed storage cap | Phase 2/4 | **ANSWERED — DEC-022** |
+| Q-P08 | Recorded/edited samples in plugin state | (a) always embed audio in DAW project; (b) reference files + "collect" on save; (c) embed only unsaved recordings | Embed unsaved recording buffers in plugin state; reference library files and support relink/collect | Phase 3 | **ANSWERED — DEC-025** (serialization/size policy remains Phase 3) |
 | Q-P09 | Host certification list | Logic Pro, Ableton Live, Bitwig, Reaper, Cubase, Studio One, MainStage? | Logic, Live, Bitwig, Reaper for R1 | Phase 7 | OPEN |
 | Q-P10 | Reference machine and minimum supported Mac | Defines CPU budget and acceptance tests | Reference: Apple Silicon M1 (base) as minimum performance target; also test latest M-series | Phase 5 | OPEN |
-| Q-P11 | R1 effect set | Proposal: Delay, PP Delay, Reverb, Chorus, EQ3, Saturator, Compressor | Approve or amend | Phase 2 | PROPOSED |
+| Q-P11 | R1 effect set | Proposal: Delay, PP Delay, Reverb, Chorus, EQ3, Saturator, Compressor | Seven-effect set approved for R1; advanced set remains L2 | Phase 2 | **ANSWERED — DEC-023** |
 | Q-P12 | Dedicated hardware-controller support (a *specific* controller template/target)? | Generic controller operation is required by DEC-016/021; a named template is optional | Generic class-compliant MIDI controller, MIDI Learn + manual CC/channel/Note mapping; no named template or feedback in R1 | Phase 4 | **ANSWERED — DEC-021** |
 | Q-P13 | GR-MEGA unit access for A/B | Needed for §C/§D items | Yes if possible | Phase 2 | OPEN |
 | Q-P14 | Factory content | Who produces samples/presets; licensing of samples | Decide before Phase 8 | Phase 8 | OPEN |
@@ -119,7 +119,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-M08 | Mod destination count (140/149/150) | p.23, p.76, p.78, p.158–161 | Use enumerated 149 as parity target | ANSWERED-candidate |
 | Q-M09 | Grain-count normalization law | Only "max volume at density 17" (p.33) | Energy-preserving 1/√density beyond d0; match level at density 17 by measurement | OPEN |
 | Q-M10 | Tape chord: tracking head = first or lowest note | p.48 "TBV" | Lowest note (consistent with p.53 rule "lowest chord note matches the played note") | PROPOSED |
-| Q-M11 | LFO scope: per voice or per layer | p.79 "each layer has its own LFOs"; key sync Legato | Add per-LFO Poly/Mono switch; default Mono (per layer) for parity | PROPOSED |
+| Q-M11 | LFO scope: per voice or per layer | p.79 "each layer has its own LFOs"; key sync Legato | Per-LFO Poly/Mono mode; default Mono (shared per-layer phase), Poly uses per-voice phase | **ANSWERED — DEC-024** |
 | Q-M12 | Patch spray / patch bias semantics | p.19 "grain counts boosted based on which part of the screen you focus on" | Unclear — investigate on unit/videos before specifying | OPEN |
 | Q-M13 | Spectral C+Shift: Amp smear vs FFT reducer | p.37 vs p.49, p.148 | Firmware 1.8.0 release notes: FFT reducer merged into amp threshold → C+Shift = Amp smear; no separate reducer needed | RESOLVED-EVIDENCE |
 | Q-M14 | Grain key trigger values (On/Off vs Off/On/Legato) | p.54 vs p.135 | Implement Off/On/Legato | PROPOSED |
