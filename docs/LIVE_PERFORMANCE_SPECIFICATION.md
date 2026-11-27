@@ -74,14 +74,14 @@ Open and explicitly **not** decided by this document: the exact wire format of a
 
 ## 4. Global and preset-specific mappings
 
-Two mapping scopes are proposed, both needed because the instrument is multitimbral (some number of layers *N*; **N is not decided by this document** — layer count is Q-P04, still OPEN, and DEC-008's "4 layers" is itself still Proposed, not an architectural constraint). The mapping architecture below must hold for any approved *N*: it addresses "the currently active layer" / "layer index" generically, never a fixed count, so a future change to *N* does not require reworking the mapping model.
+Two mapping scopes are used for the four-layer R1 instrument (DEC-017). The mapping architecture addresses the active layer and layer index without hard-coding controller layouts; it must cover all four layers.
 
 | Scope | Applies to | Typical use |
 | --- | --- | --- |
 | **Global** | Transport, panic, macro-bank select, preset/patch navigation | Stays constant regardless of which preset/patch is loaded — a performer's physical layout should not need remapping when changing sounds |
 | **Preset-specific** | Macros' *destinations*, per-layer performance knobs, chord/hold behavior | Travels with the patch/preset (GS-PRS-001 data model); a mapping can be saved as part of a preset, or left to fall back to the global default |
 
-Precedence proposal: preset-specific mapping overrides global mapping for the same physical control; otherwise global applies. This is a recommendation for Phase 4/5, not an approval.
+Product-management design direction for Phase 4/5: preset-specific mapping overrides global mapping for the same physical control; otherwise global applies. Confirm conflict and recall workflows during UI design.
 
 ---
 
@@ -98,7 +98,7 @@ Precedence proposal: preset-specific mapping overrides global mapping for the sa
 
 - MIDI feedback to motorized faders, LED rings or controller displays is **not an R1 requirement**. It may be considered later; it must not be treated as a prerequisite for R1 operation.
 - When supported, feedback keeps the physical controller's visual/haptic state in sync with the current parameter value (e.g., after a preset change moves a mapped value, a motorized fader should follow). This is Message/UI-thread work (DSP_ARCHITECTURE.md §12a) — never audio-thread-driven, never a source of audio-thread blocking.
-- No specific controller or feedback protocol is targeted by this document (Q-P12 remains open). The requirement is architectural readiness (bidirectional MIDI I/O in the standalone shell — DSP_ARCHITECTURE.md §12a), not a committed feature list.
+- No named controller is targeted in R1 (Q-P12 answered by DEC-021). MIDI feedback is deferred; R1 requires controller-to-instrument input, not bidirectional feedback.
 
 ---
 
@@ -109,7 +109,7 @@ R1 uses generic flexible controls only. A dedicated named-controller template is
 - **Flexible (R1, required by GS-MID-008/GS-UI-007):** generic MIDI Learn against *any* class-compliant MIDI controller. This is what actually satisfies DEC-016 for R1 — it requires no assumption about which hardware the performer owns.
 - **Dedicated (proposed for later, not R1):** a named-controller template (e.g., a specific control surface's physical layout pre-mapped to the 8-knob engine section and macros) would improve out-of-box experience but requires committing to a specific controller (Q-P12, OPEN) and is not necessary to satisfy DEC-016. **R1 decision:** dedicated templates are not required; the flexible MIDI Learn/manual mapping system is the supported baseline.
 
-This recommendation does not decide Q-P12 — it only argues that Q-P12's resolution is not a prerequisite for satisfying DEC-016.
+Q-P12 is answered by DEC-021: the generic MIDI Learn/manual mapping system is the R1 baseline; named-controller templates are deferred.
 
 ---
 
