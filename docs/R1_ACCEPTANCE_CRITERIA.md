@@ -81,7 +81,19 @@
 | AC-AUD-002 | Device loss | Device removal/change leads to safe silent/stopped state, user notification and recoverable reconnect | audio spec §2 |
 | AC-AUD-003 | Layer input | Live input can be assigned independently to each of four layers | DEC-020; GS-SMG-012 |
 | AC-AUD-004 | Input controls | Each layer's input level and wet/dry controls operate independently | GS-SMG-012 |
-| AC-AUD-005 | Freeze controls | Per-layer and global Freeze controls exist and are controller-reachable; semantic tests follow Phase 3 definition | GS-SMG-021 |
+| AC-AUD-005 | Freeze controls | Per-layer and global Source Snapshot Freeze controls exist and are controller-reachable; global action targets all four layers at one logical boundary | GS-SMG-021; DEC-042 |
+| AC-AUD-015 | Freeze capture | Freeze captures a stable copy of the current valid source region, respecting active sample/crop/loop bounds; rolling buffers use only committed valid frames | DEC-042 |
+| AC-AUD-016 | Frozen playback | Existing grains/voices continue; new MIDI notes and sequencer events use the frozen snapshot | DEC-042 |
+| AC-AUD-017 | Engine continuity | Transport, envelopes, LFOs, modulation, MIDI and sequencer continue normally while frozen | DEC-042 |
+| AC-AUD-018 | FX continuity | Layer effects and effect tails continue processing while frozen | DEC-042 |
+| AC-AUD-019 | Recording independence | Independent recording continues at its defined tap; Freeze does not implicitly start/stop recording and does not create a read/write race | DEC-042 |
+| AC-AUD-020 | Thaw | Thaw restores the prior live/rolling source using a click-safe crossfade | DEC-042 |
+| AC-AUD-021 | Global Freeze | All four layers transition at the same logical boundary; partial failure is reported accurately and never presented as full success | DEC-042 |
+| AC-AUD-022 | Static sample | An already immutable library sample reports “already static” or disables redundant Freeze capture without allocating a duplicate full copy | DEC-042 |
+| AC-AUD-023 | Failure handling | Missing/disconnected source or memory exhaustion leaves the prior valid source intact, reports failure and remains recoverable | DEC-042 |
+| AC-AUD-024 | Persistence | Freeze state and frozen snapshot restore with plugin state; snapshot audio is embedded under DEC-025 policy | DEC-025; DEC-042 |
+| AC-AUD-025 | Panic behavior | All Sound Off silences voices/effect tails but does not silently thaw the frozen source | DEC-042 |
+| AC-AUD-026 | RT safety | Freeze/thaw audio-thread transition performs no allocation, blocking, file I/O or unbounded work; snapshot preparation and retirement occur off-thread | DEC-042; GS-NFR-001 |
 | AC-AUD-006 | Layer recording | Each layer can be recorded independently and saved/exported as reusable audio | GS-SMG-020 |
 | AC-AUD-007 | Master recording | Stereo master mix can be recorded and exported | GS-SMG-020 |
 | AC-AUD-008 | Record modes | One-shot, loop, scrolling record, AUTO/fixed buffer and mono/stereo initialization operate as specified | GS-SMG-008…011 |
@@ -108,4 +120,4 @@
 - Test fixture samples, deterministic seeds and golden reference renders.
 - Stress profiles for four layers, voice/grain load, FX chains, recording and modulation.
 - Host-specific plugin state and live-input test matrix.
-- Freeze semantic tests after Phase 3 defines Freeze behavior.
+- Freeze semantic tests follow the approved contract in `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 (DEC-042); numeric snapshot/resource thresholds remain Phase 5 validation.
