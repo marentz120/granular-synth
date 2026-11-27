@@ -1,6 +1,6 @@
 # Phase 3 R1 Cross-Module Interface Contracts
 
-**Version:** 0.2 — Freeze retention and global transaction contracts added  
+**Version:** 0.3 — AU/VST3 process and bus normalization refined  
 **Status:** Proposed contracts for owner review. No public API, framework choice, numeric capacity, or production implementation is approved by this document.  
 **Baseline:** `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0; DEC-017…DEC-042; companion Phase 3 specifications.
 
@@ -114,3 +114,16 @@ The existing 124-row traceability table remains the authoritative inventory reco
 - Non-functional requirements: all interfaces, especially IF-01/03/04/06/07/11/12.
 
 **Audit status:** 12 cross-domain interfaces are defined at contract level. Candidate C++ API/class signatures and the proposed signal-flow/tap semantics are documented in `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md`; they still require owner review and host/UX validation. Queue capacities, state container encoding, final host bus exposure and numeric resource budgets remain open. No implementation-readiness claim is made.
+
+### 3.5 AU/VST3 process and bus normalization — format-specific refinement
+
+The generic rules in §3.4 are refined by the official format contracts:
+
+- **AU:** maximumFramesToRender is host-set before render-resource allocation and cannot change while resources are allocated. The normalized context carries both actual frame count and allocated maximum. A failed input-pull result is represented as invalid/unavailable input for that call. AU parameter scheduling may enter from any thread; adapter ingress must have an explicit bounded producer topology.
+- **VST3:** ProcessData provides per-call numInputs/numOutputs, numSamples, process mode, parameter changes, events and optional process context. A parameter-flush process call may have no audio buses (numInputs = numOutputs = 0); it is not an audio render. Sample rate and maximum block size are not reconfigured while the component is active.
+- **VST3 bus arrays:** the adapter checks current input/output counts before indexing. An inactive bus entry may have null sample pointers; trailing inactive buses may be omitted from the arrays. For every entry that is present, channel count must match the negotiated arrangement. Declared, active, present and buffer-valid are separate facts.
+- **VST3 default activation:** a default-active bus flag is a request only. The host may activate fewer buses; the primary master output must remain usable when optional layer stems are not activated.
+- **VST3 process context:** request required fields with IProcessContextRequirements where supported, then validate the per-call context flags. Missing tempo/PPQ/transport fields remain unavailable, never synthesized by the adapter.
+- **VST3 state callbacks:** offline getState/setState may run on the same thread as process; the state contract must not assume UI-thread-only invocation.
+
+These details refine the normalized bus/process representation and validation obligations; they do not change DEC-020/026 or select Q-P06/Q-P09. See PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md §10 and PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md §8.
