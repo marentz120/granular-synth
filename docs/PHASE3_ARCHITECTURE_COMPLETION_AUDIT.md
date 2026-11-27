@@ -226,3 +226,8 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 ## API and signal-flow refinement (2026-11-27)
 
 `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` adds candidate service boundaries and typed interface sketches for IF-01…IF-12, plus render ordering, signal-flow topology, recording-tap alternatives and validation obligations. It does not approve framework, ABI, numeric capacities, plugin topology or implementation. Recording tap selection, dry-input routing, mute/solo capture semantics, layer output tap and exact voice processing order remain open pending owner review and host evidence.
+
+
+## Recommended signal-flow defaults added (2026-11-27)
+
+The API/signal-flow proposal now recommends one coherent routing contract across engine, recorder and host adapters: layer recording and layer output are post-FX/pre-fader; layer stem capture is independent of mute/solo; master recording is post-layer-mix/pre-host-output and reflects fader/mute/solo; live input enters each layer before FX with DEC-040 mono centering; no separate dry-to-master bypass is enabled by default; voice order is engine sum → sub-oscillator → voice filter → amp envelope → pan → layer sum. These are engineering recommendations pending host and UX validation, not new product-level decisions.
