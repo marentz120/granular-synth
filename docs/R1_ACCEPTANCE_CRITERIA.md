@@ -102,7 +102,7 @@
 | AC-AUD-009 | Monitor while recording | Granular and Sampler can play/process the recording buffer while capture continues | GS-SMG-009 |
 | AC-AUD-010 | Keep/discard/export | User can retain, discard and export valid recorded audio; discarded buffers do not remain hidden dependencies | GS-SMG-017, GS-SMG-020 |
 | AC-AUD-011 | Resource exhaustion | Full buffer/resource exhaustion stops safely, preserves valid capture and informs user | GS-NFR-008 |
-| AC-AUD-012 | File formats | WAV, AIFF and FLAC load; WAV export is valid | GS-SMG-001/017 |
+| AC-AUD-012 | File formats | WAV, AIFF and FLAC load; WAV export is valid | GS-SMG-001, GS-SMG-017 |
 | AC-AUD-013 | RT safety | Audio callback performs no allocation, lock, file/network I/O, logging or blocking wait | GS-NFR-001 |
 | AC-AUD-014 | Sample-rate behavior | Musical behavior remains consistent across the sample-rate matrix validated and approved in Phase 3/5 | GS-NFR-010; Q-T17 |
 
