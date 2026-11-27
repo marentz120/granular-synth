@@ -20,7 +20,7 @@ macOS Standalone, AU and VST3 are the intended R1 delivery targets. AU/VST3 form
 Both studio sound design and live performance are primary — **DEC-015, Approved 2026-11-27**. Standalone is a complete performance instrument, not merely a plug-in wrapper.
 
 ## Approved R1 product scope
-- Four independent Granular layers.
+- Four independent layers, each selectable as Granular or Sampler (DEC-017).
 - Granular and Sampler engines; Granular Slice deferred, Tape later (L2), Spectral later (L3).
 - Live input per layer, Freeze per layer/globally, per-layer recording and stereo master-mix recording.
 - Full central step sequencer, Patterns/Chains/Performance Sets, performance controls and generic MIDI-controller editing/operation.

@@ -2,7 +2,7 @@
 
 **Status:** Product behavior baseline approved under DEC-015…DEC-021 and the owner's explicit delegation to ChatGPT as product manager. UI layouts, mapping UX, DSP architecture, numeric acceptance thresholds and implementation remain later-phase work; this document does not authorize implementation.
 
-**Version:** 0.2
+**Version:** 0.3 (consistency fixes, 2026-11-27: §0 malformed table row repaired; §9 criterion 2 no longer contradicts §6's R1 feedback exclusion; §1 adds Freeze, GS-SMG-021)
 **Inputs:** CLAUDE.md, DECISIONS_LOG.md (DEC-015, DEC-016), OPEN_QUESTIONS.md (Q-P05, Q-P06, Q-P12, Q-T01, Q-T12), GRANULAR_SYNTH_REQUIREMENTS.md (GS-MID-*, GS-UI-*), DSP_ARCHITECTURE.md §4, §9, §12a, GR_MEGA_FEATURE_MAP.md (performance workflows, §11).
 
 ---
@@ -11,17 +11,15 @@
 
 | Decided here (by reference to DECISIONS_LOG.md) | Not decided here — remains open/proposed |
 |---|---|
-| DEC-015: studio and live performance are both primary | AU/VST3 component types and bus layout |
+| DEC-015: studio and live performance are both primary | AU/VST3 component types and bus layout (Q-P06, DSP_ARCHITECTURE.md §5.6) |
 | DEC-016: standalone essential live operations must be fully MIDI-controller-operable | Framework (Q-T01) |
 | DEC-017: four independent layers in R1 | Parameter exposure scope/scheme (Q-T12) |
 | DEC-018: Granular + Sampler in R1; Slice deferred | Numeric performance budgets and acceptance thresholds |
 | DEC-019: full central sequencer in R1 | Detailed UI and controller-mapping UX |
 | DEC-020: live input, Freeze and recording across layers | Legal, naming and distribution decisions |
-| DEC-021: generic MIDI controller, full sequencer editing; no R1 feedback/template |
-| | AU/VST3 component types (Q-P06, DSP_ARCHITECTURE.md §5.6) |
-| | Framework (Q-T01) |
-| | Parameter exposure scope/scheme (Q-T12) |
-| | The specific target MIDI controller or a dedicated hardware template (Q-P12) |
+| DEC-021: generic MIDI controller required, full sequencer editing included; no R1 MIDI feedback or named-controller template | — |
+
+*(Consistency fix, 2026-11-27: the DEC-021 row previously broke the table's two-column structure, and the duplicated "Framework"/"parameter exposure"/"AU-VST3" lines below it repeated content already in the rows above. The line claiming "the specific target MIDI controller or a dedicated hardware template (Q-P12)" is still open was removed — Q-P12 is answered by DEC-021 itself (no named template/feedback in R1); its resolution is recorded in OPEN_QUESTIONS.md and DECISIONS_LOG.md, unaffected by this formatting fix.)*
 
 The owner explicitly delegated resolution of remaining product questions to ChatGPT as product manager on 2026-11-27, provided decisions do not contradict prior owner decisions. DEC-015…DEC-021 record the resulting approved product baseline. Technical and implementation decisions remain gated.
 
@@ -45,6 +43,7 @@ R1 essential-operation set (product baseline; detailed acceptance criteria remai
 | Sequencer transport, pattern selection/chain, step/event editing, event/layer assignment | GS-SEQ-001…012 | All sequencer operations are essential and controller-accessible; physical ergonomics depend on the controller |
 | Fill intensity/toggle and layer/event Mute | GS-SEQ-011 | Fill is latched and continuous; Mute is immediate |
 | Pattern save/draft/undo/redo actions | GS-SEQ-012 | Must be reachable without keyboard/mouse during performance when needed |
+| Freeze: per-layer and global | GS-SMG-021 | Independently switchable per-layer Freeze plus a global Freeze (DEC-020); a core live-performance control, controller-reachable under GS-MID-008 |
 | MIDI Learn entry/exit and mapping recall | GS-MID-003, GS-UI-007 (new, this document) | The mechanism itself must be controller-reachable or at minimum not *require* mouse/keyboard mid-set once mappings exist |
 
 This is the approved product-level operation set. Phase 4 defines the UI and mapping workflows; Phase 5 defines pass/fail acceptance tests for every operation. Any action genuinely needed mid-set remains controller-reachable under DEC-016, even if it can also be prepared in advance.
@@ -133,7 +132,7 @@ This boundary is a **recommendation**, meant to make "essential" testable; per t
 Consistent with the gap already noted in GRANULAR_SYNTH_REQUIREMENTS.md §8 (acceptance criteria are a Phase 5 deliverable) and DEVELOPMENT_ROADMAP.md Phase 5, these are **proposed** criteria, to be finalized alongside other R1 acceptance tests, not approved here:
 
 1. Every operation in the §1 essential-operation table is reachable from a generic class-compliant MIDI controller with zero required keyboard/mouse input, verified by a scripted/manual test pass per operation.
-2. No audio dropout or added callback latency when a mapping is created, edited, or triggers controller feedback (ties into GS-NFR-002/GS-NFR-003 — no new NFR is introduced, this just states the existing ones apply here).
+2. No audio dropout or added callback latency when a mapping is created or edited (ties into GS-NFR-002/GS-NFR-003 — no new NFR is introduced, this just states the existing ones apply here). Controller feedback is deferred beyond R1 (§6, DEC-021) and is explicitly out of scope for this criterion; if a later release adds feedback, the same no-dropout/no-added-latency bar applies to it then.
 3. Soft-takeover behaves correctly (no value jump) across at least one deliberately-mismatched controller/parameter state per mapped control type.
 4. A conflicting mapping is detected and surfaced, never silently overwritten, in 100% of tested conflict scenarios (§5).
 5. Panic (all notes/sound off) is reachable and effective within one control gesture at all times, including mid-performance error states.

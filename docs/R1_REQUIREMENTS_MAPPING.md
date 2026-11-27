@@ -1,6 +1,8 @@
 # R1 Requirements Mapping — Initial Pass
 
 **Status:** Initial / preliminary mapping document (as requested). Read-only analysis — **no approved requirement, decision status, or scope was changed to produce this document.** It is not itself an approved artifact; findings below are observations for ChatGPT/owner review, not decisions.
+
+**Follow-up (2026-11-27, "Stage B"):** all 9 recommendations in §8 were reviewed and applied as consistency corrections — see the commit that added this note for the exact diff. No approved or proposed decision status was changed and no R1 scope was altered beyond completing the already-approved Freeze requirement (DEC-020) with a `GS-*` ID; each affected §4/§5/§6/§7 finding below is now marked **[Fixed]**.
 **Base commit:** `main` @ `908b06a` ("Phase 1: approved R1 product scope"), pulled fresh for this analysis.
 **Method:** Every requirement in `docs/GRANULAR_SYNTH_REQUIREMENTS.md` and the relevant sections of `docs/DSP_ARCHITECTURE.md`, `docs/LIVE_PERFORMANCE_SPECIFICATION.md`, `docs/PRODUCT_VISION.md`, `docs/DEVELOPMENT_ROADMAP.md`, `docs/DECISIONS_LOG.md` and `docs/OPEN_QUESTIONS.md` was checked against `docs/R1_PRODUCT_SPECIFICATION.md` (the authoritative R1 product baseline, v1.0) and against DEC-015…DEC-021.
 
@@ -73,7 +75,7 @@ This is a legitimate, substantial advance of the project since this session last
 
 ## 4. Contradictions found
 
-### 4.1 GS-UI-007 still requires MIDI feedback, which DEC-021 excludes from R1 (highest priority)
+### 4.1 [Fixed] GS-UI-007 still requires MIDI feedback, which DEC-021 excludes from R1 (highest priority)
 
 - `docs/GRANULAR_SYNTH_REQUIREMENTS.md` §3.16, **GS-UI-007** (an **Approved** R1 requirement) reads: *"...global and per-preset mappings, conflict detection and recovery, **and controller feedback where the connected controller supports it** — sufficient to satisfy GS-MID-008."*
 - `docs/DECISIONS_LOG.md` **DEC-021** (Approved) reads: *"...no R1 MIDI feedback or named-controller template."*
@@ -83,30 +85,30 @@ This is a legitimate, substantial advance of the project since this session last
 
 **Effect:** an Approved requirement's literal text still mandates something a later Approved decision explicitly excludes from R1. Anyone implementing strictly from GS-UI-007 would build R1 feedback support; anyone implementing from DEC-021/LIVE_PERFORMANCE_SPECIFICATION.md §6 would not.
 
-### 4.2 LIVE_PERFORMANCE_SPECIFICATION.md §9 self-contradicts §6 on feedback
+### 4.2 [Fixed] LIVE_PERFORMANCE_SPECIFICATION.md §9 self-contradicts §6 on feedback
 
 - §6 (as above): feedback deferred beyond R1.
 - §9, acceptance criterion 2: *"No audio dropout or added callback latency when a mapping is created, edited, or **triggers controller feedback**..."* — phrased as if feedback is an in-scope, testable R1 behavior.
 
-### 4.3 DSP_ARCHITECTURE.md §7 still labels Granular Slice "(R1)"
+### 4.3 [Fixed] DSP_ARCHITECTURE.md §7 still labels Granular Slice "(R1)"
 
 - `docs/DSP_ARCHITECTURE.md` §7 engine-comparison table, row **Granular Slice**, is still tagged **"(R1)"**.
 - `docs/GRANULAR_SYNTH_REQUIREMENTS.md` §3.5 is titled *"Granular Slice engine (SLC) — deferred from R1"*, with every SLC-* requirement now tier **L2**, per **DEC-018 (Approved)**.
 - The rest of DSP_ARCHITECTURE.md *was* updated for DEC-017…021 (e.g. §3 module tree, §11 transport, §12a) — this one table row appears to have been missed.
 
-### 4.4 PRODUCT_VISION.md misstates DEC-017
+### 4.4 [Fixed] PRODUCT_VISION.md misstates DEC-017
 
 - `docs/PRODUCT_VISION.md`, "Approved R1 product scope": *"Four independent **Granular** layers."*
 - DEC-017 and R1_PRODUCT_SPECIFICATION.md §2.1 both say each of the four layers is **independently selectable as Granular or Sampler** — not that all four are fixed to the Granular engine.
 - This is the project's top-level vision document; a reader relying on this line alone would get the R1 layer/engine model wrong.
 
-### 4.5 GS-ARC-001 cites Q-P04 as if still open, inconsistent with the next row (GS-ARC-005)
+### 4.5 [Fixed] GS-ARC-001 cites Q-P04 as if still open, inconsistent with the next row (GS-ARC-005)
 
 - `docs/GRANULAR_SYNTH_REQUIREMENTS.md` §3.2, **GS-ARC-001**: *"4 independent layers... **decision Q-P04**"* — no mention of DEC-017, no mention of per-layer Granular/Sampler selection, and cites Q-P04 without noting it is now **ANSWERED**.
 - The very next row, **GS-ARC-005**, correctly cites **DEC-018** and describes the Granular/Sampler selection.
 - GS-ARC-001 and GS-ARC-005 describe two halves of the same DEC-017 decision (layer count; engine selectability) but only one of them was updated to reflect it.
 
-### 4.6 `docs/LIVE_PERFORMANCE_SPECIFICATION.md` §0 table — malformed row
+### 4.6 [Fixed] `docs/LIVE_PERFORMANCE_SPECIFICATION.md` §0 table — malformed row
 
 - The table row for DEC-021 (line 20) has only one cell (`| DEC-021: ... |`) instead of the table's two columns, breaking the Markdown table structure at that point. Minor, but worth a cleanup pass.
 
@@ -114,11 +116,11 @@ This is a legitimate, substantial advance of the project since this session last
 
 ## 5. Missing requirements
 
-### 5.1 Freeze has no requirement ID
+### 5.1 [Fixed — added GS-SMG-021] Freeze has no requirement ID
 
 `docs/R1_PRODUCT_SPECIFICATION.md` §3 (line 34) and **DEC-020** (Approved, `DECISIONS_LOG.md` line 27) both explicitly require: *"Freeze is available independently per layer and globally across the instrument."* "Freeze" is mentioned only in passing prose in `GRANULAR_SYNTH_REQUIREMENTS.md` lines 10 and 70 (the v0.4 changelog and the §2 R1-scope summary), in `PRODUCT_VISION.md` line 25 ("Approved R1 product scope" bullet list), and in `LIVE_PERFORMANCE_SPECIFICATION.md` §0's table (line 19, quoting DEC-020) — but **no `GS-*` requirement ID defines what Freeze actually does** (what it freezes — grain position, playback, modulation state; per-layer vs. global toggle semantics; MIDI-controller reachability). Confirmed by searching all of `GRANULAR_SYNTH_REQUIREMENTS.md` §3 (the requirement tables themselves, not the prose) for "Freeze": no match. It is also absent from `LIVE_PERFORMANCE_SPECIFICATION.md` §1's essential-operation table (lines 36–48), even though a live "Freeze" control is squarely a performance-time operation under GS-MID-008/DEC-016.
 
-### 5.2 Sequencer editing and Freeze are not listed in the §1 essential-operations table
+### 5.2 [Partly fixed — Freeze added] Sequencer editing and Freeze are not listed in the §1 essential-operations table
 
 `LIVE_PERFORMANCE_SPECIFICATION.md` §1's table (lines 36–48) *does* include most sequencer operations — "Sequencer transport, pattern selection/chain, step/event editing..." (line 45) and "Fill intensity/toggle and layer/event Mute" (line 46) — but Freeze is entirely absent from that table, and it's worth double-checking in Phase 4 that every §4 sequencer sub-behavior in `R1_PRODUCT_SPECIFICATION.md` (e.g., the per-step unmute-timing choice, §4.3 line 64) has a corresponding line.
 
@@ -126,7 +128,7 @@ This is a legitimate, substantial advance of the project since this session last
 
 ## 6. Duplicates / overlapping requirements
 
-### 6.1 GS-MID-007 and GS-SEQ-005 both specify MIDI Clock input
+### 6.1 [Fixed — cross-referenced, neither ID removed] GS-MID-007 and GS-SEQ-005 both specify MIDI Clock input
 
 - **GS-MID-007**: *"MIDI clock in (standalone)."* (R1, DEC-019)
 - **GS-SEQ-005**: *"Synchronization to internal BPM, external MIDI Clock, Ableton Link and DAW/host transport."* (R1, DEC-019)
@@ -135,7 +137,7 @@ Both are now R1 and both cite DEC-019. GS-SEQ-005 is the broader, more complete 
 
 ---
 
-## 7. Stale summary table (`GRANULAR_SYNTH_REQUIREMENTS.md` §6)
+## 7. [Fixed — fully recounted] Stale summary table (`GRANULAR_SYNTH_REQUIREMENTS.md` §6)
 
 The §6 "Requirement summary" counts table was **not recomputed** after the tier changes in §3. Spot-checked discrepancies:
 

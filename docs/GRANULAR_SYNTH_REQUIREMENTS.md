@@ -1,8 +1,17 @@
 # GRANULAR SYNTH Requirements
 
 **Status:** Draft; detailed acceptance criteria and technical feasibility remain subject to architecture and test review. Product scope for four layers, R1 engines, the R1 sequencer, live input and controller-only performance is approved in DECISIONS_LOG.md (DEC-015…DEC-021) and docs/R1_PRODUCT_SPECIFICATION.md. Other requirement tiers remain proposals unless explicitly approved.
-**Version:** 0.4 (R1 product-scope decisions, 2026-11-27)
+**Version:** 0.5 (consistency pass on the R1 product-scope decisions, 2026-11-27)
 **Inputs:** GR_MEGA_FEATURE_MAP.md (manual 1.8.d + fw 1.8.x release notes), PRODUCT_VISION.md, CLAUDE.md.
+
+## Change summary (v0.4 → v0.5)
+
+Corrections only — no decision status or R1 scope changed beyond what DEC-017…DEC-021 already approved:
+- GS-UI-007: removed the controller-feedback clause from its R1 text (DEC-021 excludes MIDI feedback from R1); the requirement itself is unchanged otherwise, still Approved.
+- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's already-approved scope — the only new requirement added.
+- GS-ARC-001: fixed a stale citation (cited Q-P04 as open; it is ANSWERED via DEC-017) and cross-referenced GS-ARC-005.
+- GS-MID-007 and GS-SEQ-005 cross-reference each other instead of independently restating MIDI-Clock sync — no ID removed, no tier changed.
+- §6 Requirement summary fully recounted against §3 (see note there) — corrects stale Slice/Sequencer/MIDI counts and the grand total.
 
 ## Change summary (v0.3 → v0.4)
 
@@ -90,7 +99,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 | ID | Requirement | Proposed tier | Source / notes |
 |---|---|---|---|
-| GS-ARC-001 | 4 independent layers per instance, each with its own patch (sample + parameters), voices, modulation, FX chain and MIDI channel. | R1 | ARCH-04, ARCH-11; **decision Q-P04** |
+| GS-ARC-001 | 4 independent layers per instance, each with its own patch (sample + parameters), voices, modulation, FX chain and MIDI channel; per-layer engine selection per GS-ARC-005. | R1 | ARCH-04, ARCH-11; **DEC-017** (Q-P04 **ANSWERED** — layer count and per-layer Granular/Sampler selection) |
 | GS-ARC-002 | Per-layer polyphony 1–20 voices (patch parameter). | R1 | ARCH-05, VOI-01 |
 | GS-ARC-003 | Up to 128 simultaneous grains per voice. | R1 | ARCH-06 |
 | GS-ARC-004 | A global, configurable grain budget across all layers with graceful (click-free), deterministic degradation when exceeded. | R1 | ARCH-07; refines REQ-AUD-003; [PROP] — budget value set by CPU benchmark (Q-T07) |
@@ -221,6 +230,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-018 | Tuning reference tone. | L2 | EDT-11 |
 | GS-SMG-019 | Maximum granular sample length ≥ 6 minutes stereo at 48 kHz per layer (exceeds benchmark 5m49s). | R1 | SMG-08, C-02 |
 | GS-SMG-020 | Record each layer independently and record the stereo master mix; save/export captured audio for later sample use. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3 |
+| GS-SMG-021 | Freeze: an independently switchable per-layer Freeze, plus a global Freeze across all layers, holding current playback/grain state for sustained performance use. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. Exact DSP semantics (what state is held — position, grain cloud, modulation) are Phase 3 architecture work; this row only fixes the product-level requirement and tier. |
 
 ### 3.11 Modulation (MOD)
 
@@ -247,7 +257,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SEQ-002 | Sequencer modulation lanes and parameter-lock/event overrides with live-edit semantics. | R1 | SEQ-05/06; DEC-019 |
 | GS-SEQ-003 | Pattern timing tools: selectable straight grids, triplets, per-pattern quantization, microtiming, Swing and Humanize. | R1 | SEQ-07…10; DEC-019 |
 | GS-SEQ-004 | Pattern management: multiple patterns, save/recall, end-of-bar pattern switching, chaining and ordered Performance Sets; no fixed product-level count cap. | R1 | SEQ-01…10; DEC-019 |
-| GS-SEQ-005 | Synchronization to internal BPM, external MIDI Clock, Ableton Link and DAW/host transport. | R1 | MID-08; DEC-019 |
+| GS-SEQ-005 | Synchronization to internal BPM, external MIDI Clock, Ableton Link and DAW/host transport. | R1 | MID-08; DEC-019. This is the authoritative statement of the full synchronization scope; MIDI Clock input itself is also tracked as GS-MID-007 (standalone MIDI-input requirement) — see that row. |
 | GS-SEQ-006 | MIDI out of sequencer notes; MIDI clock/transport out (standalone; plugin MIDI out where the format allows). | L3 | SEQ-13, MID-09 |
 | GS-SEQ-007 | Record MIDI into sequencer. | L2 | SEQ-11 |
 | GS-SEQ-008 | Play/drone mode per layer (latching continuous note) and panic. | R1 | MID-13 |
@@ -266,7 +276,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MID-004 | Default CC map documented; benchmark CC map compatibility (same CC numbers for common parameters). | L2 | MID-05; Q-L02 |
 | GS-MID-005 | Program change → preset recall (standalone; plugin where host allows). | R1 | MID-06 |
 | GS-MID-006 | Channel-mode messages: all notes off, all sound off (incl. FX tails), reset controllers. | R1 | MID-12 |
-| GS-MID-007 | MIDI clock in (standalone). | R1 | MID-08; DEC-019 |
+| GS-MID-007 | MIDI clock in (standalone), as a MIDI-input/protocol requirement. | R1 | MID-08; DEC-019. Refines the MIDI-Clock element of GS-SEQ-005's broader synchronization requirement (which also covers BPM, Ableton Link and DAW/host transport) — not an independent synchronization spec; kept as its own ID because it is also a MIDI-protocol/input-handling requirement (§3.13 MID), distinct from sequencer behavior (§3.12 SEQ). |
 | GS-MID-008 | Standalone operation shall be fully operable via MIDI controller alone for all *essential live-performance* operations, without requiring a computer keyboard or mouse. "Essential" excludes one-time setup/configuration tasks (sample loading, patch editing detail, initial mapping). | **R1 — Approved** | DEC-016 (owner decision, PR #2, 2026-11-27). Detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Generic class-compliant controller is the R1 target; no named-controller template or MIDI feedback is required (DEC-021). |
 
 ### 3.14 Effects (FX)
@@ -307,7 +317,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-UI-004 | Resizable, HiDPI, keyboard-navigable UI; tooltips; value readout on hover. | R1 | PRF-03 [PROP] |
 | GS-UI-005 | CPU meter by category (voices / FX / housekeeping). | R1 | PRF-07 |
 | GS-UI-006 | Plugin UI and standalone UI are the same component. | R1 | GS-PLT-004 |
-| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery, and controller feedback where the connected controller supports it — sufficient to satisfy GS-MID-008. | **R1 — Approved** | DEC-016. Mapping architecture and conflict handling detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; its acceptance criteria (§9 there) are **proposed**, not approved — final criteria are a Phase 5 deliverable per §8 below. Does not decide parameter-exposure scope (Q-T12, still OPEN) or a specific controller target (Q-P12, still OPEN). |
+| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery — sufficient to satisfy GS-MID-008. Controller feedback (motorized faders, LED rings/displays) is explicitly **not** an R1 requirement; it is deferred beyond R1. | **R1 — Approved** | DEC-016; scope narrowed by **DEC-021** (2026-11-27): no R1 MIDI feedback or named-controller template. Mapping architecture and conflict handling detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; its acceptance criteria (§9 there) are **proposed**, not approved — final criteria are a Phase 5 deliverable per §8 below. Does not decide parameter-exposure scope (Q-T12, still OPEN) or a specific controller target (Q-P12, still OPEN). |
 
 ---
 
@@ -346,26 +356,28 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 ## 6. Requirement summary
 
+**Recount note (this revision):** the table below was fully recounted against §3 (every row counted exactly once; a row split across two tiers, e.g. "R1/L", is counted once under its primary/R1 bucket and annotated). Three areas were stale and are now corrected: **Slice (SLC)** — all 6 items are L2 (Granular Slice deferred, DEC-018), not 4 R1/2 L2; **Sequencer (SEQ)** — now 12 rows (SEQ-001…012) reflecting the R1 central sequencer (DEC-019), not the pre-DEC-019 10-row count; **MIDI (MID)** — GS-MID-007 moved L2→R1 under DEC-019. **Samples/recording (SMG)** also grew by one row (GS-SMG-021, Freeze, DEC-020).
+
 | Area | R1 | L2 | L3 | OPT | Other |
 |---|---|---|---|---|---|
 | Platform (PLT) | 4 | — | — | 2 | — |
 | Architecture (ARC) | 8 (1 split R1/L) | 1 | — | 1 | — |
 | Granular (GRN) | 20 | 3 | — | — | — |
 | Chord/quantization (CHD) | 5 | 1 | — | 1 | — |
-| Slice (SLC) | 4 | 2 | — | — | — |
+| Slice (SLC) | — | 6 | — | — | — |
 | Sampler (SMP) | 4 | 2 | 1 | — | — |
 | Tape (TAP) | — | 2 | — | — | — |
 | Spectral (SPC) | — | — | 5 | 1 | — |
 | Voice/env/filter (VOI) | 9 | 1 | — | — | — |
-| Samples/recording (SMG) | 14 (1 split R1/L2) | 5 | — | — | — |
+| Samples/recording (SMG) | 16 (1 split R1/L2; incl. GS-SMG-021 Freeze) | 5 | — | — | — |
 | Modulation (MOD) | 9 | 1 | 1 | 1 | — |
-| Sequencer/performance (SEQ) | 2 | 6 | 1 | — | 1 pending Q-M12 |
-| MIDI (MID) | 6 (1 Approved: GS-MID-008) | 2 | — | — | — |
+| Sequencer/performance (SEQ) | 9 | 1 | 1 | — | 1 pending Q-M12 |
+| MIDI (MID) | 7 (1 Approved: GS-MID-008) | 1 | — | — | — |
 | Effects (FX) | 4 | 2 | 1 | 1 | — |
 | Presets/state (PRS) | 9 | — | — | 1 | — |
 | UI (UI) | 7 (1 Approved: GS-UI-007) | — | — | — | — |
 | Non-functional (NFR) | 13 | — | — | — | — |
-| **Total (164)** | **118** (2 Approved, 116 still Proposed) | **28** | **9** | **8** | **1** |
+| **Total (168)** | **124** (2 Approved, 122 still Proposed) | **26** | **9** | **8** | **1** |
 
 ## 7. Dependencies between requirement areas
 
@@ -381,6 +393,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | MOD-008 macros | MOD-003 | Macros are matrix sources and destinations |
 | SEQ | Transport abstraction (Arch §11), MOD (mod lanes, p-locks) | p-locks override registered parameters |
 | SMG-008…012 (live input) | Q-P06 (plugin input bus), ARC-006/007 | Bus layout and AU component type |
+| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Freeze holds per-layer or global playback/grain state; exact state held is Phase 3 architecture work |
 | FX | Parameter registry, ARC-007 | Slot host + registered FX params |
 | PRS | Parameter registry, SMG (sample refs), Q-P07/Q-P08 | Serialization of every registered parameter + sample references |
 | MID | Parameter registry, VOI (MPE voice mapping) | MIDI learn binds to parameter IDs; MPE binds to voices |
