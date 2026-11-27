@@ -1,6 +1,6 @@
 # Sample and State Lifecycle Specification
 
-**Version:** 0.2 — Phase 3 proposal, DEC-042 aligned  
+**Version:** 0.3 — recording tap proposal aligned  
 **Status:** Proposed; requires architecture and owner approval. No implementation is authorized.  
 **Authority:** DEC-025/028/040, GS-SMG-001…021, GS-PRS-005/006, Q-T04/Q-T05/Q-T15/Q-T16.
 
