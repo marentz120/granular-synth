@@ -270,3 +270,6 @@ The API and threading specifications now make event-time constraints explicit wi
 - The writer-precedence matrix, same-offset tie-break and overload capacities remain open; no implementation or benchmark was run.
 
 The DSP review also found that the former grain-stealing expression used an undefined `k`, and offered “oldest” versus “longest-remaining” as interchangeable choices despite different outcomes. The revised DSP section separates voice stealing (GS-VOI-001) from global grain-budget reclamation (GS-ARC-004), records a deterministic candidate comparator, and marks it as a proposal requiring validation. No threshold, fade duration, grain budget or click-free performance claim is approved by this documentation change.
+
+
+The two unresolved cross-cutting items are now tracked as AR-01 (same-offset event tie-break and parameter-writer precedence) and AR-02 (deterministic voice/grain capacity reclamation) in `PHASE3_ARCHITECTURE_DECISION_REGISTER.md` §5. Both remain OPEN; neither changes approved product scope or authorizes implementation/benchmark work.
