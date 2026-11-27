@@ -63,8 +63,18 @@ Do not skip gates without owner approval. Do not attempt to build the entire ins
 Maintain the project documents listed in docs/README.md. Keep docs/DECISIONS_LOG.md and docs/OPEN_QUESTIONS.md current.
 
 ## Current authorization
-Current phase: GR-MEGA reference research and product definition.
+Current phase: Phase 3 architecture completion and implementation preparation. Phase 2 product requirements and R1 release tiers are approved; Phase 3 remains an open Draft PR pending owner review.
 
-Authorized: read public documentation, build a traceable feature map, draft requirements, architecture options, roadmap and risk analysis.
+Authorized:
+- Read and review the repository, requirements, decisions, architecture proposals and acceptance criteria.
+- Perform implementation-readiness analysis and identify contradictions, missing decisions, test gaps and build prerequisites.
+- Prepare implementation plans, test plans, code skeleton proposals and narrowly scoped prototype plans for owner review.
+- Update documentation and traceability on the authorized Phase 3 branch.
 
-Not yet authorized: production DSP implementation, framework lock-in, or scope expansion. Wait for technical review and owner approval before implementation.
+Not authorized without explicit owner approval:
+- Production DSP, plugin shell, host adapter or UI implementation.
+- Framework/toolchain lock-in or public parameter-ID commitment.
+- Host prototype code, benchmark execution or performance measurement.
+- Scope expansion, PR merge or release/tag creation.
+
+Claude Code must first return an implementation-readiness report. It must wait for explicit owner authorization naming the milestone before editing production code. The handoff in `docs/CLAUDE_CODE_IMPLEMENTATION_HANDOFF.md` governs the proposed implementation workflow.
