@@ -31,7 +31,7 @@
 | Topic | Recommendation | Gate |
 |---|---|---|
 | VST3 live input | Instrument with optional stereo input bus; master stereo output plus four optional stereo layer outputs | Host prototype and Q-P09 matrix |
-| AU live input | Start with AU instrument `aumu`; test `aufm` music-effect alternative. Do not commit to dual components without demonstrated host need | Logic and additional host prototype |
+| AU component strategy | Retain `aumu` as first validation candidate; test full-band input on the instrument component. If it fails DEC-020, test `aufm` against the complete MIDI/MPE/instrument workflow; dual only for distinct proven workflows | Logic plus at least one additional target AU host; full-band source path, Note On/Off, MPE, five outputs, automation and state/reopen evidence; see `PHASE3_AU_COMPONENT_STRATEGY_AUDIT.md` |
 | Shared engine | One framework-independent engine/state implementation for Standalone, AU and VST3 | Q-T02 |
 | RT workers | Do not enable in R1 absent measured need | Q-T08 |
 | Sample data | Immutable decoded float32 buffers; off-thread decode/analysis and safe swap | Q-T04/Q-T05/Q-T16 |
