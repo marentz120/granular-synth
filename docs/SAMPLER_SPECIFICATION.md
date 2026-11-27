@@ -1,7 +1,7 @@
 # Sampler Specification
 
 **Version:** 0.1 — Phase 2 working specification  
-**Status:** Proposed; subject to owner review. No DSP implementation authorized.  
+**Status:** R1 product behavior specification; product scope decisions approved by DEC-030/037. No DSP implementation authorized.  
 **Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-SMP-001…007 and GS-SMG-001…021; DEC-017…020.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §4 and §9.3.
 
@@ -40,7 +40,7 @@ The exact meaning of looped-release ON and OFF must be settled through source ve
 
 - One sampler playback head is associated with each active voice.
 - Chord mode may expand playback to up to 12 heads per voice as benchmark reference behavior.
-- Env Pile-up controls same-note retrigger behavior. The benchmark says enabled mode reuses the voice; it recommends disabled for sampler. The GRANULAR SYNTH requirement includes the option, but default is not yet approved.
+- Env Pile-up controls same-note retrigger behavior. When enabled, same-note retrigger reuses the existing voice; R1 default is OFF for Sampler (DEC-037).
 - Voice stealing follows GS-VOI-001, not a sampler-specific replacement policy.
 - Sustain/hold, glide, velocity, pitch bend and envelopes follow the shared R1 voice requirements.
 - Polyphony and chord head limits are ultimately subject to measured resource ceilings; no new global cap is invented here.
