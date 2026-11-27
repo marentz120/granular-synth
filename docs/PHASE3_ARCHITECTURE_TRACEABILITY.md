@@ -264,3 +264,10 @@ The 77 IDs without an explicit acceptance-criterion reference are:
 **Interpretation and next gate:** the current acceptance document is a partial product-level criteria draft, not a complete 124-row acceptance matrix. The source document itself assigns detailed acceptance criteria and test design to Phase 5. Therefore this finding is recorded as a Phase 5 traceability deliverable, not silently filled with invented pass conditions in Phase 3. Before Phase 5 test implementation, every one of the 124 R1 IDs must link to either (a) one or more explicit acceptance/test IDs, or (b) a documented rationale for being validated through a cross-cutting criterion. Existing criteria are not evidence of passing tests.
 
 **Mechanical result:** 124 unique R1 traceability rows; 47 have an explicit requirement reference somewhere in the current acceptance document; 77 do not. No requirement tier or approved product behavior is changed by this audit.
+
+
+## 9. Candidate API-symbol traceability — 2026-11-27
+
+The 124 individual requirement rows now have a second-level candidate symbol/operation assignment in PHASE3_API_SYMBOL_TRACEABILITY.md, linked to the existing IF-01…IF-12 contracts and the current acceptance-criteria references. This is a proposed symbol vocabulary only; no final C++ signatures, ABI, implementation or public parameter IDs are approved. The current acceptance cross-check remains 47/124 explicit links and 77 gaps; the new symbol mapping does not fabricate test IDs or close Phase 5 acceptance work.
+
+The candidate symbol catalogue is in PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md §14. Framework, AU component strategy, host bus layout, AR-01/AR-02, Q-T03/Q-T12, numeric resource limits and DEC-042 mixed-failure semantics remain open as recorded in the decision register.
