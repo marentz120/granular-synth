@@ -118,7 +118,7 @@ Not R1 by current tiering:
 - Q-P06 format-specific AU/VST3 live-input behavior and bus layout — Phase 3.
 - Q-T04/Q-T16 sample-rate conversion and decoder choices — Phase 3.
 - Q-T17 sample-rate/buffer support values and latency — proposed, require technical validation.
-- Q-P08 unsaved recording embedding in plugin state — product policy proposal in Preset/Library spec.
+- Q-P08 unsaved recording embedding in plugin state — product policy approved by DEC-025; serialization/size policy remains Phase 3.
 - Exact recording start modes and scrolling-record distance controls.
 - Mono input duplication/default routing.
 - Exact signal tap points for per-layer and master recording.
