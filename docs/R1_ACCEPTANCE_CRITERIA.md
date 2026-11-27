@@ -94,6 +94,8 @@
 | AC-AUD-024 | Persistence | Freeze state and frozen snapshot restore with plugin state; snapshot audio is embedded under DEC-025 policy | DEC-025; DEC-042 |
 | AC-AUD-025 | Panic behavior | All Sound Off silences voices/effect tails but does not silently thaw the frozen source | DEC-042 |
 | AC-AUD-026 | RT safety | Freeze/thaw audio-thread transition performs no allocation, blocking, file I/O or unbounded work; snapshot preparation and retirement occur off-thread | DEC-042; GS-NFR-001 |
+| AC-AUD-027 | Rolling-source retention | During ongoing recording and forced ring-wrap pressure, Freeze copies exactly the committed source region under a retention lease; the recorder continues in a separate writable region; if retention cannot be reserved, Freeze fails before source switch and preserves valid source/capture without a data race | DEC-042; GS-NFR-001/008 |
+| AC-AUD-028 | Global Freeze transaction | With mixed per-layer preparation success/failure, all ready layers switch at the same logical boundary, failed layers remain unchanged, transaction publication failure changes none, and per-layer/partial status is accurate | DEC-042 |
 | AC-AUD-006 | Layer recording | Each layer can be recorded independently and saved/exported as reusable audio | GS-SMG-020 |
 | AC-AUD-007 | Master recording | Stereo master mix can be recorded and exported | GS-SMG-020 |
 | AC-AUD-008 | Record modes | One-shot, loop, scrolling record, AUTO/fixed buffer and mono/stereo initialization operate as specified | GS-SMG-008…011 |
@@ -120,4 +122,4 @@
 - Test fixture samples, deterministic seeds and golden reference renders.
 - Stress profiles for four layers, voice/grain load, FX chains, recording and modulation.
 - Host-specific plugin state and live-input test matrix.
-- Freeze semantic tests follow the approved contract in `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 (DEC-042); numeric snapshot/resource thresholds remain Phase 5 validation.
+- Freeze semantic tests follow the approved contract in `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0 (DEC-042), including rolling-ring wrap/retention and global transaction failure injection; numeric snapshot/resource thresholds remain Phase 5 validation.
