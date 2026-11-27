@@ -374,7 +374,7 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 3. **Split-tier rows are counted once**, under their primary (R1) tier, and are listed explicitly in §6.3 instead of being written as an inline "+1" annotation. No row is counted in two buckets, so **every area's buckets sum to that area's row count, and the area rows sum to the grand total.**
 4. **Zero is written `0`**, not `—`, so each row and column can be added up directly.
 
-**Reconciliation:** 124 + 26 + 9 + 8 + 1 = **168**, and the 17 area row-counts (6+10+23+7+6+7+2+6+10+21+12+12+8+8+10+7+13) also total **168**. The two agree, and both match the number of `GS-*` rows actually present in §3/§4.
+**Reconciliation:** 124 + 27 + 9 + 8 + 0 = **168**, and the 17 area row-counts (6+10+23+7+6+7+2+6+10+21+12+12+8+8+10+7+13) also total **168**. The two agree, and both match the number of `GS-*` rows actually present in §3/§4.
 
 ### 6.2 Requirement counts
 
