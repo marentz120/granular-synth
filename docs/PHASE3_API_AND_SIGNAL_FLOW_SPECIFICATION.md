@@ -466,7 +466,9 @@ Granular Voice                 Sampler Voice
                      |
              Sub-Oscillator Mix
                      |
-             Voice Filter Stage
+                  LPF Stage
+                     |
+                  HPF Stage
                      |
               Amp Envelope
                      |
@@ -496,6 +498,9 @@ Input Gain / Mono Centering              |
 Layer Stem Output + Recording       Layer Fader / Mute / Solo
 (post-FX, pre-fader)                        |
                                            +----> Master Mixer
+                                                      |                         Dry Live Input
+                       |                                |
+                       +----------------------------> Master Mixer
                                                       |
                                                Stereo Master
                                                       |
@@ -520,7 +525,7 @@ The recorder interface supports these candidate positions:
 | Layer Engine Pre-FX | Sum of engine/live input before layer FX | Captures performed layer without effect tails |
 | Layer Post-FX Pre-Layer-Gain | Wet layer output before layer output gain/mute | Captures effect processing; independent of layer fader |
 | Layer Post-Layer-Gain | Final layer signal after gain/mute/solo logic | Matches what layer contributes to mix |
-| Master Pre-Output | Final master mix before host output | Captures complete mix, subject to dry path and master processing position |
+| Master Pre-Output | Final master mix before host output | Captures wet layer mix plus the required parallel dry live-input path |
 
 **Recommended R1 architecture default (not a new product decision):** define two fixed recording sources:
 - Per-layer recording: Layer Post-FX Pre-Layer-Gain, so a layer take includes its effect character but can be mixed later.
@@ -529,7 +534,7 @@ The recorder interface supports these candidate positions:
 
 Validation questions (not unresolved product semantics):
 1. Confirm in Standalone and each target host that the per-layer tap is post-FX and pre-layer-fader, excluding fader/mute/solo.
-2. Confirm the master tap is the final stereo master before host/device output and includes only live input routed through the layer graph.
+2. Confirm the master tap is the final stereo master before host/device output and includes both wet live input routed through layer FX and the parallel dry live-input path required by GS-ARC-007.
 3. R1 has no approved master FX chain; do not introduce one in this specification.
 4. Verify that an armed layer continues recording its stem while muted or solo-isolated.
 
@@ -624,7 +629,7 @@ For consistency across the engine, recorder and plugin adapters, the following d
 | Per-layer recording | Post-FX, pre-layer fader | Not affected; muted/solo-isolated layer can still record its isolated stem |
 | Layer output bus | Post-FX, pre-layer fader | Not affected; host receives a mixable stem |
 | Master recording | Final stereo master, pre-host output | Includes layer faders, mute/solo and any live input routed through layers |
-| Live input | Per-layer input, before layer FX | Affects the layer FX and its stem/master contribution |
+| Live input | Per-layer wet feed before layer FX plus parallel dry feed summed before master | Wet feed affects layer FX/stem; dry feed contributes directly to master as required by GS-ARC-007 |
 | Dry live-input path | Required by GS-ARC-007; summed before master | Parallel dry feed is intentional; validate gain staging and avoid unintended double-counting in host bus adapters |
 | Voice processing | Engine + sub-oscillator → LPF → HPF → proposed amp envelope/pan → layer sum | Preserves GS-ARC-007 filter order; validate envelope/pan placement |
 
