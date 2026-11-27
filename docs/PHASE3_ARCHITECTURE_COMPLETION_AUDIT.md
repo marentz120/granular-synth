@@ -220,4 +220,4 @@ Still open as engineering work: exact recording tap definition, snapshot memory 
 - No proprietary GR-MEGA firmware, source, presets, artwork or undocumented file format may be copied or reverse-engineered.
 - Host compatibility, legal review and distribution remain separate evidence/gates; this audit does not certify them.
 
-**Audit outcome:** Phase 3 is correctly started, but not complete. The repository needs the deliverables in §7 before the architecture can be considered implementation-ready. The traceability table currently maps all 124 R1 rows at domain/module level; it does not yet provide class/API-level contracts or passing validation evidence.
+**Audit outcome:** Phase 3 is correctly started, but not complete. The repository needs the deliverables in §7 before the architecture can be considered implementation-ready. The traceability table now maps all 124 R1 rows individually to proposed modules, interfaces and validation families; it does not yet provide concrete class/API signatures or passing validation evidence.
