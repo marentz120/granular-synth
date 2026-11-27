@@ -108,6 +108,16 @@ Avoid general-purpose shared_ptr destruction on the audio thread. If reference c
 
 A new sample must not replace the active sample until the new buffer is ready. A failed load leaves the previous sample active. FX/patch graph changes must have defined tail and crossfade behavior.
 
+## 5.1 State capture and restore transactions
+
+- A state-capture request is coordinated off the audio thread and produces an immutable snapshot descriptor with a monotonically increasing state generation. Each recording/Freeze payload is tied to its source generation and committed-frame range.
+- A rolling recording reader must hold a bounded retention lease or read from a pre-reserved immutable staging copy. A committed-frame count alone is not permission to read while the writer may wrap and overwrite the region.
+- The audio thread may publish bounded descriptors and advance ownership at a safe point; it never copies large audio payloads, waits for the serializer, performs compression, checksums, file I/O or allocates staging memory.
+- The serializer owns immutable snapshot handles until every required embedded chunk has been written and verified or the save transaction has failed. A failed/cancelled save releases leases and staging through the non-RT owner path; it must not alter the active recording.
+- Restore preparation is off-thread and owns all decoded candidate assets until a complete validated restore command is successfully published. The audio thread performs only the bounded safe-point graph/state handoff; failed preparation or publication leaves the active runtime unchanged.
+- A partially prepared restore must never be exposed as a successful project state. Missing external references may be represented as explicit relink-required placeholders; corrupt required embedded audio must surface recovery status, not silent substitution.
+- The exact host callback strategy (prebuilt snapshot versus bounded callback-time capture) is adapter-specific and must obey the host's documented contract. No callback may wait for disk I/O or global audio quiescence.
+
 ## 6. Parameter and event ordering
 
 For each render block, define and test a deterministic order:
