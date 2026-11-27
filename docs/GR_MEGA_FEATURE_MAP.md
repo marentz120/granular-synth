@@ -87,7 +87,7 @@ Audio In (stereo/mono) ──► SPL (sample buffer / recorder) ─────�
 | SIG-09 | Grain-count gain normalization ("grain compression") | Prevents volume blow-up at high density; max volume reached at density ≈17. Switchable per patch. | p.33; p.56 Compression | [MC] |
 | SIG-10 | No master limiter | Summed output can hard-clip at high polyphony. | p.121 Master volume and patch volume | [MC] |
 | SIG-11 | Resample tap | Resampling records the signal after layer mix, before Wet and Master. | p.71 Audio source | [MC] |
-| SIG-12 | Master EQ (5 bands) | Freq/gain/resonance/type/bypass per band + global bypass exist as NRPNs; no prose description. Prose mentions "future master effects". Release notes 1.8.0: Q up to 18, max band gain 24 dB. | p.148–150 NRPN 300–370; p.111; RN 1.8.0 | [MC] params / [RN] ranges / [UNV] placement in signal path |
+| SIG-12 | Master EQ (5 bands) | Freq/gain/resonance/type/bypass per band + global bypass exist as NRPNs; no prose description. Prose mentions "future master effects". Release notes 1.8.0: Q up to 18, max band gain 24 dB. | p.148–150 NRPN 300–370; p.111; RN 1.8.0 | [MC] params / [MC via RN] ranges / [UNV] placement in signal path |
 | SIG-13 | Synth → recording feedback | Synth output can be fed back into the recording buffer at an adjustable level (Shift + env Amount fader). | p.19; p.135; NRPN 396 p.150 | [MC] |
 
 ---
@@ -112,7 +112,7 @@ Audio In (stereo/mono) ──► SPL (sample buffer / recorder) ─────�
 | GRN-12 | Scan | Movement speed of the spawn position, −2× … +2× of original speed; follows stop/loop flags, loop and ping-pong; modulatable; clock-syncable. Fine mode (Shift) and ±0.25 snap mode (View). | p.37; p.43 Scan; p.142 CC 15 | [MC] |
 | GRN-13 | Pitch | ±1 octave (coarse) / ±1 semitone (Shift); snapping with [Chord] held. | p.37–38 table | [MC] |
 | GRN-14 | Pitch spray | Per-grain random pitch (View+H in granular/slice), with polarity setting. | p.38 table; p.54 Voicing right column; NRPN 1121, 1126 | [MC] |
-| GRN-15 | Grain probability | NRPN exists ("Grain probability", 14-bit); not described in manual prose. Release notes 1.8.0 place it on Shift + knob A. Behavior (likely per-grain spawn-skip probability) undocumented. | p.155 NRPN 1125; RN 1.8.0 | [MC] param / [RN] control / [INT] behavior |
+| GRN-15 | Grain probability | NRPN exists ("Grain probability", 14-bit); not described in manual prose. Release notes 1.8.0 place it on Shift + knob A. Behavior (likely per-grain spawn-skip probability) undocumented. | p.155 NRPN 1125; RN 1.8.0 | [MC] param / [MC via RN] control / [INT] behavior |
 | GRN-16 | Engine knob table | Full A–H mapping (incl. Shift/View/Chord alternates) per engine. | p.37–38 | [MC] |
 
 ### 2.2 Grain ratio (scheduling) modes
@@ -151,7 +151,7 @@ Audio In (stereo/mono) ──► SPL (sample buffer / recorder) ─────�
 | SCH-01 | Grain key trigger | ON: a grain fires immediately on note-on. OFF: grain clock independent of notes. Panel cycles Off/On/Legato. | p.54 Grain Key trigger; p.135 [Key Trig] | [MC] |
 | SCH-02 | Grain clock sync | Grain spawning locked to clock division instead of free rate. | p.55 Grain Sync; p.135 [Sync] | [MC] |
 | SCH-03 | Synced rate divisions | 1/64 … 64/1 including triplets and dotted (33 entries); system toggles which families appear. 14-bit mul/div 1–128 also exposed. | p.157 Table 3; p.88 Straight/Triplet/Dotted rates; NRPN 1006–1015, 1109 | [MC] |
-| SCH-04 | Voice sync | ON: grain clocks synced across voices; OFF: each voice has its own clock phase. The p.54 screenshot (fw 1.8.0-a14) shows "Clock retrigger"; release notes 1.8.0-a19 record a rename "voice retrigger" → "voice sync". | p.55 Voice sync; p.54 screenshot; NRPN 504; RN 1.8.0 | [MC]; rename [RN]; whether "Clock retrigger" is the same control [UNV] |
+| SCH-04 | Voice sync | ON: grain clocks synced across voices; OFF: each voice has its own clock phase. The p.54 screenshot (fw 1.8.0-a14) shows "Clock retrigger"; release notes 1.8.0-a19 record a rename "voice retrigger" → "voice sync". | p.55 Voice sync; p.54 screenshot; NRPN 504; RN 1.8.0 | [MC]; rename [MC via RN]; whether "Clock retrigger" is the same control [UNV] |
 | SCH-05 | Spawn mode | **Gradual** (build up from the clock), **Direct** (full cloud as if running all along), **Direct reset** (full cloud all within spray area — more bass and level), **Recycle** (reuse old grains). Granular & slice only. | p.55 Grain spawn | [MC] |
 | SCH-06 | Idle scheduler shutdown | The scheduler is disabled when a voice is idle for a while (CPU saving) — the reason spawn modes exist. | p.55 technical note | [MC] |
 | SCH-07 | Local pitch ("granular glide") | ON: each grain keeps the pitch it was born with. OFF: running grains retune to the current note immediately. | p.55 Local pitch | [MC] |
@@ -411,7 +411,7 @@ Refs: p.37–50, p.56, p.74, p.99–100, p.120–121, p.162. Long-sample limits 
 | MTX-09 | Copy/paste/delete rows | Copy row, paste row, delete row, delete all. | p.133–134 | [MC] |
 | MTX-10 | Not modulatable | FFT size (stepped). Window shape changes are modulatable but crackle-prone. | p.49; p.121 | [MC] |
 | MTX-11 | Envelope follower | Input follower AR via Shift+[ADSR Curve] + A/R faders; follower input selectable (audio in or layer 1–4); per-layer follower attack/release; follower gain ±24 dB. | p.80; p.89; p.137; NRPN 482–491, 496 | [MC] |
-| MTX-12 | Drawing modulation | Draw X/Y trajectories with play, speed, loop mode, tempo sync, snap, phase, rate, key sync (global / per mtpreset). Manual references a drawing menu without documenting it. Release notes 1.8.0: "Draw XY" tile menu, **touchscreen required**, multitouch scale/rotate, waypoints that stop/restart movement, LFO-section controls (rate, phase, sync, key trig Off/On/Legato) apply. | p.80; p.154–155 NRPN 1100–1104, 1122–1124; RN 1.8.0 | [MC] params / [RN] UI & behavior |
+| MTX-12 | Drawing modulation | Draw X/Y trajectories with play, speed, loop mode, tempo sync, snap, phase, rate, key sync (global / per mtpreset). Manual references a drawing menu without documenting it. Release notes 1.8.0: "Draw XY" tile menu, **touchscreen required**, multitouch scale/rotate, waypoints that stop/restart movement, LFO-section controls (rate, phase, sync, key trig Off/On/Legato) apply. | p.80; p.154–155 NRPN 1100–1104, 1122–1124; RN 1.8.0 | [MC] params / [MC via RN] UI & behavior |
 | MTX-13 | CV direct routes | CV1/CV2 each have direct destination + amount. | CC 83, 85–87 | [MC] |
 | MTX-14 | 10-destination monitor | Sidebar shows recently used destinations with summed modulation values. | p.36 | [MC] |
 
@@ -642,10 +642,10 @@ Every row below is, by construction, release-note-sourced. The Class column stil
 
 | ID | Change | Relevance | Class |
 |---|---|---|---|
-| RN-16 | "Patch samples as HLAC" — patch/project saves can compress their samples (1.8.1) | Indicates samples are stored with patches/projects (PRS-12) | [RN] / [INT] |
+| RN-16 | "Patch samples as HLAC" — patch/project saves can compress their samples (1.8.1) | Indicates samples are stored with patches/projects (PRS-12) | [MC via RN] / [INT] |
 | RN-17 | Project folders renamed `NNN-projectname` (1.8.2); "patch" renamed "preset", `presets` folder (1.8.3) | Storage naming; terminology "preset" | [MC via RN] |
 | RN-18 | Presets stored as `.json` with accompanying files; loadable via template type (1.8.4) | Answers PRS-13 partially: preset format is JSON + sample files | [MC via RN] |
-| RN-19 | POS X **and POS Y** can modulate per-voice destinations (1.8.4) | A "Pos Y" source exists beyond the manual's source table | [RN] / [UNV] |
+| RN-19 | POS X **and POS Y** can modulate per-voice destinations (1.8.4) | A "Pos Y" source exists beyond the manual's source table | [MC via RN] / [UNV] |
 | RN-20 | USB-C mode "IMPROVED" (1.8.4); interrupt-storm fix (1.8.1) | Hardware-only | N/A |
 | RN-21 | Bug fixes: last slice silent at direction −100 %; looping slices became one-shots; free vs snapped scan mismatch; ping-pong scan not restarting at fader position | Edge cases to cover in our test suite | [MC via RN] |
 

@@ -26,7 +26,7 @@ Per CLAUDE.md governance: the human owner is the only source of product-decision
 
 ## 1. Controller-only performance workflow
 
-GS-MID-008 requires that every **essential live-performance operation** be reachable from a MIDI controller alone. "Essential" is defined narrowly (see §8) to avoid silently expanding scope: it covers the operations a performer needs *during* a set, not configuration done beforehand.
+GS-MID-008 requires that every **essential live-performance operation** be reachable from a MIDI controller alone, without keyboard or mouse. §8 draws a setup-time/performance-time boundary to make "essential" testable — that boundary exists to keep the term precise, **not** to narrow DEC-016: any operation a performer genuinely needs *during* a set is essential and must be controller-reachable, full stop, regardless of whether it could also be prepared in advance.
 
 Proposed essential-operation set for R1 (derived from GRANULAR_SYNTH_REQUIREMENTS.md §3, tiers unchanged by this document):
 
@@ -68,7 +68,7 @@ Open and explicitly **not** decided by this document: the exact wire format of a
 
 ## 4. Global and preset-specific mappings
 
-Two mapping scopes are proposed, both needed because the instrument is multitimbral (4 layers, per DEC-008 — itself still Proposed, but assumed here only for illustration, not decided by this document):
+Two mapping scopes are proposed, both needed because the instrument is multitimbral (some number of layers *N*; **N is not decided by this document** — layer count is Q-P04, still OPEN, and DEC-008's "4 layers" is itself still Proposed, not an architectural constraint). The mapping architecture below must hold for any approved *N*: it addresses "the currently active layer" / "layer index" generically, never a fixed count, so a future change to *N* does not require reworking the mapping model.
 
 | Scope | Applies to | Typical use |
 | --- | --- | --- |
@@ -109,16 +109,16 @@ This recommendation does not decide Q-P12 — it only argues that Q-P12's resolu
 
 ## 8. Setup-time versus performance-time operations
 
-To keep GS-MID-008's "essential" scope from silently growing into "everything," this document proposes the following boundary:
+This boundary exists only to make GS-MID-008's "essential" testable — **it must never be used to reclassify an essential operation as setup-only.** Governing rule (proposed): an operation belongs in the setup-time column only if **both** (a) a performer can and normally would complete it before the set starts, **and** (b) nothing about it needs to be repeated, adjusted, or accessed again once the set is underway. If any realistic live-performance use case needs an operation *during* the set, it is performance-time/essential under GS-MID-008 — even though it could also, in principle, be done in advance. Being doable in advance is not sufficient grounds to classify something as setup-only.
 
 | Setup-time (keyboard/mouse acceptable) | Performance-time (must be controller-reachable, GS-MID-008) |
 |---|---|
 | Sample import, recording-buffer configuration, slice editing | Recall of an already-prepared preset/patch |
 | Detailed patch editing (modulation matrix rows, FX chain construction, envelope curve shaping) | Macro control, scan/pitch, layer mix, play/drone, panic, chord hold (§1 table) |
-| Creating/editing MIDI mappings themselves (learn mode entry may be controller-reachable, but detailed mapping management is expected to use the UI) | Using mappings once created |
+| Creating a **new** MIDI mapping (learn mode entry may be controller-reachable, but building/editing the mapping list is expected to use the UI) | **Using** an already-created mapping — including recalling a different saved mapping set, which GS-MID-008 requires to be controller-reachable if a performer needs it mid-set |
 | Initial controller selection/configuration in the standalone app | — |
 
-This boundary is a **recommendation**, meant to make "essential" testable; it is not itself a new requirement and does not expand or narrow GS-MID-008's text. Phase 4/5 should turn it into the authoritative scope list and attach acceptance tests.
+This boundary is a **recommendation**, meant to make "essential" testable; per the governing rule above, it clarifies GS-MID-008's scope but must not be read as narrowing it. Phase 4/5 should turn it into the authoritative scope list and attach acceptance tests, applying the same governing rule.
 
 ---
 

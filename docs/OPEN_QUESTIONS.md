@@ -38,7 +38,7 @@ Every item from the v0.1 list is kept and mapped:
 | # | Question | Why it blocks | Recommendation |
 |---|---|---|---|
 | 1 | **Q-P04** — Ship 4 multitimbral layers in the first release? | Drives the state model, UI layout, CPU budget and plugin bus layout | **Yes**: the layer abstraction is cheap if designed in from day one, costly to retrofit |
-| 2 | **Q-P05** — Is the step sequencer required for the first release? | Largest single feature after the engines | **No** (L2) unless standalone live use is the primary market; DAW hosts sequence already |
+| 2 | **Q-P05** — Is the step sequencer required for the first release? | Largest single feature after the engines | Recommendation unchanged, reassessed under DEC-015 (both studio **and** live use are now confirmed primary — not a hypothetical): **No** (L2) for the full step sequencer. DAW hosts sequence already for studio use; R1's other controller-reachable performance controls (docs/LIVE_PERFORMANCE_SPECIFICATION.md §1) cover standalone live use without it. See that document §"Sequencer reassessment" for the trade-offs this raises — non-binding |
 | 3 | **Q-P06** — Must the *plugin* granulate live audio input (not just the standalone)? | Determines AU component type(s) and bus layout | **Yes** for VST3 + AU music-effect variant; it is a core GR-MEGA workflow |
 | 4 | **Q-P02** — Confirm plugin formats: AU + VST3 only? (AAX / CLAP?) | Framework choice, test matrix | AU + VST3 for R1; CLAP optional; AAX not planned |
 | 5 | **Q-T01** — Approve C++20 + JUCE 8 with a framework-free DSP core | Every later assignment depends on it | Approve (subject to JUCE EULA review, Q-L04) |

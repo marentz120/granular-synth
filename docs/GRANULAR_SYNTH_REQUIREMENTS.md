@@ -297,7 +297,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-UI-004 | Resizable, HiDPI, keyboard-navigable UI; tooltips; value readout on hover. | R1 | PRF-03 [PROP] |
 | GS-UI-005 | CPU meter by category (voices / FX / housekeeping). | R1 | PRF-07 |
 | GS-UI-006 | Plugin UI and standalone UI are the same component. | R1 | GS-PLT-004 |
-| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery, and controller feedback where the connected controller supports it — sufficient to satisfy GS-MID-008. | **R1 — Approved** | DEC-016. Mapping architecture, conflict handling and acceptance criteria detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Does not decide parameter-exposure scope (Q-T12, still OPEN) or a specific controller target (Q-P12, still OPEN). |
+| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery, and controller feedback where the connected controller supports it — sufficient to satisfy GS-MID-008. | **R1 — Approved** | DEC-016. Mapping architecture and conflict handling detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; its acceptance criteria (§9 there) are **proposed**, not approved — final criteria are a Phase 5 deliverable per §8 below. Does not decide parameter-exposure scope (Q-T12, still OPEN) or a specific controller target (Q-P12, still OPEN). |
 
 ---
 
