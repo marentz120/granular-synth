@@ -1,0 +1,76 @@
+# Milestone A0 CI — framework-free core and headless tests only.
+#
+# Deliberately absent, because none of it is authorized or possible yet:
+#   * auval / pluginval / host scanning  -> no plug-in exists (Q-T01, Q-P09)
+#   * codesign / notarization            -> Phase 8
+#   * Universal 2 / deployment target    -> Q-T03 open; architectures stay unset
+#   * benchmarks or timing measurement   -> requires separate owner authorization (Q-T07)
+#
+# The arm64 leg runs on a GitHub-hosted Apple Silicon runner and the x86_64 leg on an Intel
+# runner. That exercises both architectures natively, but it is NOT a Universal 2 binary and
+# must not be reported as one.
+
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.runner }} / ${{ matrix.preset }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-13, macos-14]
+        preset: [ci-debug, ci-release]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Record toolchain
+        run: |
+          echo "runner-arch: $(uname -m)"
+          sw_vers
+          cmake --version
+          c++ --version
+          xcode-select -p || true
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-${{ matrix.runner }}-${{ matrix.preset }}
+          path: build/${{ matrix.preset }}/Testing/
+          if-no-files-found: ignore
+
+  format:
+    name: clang-format (advisory)
+    runs-on: macos-14
+    # Advisory until the runner toolchain has been confirmed in an actual CI run. It must not
+    # block A0 review, and a green tick here is not evidence that formatting was checked.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-format
+        run: brew install clang-format
+      - name: Check formatting
+        run: |
+          files=$(git ls-files '*.h' '*.cpp')
+          echo "$files"
+          clang-format --dry-run --Werror $files
