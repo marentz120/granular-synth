@@ -3,46 +3,26 @@
 **Status:** Initial proposal; gated by research and owner approval.
 
 ## Phase 1 — Reference research and product definition
-- Analyze GR-MEGA User Manual 1.8.d.
-- Build feature map with precise manual references.
-- Separate manual facts, interpretations, proposals and unknowns.
-- Identify product choices and risks.
-
-**Exit gate:** Reference feature map and open questions reviewed.
+Study GR-MEGA manual 1.8.d, build traceable feature map, classify evidence and identify open decisions.
+**Exit gate:** Feature map and open questions reviewed.
 
 ## Phase 2 — Requirements and release scope
-- Define first-release feature set.
-- Prioritize essential, later and optional features.
-- Define supported formats, performance targets and acceptance criteria.
-
-**Exit gate:** Product requirements approved by owner.
+Define first-release features, priorities, supported formats, performance targets and acceptance criteria.
+**Exit gate:** Requirements approved by owner.
 
 ## Phase 3 — Architecture
-- Compare frameworks and plug-in strategies.
-- Design real-time audio architecture and DSP module boundaries.
-- Define sample storage, parameter model, persistence and testing approach.
+Compare frameworks; design real-time audio architecture, DSP boundaries, sample management, parameter model and test strategy.
+**Exit gate:** Architecture decision approved.
 
-**Exit gate:** Architecture decision record approved.
-
-## Phase 4 — Interaction and visual design
-- Define primary workflows and UI layout.
-- Prototype high-risk interactions and visualization requirements.
-
+## Phase 4 — UI/UX
+Define workflows and interface; prototype high-risk interactions and visualizations.
 **Exit gate:** UI/UX scope approved.
 
 ## Phase 5 — Incremental implementation
-- Build a minimal audio/plugin shell.
-- Implement and test DSP in small vertical slices.
-- Add sample loading and core granular voice path.
-- Add modulation, layers, performance tools and later engines according to approved priorities.
-
-**Exit gate:** Each milestone meets its acceptance tests and review requirements.
+Build a minimal audio/plugin shell; implement and test DSP vertical slices; add sample loading and core granular path; expand according to approved priorities.
+**Exit gate:** Each milestone passes acceptance tests and review.
 
 ## Phase 6 — Validation and release
-- Automated unit and integration tests.
-- Audio stress tests and host compatibility tests.
-- CPU/memory profiling and long-duration stability tests.
-- macOS signing, notarization, packaging and release documentation.
+Run automated tests, audio stress tests, host compatibility tests, profiling, long-duration stability tests, signing/notarization and packaging.
 
-## Governance
-No phase is automatically authorized by the roadmap. Each phase has a review gate. Do not build all features in parallel or skip foundational real-time audio validation.
+No phase is automatically authorized by this roadmap. Do not build all features in parallel or skip real-time validation.
