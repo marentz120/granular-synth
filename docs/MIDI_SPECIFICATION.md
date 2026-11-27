@@ -60,7 +60,7 @@ Standalone essential live-performance operations, including all sequencer functi
 - Standalone accepts external MIDI Clock.
 - The central sequencer synchronizes to internal BPM, external MIDI Clock, Ableton Link and DAW/host transport as required by GS-SEQ-005.
 - Host/DAW synchronization is used in plugin contexts; exact host API and clock arbitration are Phase 3.
-- Clock loss, unstable clock, Start/Continue/Stop, song-position pointer and clock restart behavior must be explicitly specified before implementation.
+- Start resets the shared sequencer transport to its start; Continue resumes; Stop halts at the current position. If pulses are absent for two expected beat intervals, clock-dependent progression stops at the current position. Song Position Pointer is ignored in R1 (DEC-039).
 - No per-layer independent sequencer clock is introduced; shared transport follows the approved R1 product spec.
 - MIDI Clock/transport output is L3 and is not an R1 commitment.
 
