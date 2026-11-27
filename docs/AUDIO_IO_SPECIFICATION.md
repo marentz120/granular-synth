@@ -32,7 +32,7 @@ Exact device API, aggregate-device support, hot-swap behavior and macOS minimum 
 - Live input is available as a source to the layer's engine and its FX send path, subject to the final signal-flow definition.
 - Input monitoring behavior must be explicit: monitor through the selected layer processing path; no hidden direct-monitor loopback is assumed.
 - Input channel mapping supports mono and stereo sources where available.
-- Mono duplication behavior LL/RR is represented in the benchmark research; R1 requirement must define whether duplication or centered mono routing is the default. Proposed default: mono source is centered and duplicated to stereo only where a stereo destination requires it.
+- Mono live input is centered and available to both sides of stereo layer processing; explicit LL/RR duplication is not the default (DEC-040).
 - Feedback prevention and gain staging must prevent accidental unbounded routing loops. Synth-to-record-buffer feedback remains L2 (GS-SMG-016).
 
 ## 4. Recording model
@@ -120,7 +120,7 @@ Not R1 by current tiering:
 - Q-T17 sample-rate/buffer support values and latency — proposed, require technical validation.
 - Q-P08 unsaved recording embedding in plugin state — product policy approved by DEC-025; serialization/size policy remains Phase 3.
 - Exact recording start modes and scrolling-record distance controls.
-- Mono input duplication/default routing.
+- Mono input behavior is set by DEC-040; exact channel mapping implementation remains Phase 3.
 - Exact signal tap points for per-layer and master recording.
 - Freeze semantics — explicitly Phase 3.
 - Numeric resource limits and overload thresholds — Phase 3/5.
