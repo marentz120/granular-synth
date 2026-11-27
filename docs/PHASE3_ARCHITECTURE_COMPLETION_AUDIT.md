@@ -250,3 +250,10 @@ This is a documentation correction to preserve approved product scope, not a new
 ## Source-inventory arithmetic correction — 2026-11-27
 
 A cross-check of the Phase 2 requirement inventory found a stale arithmetic expression in §6.1 of `GRANULAR_SYNTH_REQUIREMENTS.md`: it stated `124 + 26 + 9 + 8 + 1 = 168`, while the approved DEC-041 tier totals and the adjacent §6.2 table state `124 + 27 + 9 + 8 + 0 = 168`. The Phase 3 branch corrects only that arithmetic expression. No requirement row, tier, wording, or approved scope was changed. The reconciled totals remain 124 R1, 27 L2, 9 L3, 8 OPT, 0 Other (168 total).
+
+
+## R1 acceptance traceability finding — 2026-11-27
+
+The 124-row architecture traceability table was cross-checked against the current `R1_ACCEPTANCE_CRITERIA.md`. The current acceptance draft explicitly references 47 of the 124 R1 requirement IDs; 77 have no explicit AC reference yet. The detailed per-area counts and missing-ID list are recorded in §8 of `PHASE3_ARCHITECTURE_TRACEABILITY.md`.
+
+This is not a product-scope defect and does not imply those requirements are unassigned in the architecture map. It is a test-traceability gap: the existing acceptance document is partial and explicitly defers detailed acceptance/test design to Phase 5. Phase 5 must close all 124 links, either with specific test IDs or a documented cross-cutting validation rationale. Phase 3 will not invent numeric pass thresholds or claim test evidence that does not exist.
