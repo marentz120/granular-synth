@@ -55,6 +55,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 | DEC-039 | Standalone MIDI Clock Start resets the shared sequencer transport to its start; Continue resumes; Stop halts at the current position; loss of clock pulses for two expected beat intervals stops clock-dependent sequencer progression at the current position | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). Song Position Pointer is ignored in R1 unless later explicitly added; clock-loss handling must not free-run or jump position. |
 | DEC-040 | Mono live input is centered and available to both sides of stereo layer processing; explicit LL/RR duplication is not the default | **Approved** | Product behavior decision under the owner's explicit delegation (2026-11-27). This is product routing behavior; exact channel mapping and signal tap implementation remain Phase 3. |
 
+| DEC-041 | Approve the Phase 2 R1 release-tier classification for all 168 GS requirements as recorded in GRANULAR_SYNTH_REQUIREMENTS.md v1.0 and R1_RELEASE_SCOPE_MATRIX.md | **Approved** | Product-management decision under the owner's explicit delegation (2026-11-27). This approves tier placement only; it does not approve unresolved technical values, architecture, measured resource budgets, or implementation. GS-SEQ-010 is L2; all other tier assignments follow the reconciled matrix. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
