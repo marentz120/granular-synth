@@ -134,9 +134,5 @@ The following product decisions extend the approved baseline under the owner's e
 - DEC-038: MPE per-note pitch-bend range is 48 semitones.
 - DEC-039: MIDI Clock Start resets transport, Continue resumes, Stop halts; clock loss after two expected beat intervals stops progression; SPP is ignored in R1.
 - DEC-040: mono live input is centered; explicit LL/RR duplication is not the default.
-- DEC-037: Sampler Env Pile-up defaults OFF; user may enable per layer.
-- DEC-038: MPE per-note pitch-bend range is 48 semitones.
-- DEC-039: MIDI Clock Start resets transport, Continue resumes, Stop halts; clock loss after two expected beat intervals stops progression; SPP is ignored in R1.
-- DEC-040: mono live input is centered; explicit LL/RR duplication is not the default.
 
 *End of R1_PRODUCT_SPECIFICATION.md*
