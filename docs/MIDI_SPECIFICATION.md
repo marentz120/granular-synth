@@ -23,7 +23,7 @@ Standalone essential live-performance operations, including all sequencer functi
 ## 3. MPE
 
 - R1 supports per-note pitch, pressure and timbre expression.
-- The benchmark documents Strike/Slide/Pressure/Timbre(CC74) and pitch-bend range 48 semitones. GRANULAR SYNTH's exact MPE compatibility profile and zone configuration remain to be specified; do not hardcode the benchmark's channel allocation without review.
+- R1 per-note pitch-bend range is 48 semitones (DEC-038). The MPE zone/member-channel allocation and host/controller negotiation remain Phase 3 technical details; do not hardcode undocumented benchmark channel allocation.
 - MPE expression must be associated with the correct note/voice across overlapping notes.
 - Channel aftertouch behavior in MPE mode must be defined consistently with poly pressure; outside MPE, channel aftertouch remains a channel-level source.
 - Pitch-bend range compatibility must be deterministic and communicated to the host/controller where protocol support exists.
@@ -85,9 +85,9 @@ Standalone essential live-performance operations, including all sequencer functi
 |---|---|
 | Same MIDI channel assigned to multiple layers | Product behavior: all matching layers receive the event; implementation/configuration UX Phase 3/4 |
 | MPE zone/master/member channel configuration | OPEN; exact compatibility profile |
-| MPE pitch-bend range and negotiation | OPEN; benchmark documents 48 semitones, product profile not fully settled |
+| MPE pitch-bend range | **ANSWERED — DEC-038:** 48 semitones. Zone negotiation remains Phase 3 |
 | Program Change mapping to library/performance bank | **DEC-033:** explicit slot assignment in the active performance bank; unmapped program values are ignored. Mapping editor UX is Phase 4 |
-| Clock loss/restart/song-position behavior | OPEN |
+| Clock loss/restart/song-position behavior | **ANSWERED — DEC-039:** Start resets, Continue resumes, Stop halts; loss after two expected beat intervals stops progression; SPP ignored in R1 |
 | NRPN timeout, termination and 7/14-bit precedence | Phase 3 protocol detail |
 | Exact host parameter exposure | Q-T12 / Phase 3 |
 | Benchmark CC map compatibility | L2 |
