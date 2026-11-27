@@ -177,7 +177,7 @@ The owner approved Source Snapshot Freeze as DEC-042 on 2026-11-27. Product sema
 8. Missing/disconnected source or memory exhaustion fails safely, preserving the prior valid source and reporting status.
 9. Freeze state and snapshot persist under DEC-025; All Sound Off does not thaw.
 
-Still open as engineering work: exact recording tap definition, snapshot memory accounting/admission, capture preparation/copy strategy, bounded transition work, crossfade duration, object retirement and host-state serialization limits. These do not reopen the approved product behavior.
+Still open as engineering work: owner review and host/UX validation of the proposed recording taps, snapshot memory accounting/admission, capture preparation/copy strategy, bounded transition work, crossfade duration, object retirement and host-state serialization limits. These do not reopen the approved product behavior.
 
 ---
 
