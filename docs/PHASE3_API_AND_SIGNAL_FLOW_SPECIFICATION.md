@@ -688,6 +688,7 @@ The following supporting symbols are also candidate design vocabulary used by th
 | IPerformanceSet / IPerformanceBank | nextPattern / lookup | Separate sequencer performance ordering from explicit Program Change bank mapping (DEC-033). |
 | IParameterWriterPolicy | resolve | Placeholder for AR-01; no writer precedence is selected by naming this interface. |
 | IParameterRuntime | resetControllers | Reset-controller semantics remain distinct from All Notes Off and All Sound Off. |
+| IParameterSmoother | process | Applies the approved parameter-class smoothing contract; update class and smoothing order remain parameter-registry responsibilities, not a new product behavior. |
 | ParameterScaleVersion | versioned scale conversion | Preserves preset sound across schema versions; Q-T15 remains open. |
 
 No implementation or benchmark was run. If a future implementation uses different names or combines these responsibilities, update the traceability matrix rather than treating this candidate vocabulary as a binding ABI.
