@@ -83,10 +83,10 @@ Standalone essential live-performance operations, including all sequencer functi
 
 | Question | Status |
 |---|---|
-| Same MIDI channel assigned to multiple layers | OPEN; choose all-matching versus focus/selection behavior |
+| Same MIDI channel assigned to multiple layers | Product behavior: all matching layers receive the event; implementation/configuration UX Phase 3/4 |
 | MPE zone/master/member channel configuration | OPEN; exact compatibility profile |
 | MPE pitch-bend range and negotiation | OPEN; benchmark documents 48 semitones, product profile not fully settled |
-| Program Change mapping to unbounded library | OPEN |
+| Program Change mapping to library/performance bank | Phase 4 product interaction detail; unmapped messages must not recall arbitrary content |
 | Clock loss/restart/song-position behavior | OPEN |
 | NRPN timeout, termination and 7/14-bit precedence | Phase 3 protocol detail |
 | Exact host parameter exposure | Q-T12 / Phase 3 |
