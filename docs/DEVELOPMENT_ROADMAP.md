@@ -76,7 +76,7 @@ flowchart LR
 5. Every R1 requirement in the six completed domains has at least one observable product-level acceptance criterion; architecture-dependent and numeric performance tests are explicitly carried to Phase 3/5.
 6. Requirements document is versioned 1.0. Create the repository tag `requirements-v1.0` only after the owner approves and merges the Phase 2 PR.
 
-**Explicitly deferred:** reference machine and host matrix (Q-P09/Q-P10), sample-rate/buffer feasibility (Q-T17), CPU/RAM/latency budgets (Q-T07 and related), framework/parameter/host-bus architecture (Q-T01…Q-T16), Freeze semantics and implementation. These are not Phase 2 blockers.
+**Explicitly deferred:** reference machine and host matrix (Q-P09/Q-P10), sample-rate/buffer feasibility (Q-T17), CPU/RAM/latency budgets (Q-T07 and related), framework/parameter/host-bus architecture (Q-T01…Q-T16), Freeze semantics and implementation; optional physical benchmark A/B work if a GR-MEGA unit becomes available (Q-P13). These are not Phase 2 blockers.
   
 ---
 
