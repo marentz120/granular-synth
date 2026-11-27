@@ -1,6 +1,6 @@
 # Threading and Ownership Specification
 
-**Version:** 0.3 — AU/VST3 callback lifecycle constraints added  
+**Version:** 0.4 — render-capacity generation and scratch ownership added  
 **Status:** Proposed; requires architecture approval. No implementation is authorized.  
 **Authority:** REQ-AUD-001…003, GS-NFR-001/005/006, DEC-020/025, Q-T08/Q-T09.
 
@@ -221,3 +221,36 @@ This section refines the generic thread model using official format documentatio
 - State callbacks may be concurrent with realtime rendering in one format/context and sequential on the processing thread in another. Use immutable generation-consistent snapshots and host-specific callback rules; never solve this by blocking the render thread.
 
 These constraints are API-derived. Exact host behavior, callback sequences and live-input/output exposure still require the authorized host matrix; no host prototype or benchmark was run.
+
+### 10.4 Render-capacity generation and scratch ownership
+
+Each prepared render configuration has one immutable capacity descriptor for the lifetime of that generation:
+
+- `maxFramesPerBlock` (`B`);
+- negotiated input bus/channel arrangement;
+- negotiated output bus/channel arrangement;
+- sample rate and any sample/work format that changes storage shape;
+- monotonically increasing lifecycle generation.
+
+AU derives `B` from host-set `maximumFramesToRender` before render-resource allocation. VST3 derives `B` from `ProcessSetup::maxSamplesPerBlock` while inactive. Standalone derives it from the configured device callback maximum. For an actual audio render of `N` frames, validate `N <= B` before touching scratch. No callback may resize, allocate, free or shrink a workspace.
+
+A callback that exceeds `B` is a bounded adapter/configuration failure. It must not index beyond the prepared capacity or attempt recovery by allocating. The exact AU/VST3/device error mapping is adapter-specific and remains a validation item. A VST3 parameter-flush call with no audio buses is not an audio render: it may apply the permitted bounded parameter/event work, but it does not consume audio scratch or advance audio/transport.
+
+**Ownership split:**
+- Host input/output buffers are borrowed only for the current callback and are never retained by the engine.
+- Engine-owned scratch and per-layer working planes are allocated/reserved off-thread before the generation becomes active.
+- The implementation's resource ledger counts only actual owned/staged copies, not every borrowed bus view.
+- A read-only physical input bus may back multiple logical per-layer source views. Such fan-out does not create four copies unless an explicit staging/conversion operation materializes them.
+- Optional output buses may be absent/inactive. Their absence does not authorize allocation of replacement buffers during render; the engine follows the prepared internal routing and primary-master rules.
+
+For float32 scratch, a conditional full-copy scenario of five stereo output buses is `40 × B` bytes; one additional stereo input staging copy is `8 × B`. These are planning equations, not required allocation topology. Use checked wide byte arithmetic and verify every allocation fits `size_t` before reservation/allocation. Float32 sample width and a 32-bit per-block frame-count type do not imply a 32-bit process. Q-T03 remains open; the current macOS architecture investigation is x86_64/arm64, with no 32-bit macOS target approved or implied.
+
+Reconfiguration is a lifecycle transaction:
+1. The adapter stops/deactivates or quiesces the old configuration according to the host/device API.
+2. A non-RT owner constructs and admits the complete next generation.
+3. A failed preparation leaves the prior generation intact where host lifecycle permits; otherwise the component remains in a defined inactive/error state.
+4. The new generation is published only when its complete resources and routing map are ready.
+5. Old scratch/graph resources are retired only after the host can no longer invoke a callback referencing them; destruction occurs off RT.
+
+A lower actual frame count does not shrink capacity during render. A changed maximum, sample rate or bus arrangement is not a per-block event; it requires the documented host/device lifecycle. See `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md` for byte formulas and planned boundary/reconfiguration tests.
+
