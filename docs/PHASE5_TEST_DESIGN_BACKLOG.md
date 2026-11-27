@@ -143,9 +143,9 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | Q-T17 | GS-PLT-003, GS-GRN-002 and sample-rate-sensitive behavior | Confirm supported sample-rate and buffer-size matrix; do not convert proposed values into a support promise before approval. |
 | Q-P09 | GS-ARC-006, GS-SMG-002, GS-UI-006 and host-specific validation | Approve target hosts/versions and the AU/VST3 component/bus validation matrix. |
 | AR-01 | GS-GRN-019, GS-SEQ-002 and same-offset parameter/event behavior | Resolve deterministic same-offset ordering and writer precedence before final event-level pass conditions. |
-| AR-02 | GS-ARC-002…004, GS-GRN-017, GS-VOI-001 | Resolve deterministic voice/grain overload policy; keep voice stealing distinct from global grain-budget reclamation. |
-| Q-T07 | GS-ARC-004, GS-GRN-020, GS-SMG-019, GS-UI-005, GS-NFR-002/009 | Establish reference hardware and obtain explicit benchmark authorization before numeric performance thresholds or claims. |
-| Q-T12 | GS-NFR-006, GS-MOD-005, GS-UI-002/007 | Approve stable host parameter-ID/exposure scheme before freezing parameter registry coverage. |
+| AR-02 | GS-ARC-002, GS-ARC-003, GS-ARC-004, GS-GRN-017, GS-VOI-001 | Resolve deterministic voice/grain overload policy; keep voice stealing distinct from global grain-budget reclamation. |
+| Q-T07 | GS-ARC-004, GS-GRN-020, GS-SMG-019, GS-UI-005, GS-NFR-002, GS-NFR-009 | Establish reference hardware and obtain explicit benchmark authorization before numeric performance thresholds or claims. |
+| Q-T12 | GS-NFR-006, GS-MOD-005, GS-UI-002, GS-UI-007 | Approve stable host parameter-ID/exposure scheme before freezing parameter registry coverage. |
 | DEC-042 Global Freeze failure semantics | GS-SMG-021 and AC-AUD-028 | Owner confirmation remains required for successful-subset versus all-or-nothing preparation failure. Existing AC-AUD-028 is explicitly proposed pending review. |
 
 ## 6. Exit criteria for this backlog
