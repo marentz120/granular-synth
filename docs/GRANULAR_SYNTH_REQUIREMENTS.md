@@ -1,7 +1,7 @@
 # GRANULAR SYNTH Requirements
 
-**Status:** Draft; detailed acceptance criteria and technical feasibility remain subject to architecture and test review. Product scope for four layers, R1 engines, the R1 sequencer, live input and controller-only performance is approved in DECISIONS_LOG.md (DEC-015…DEC-021) and docs/R1_PRODUCT_SPECIFICATION.md. Other requirement tiers remain proposals unless explicitly approved.
-**Version:** 0.5 (consistency pass on the R1 product-scope decisions, 2026-11-27)
+**Status:** Phase 2 requirement inventory and release-tier classification approved by DEC-041. Technical feasibility, numeric resource budgets and architecture remain subject to Phase 3/5 validation.
+**Version:** 1.0 (Phase 2 scope and specification completion, 2026-11-27)
 **Inputs:** GR_MEGA_FEATURE_MAP.md (manual 1.8.d + fw 1.8.x release notes), PRODUCT_VISION.md, CLAUDE.md.
 
 ## Change summary (v0.4 → v0.5)
