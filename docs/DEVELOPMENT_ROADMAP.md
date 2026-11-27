@@ -119,6 +119,7 @@ flowchart LR
 7. Host component/bus decisions are supported by documented host/format evidence or explicitly deferred with an approved limitation.
 8. No stale Phase 2 product policy remains in the architecture documents; all proposed values are distinguished from measured results and approved decisions.
 9. Rolling-source Freeze/state readers have a bounded lifetime/retention contract, global Freeze cannot be split across render boundaries, and ring-wrap/lease-exhaustion/partial-failure tests are specified before implementation.
+10. Owner resolves whether mixed-preparation global Freeze applies the ready subset at one boundary or aborts all four layers (AC-AUD-028); no implementation assumes either behavior before that decision.
 
 ---
 
