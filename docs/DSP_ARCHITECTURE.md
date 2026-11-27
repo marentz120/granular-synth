@@ -1,10 +1,21 @@
 # DSP and Application Architecture
 
 **Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions (DEC-005 remains *Proposed*).
-**Version:** 0.4 (consistency fix, 2026-11-27: §7 Granular Slice row corrected from "(R1)" to "(L2 — deferred, DEC-018)", matching GRANULAR_SYNTH_REQUIREMENTS.md §3.5 and the approved R1 engine scope)
+**Version:** 0.5 (Phase 3 architecture proposal reconciliation, 2026-11-27)
+
+**Change summary (v0.4 → v0.5):**
+- Reconciled sample/plugin state policy with DEC-025: unsaved recording buffers are embedded; library samples remain external references with relink/collect.
+- Reconciled R1 macro count with DEC-036 (ten macros; no R1 expansion to twenty).
+- Reconciled R1 MIDI scope: MIDI Clock input in Standalone; no R1 MIDI feedback, clock output or sequencer MIDI output commitment.
+- Labeled Granular/Sampler as R1 engines and Slice/Tape/Spectral as later-tier extension points.
+- Added cross-references to the Phase 3 threading, parameter, sample/state, plugin bus, Freeze and traceability proposals.
+
+**Status remains:** Investigation and proposal only; no framework, component topology, numeric resource budget or implementation is approved.
 **Inputs:** GR_MEGA_FEATURE_MAP.md, GRANULAR_SYNTH_REQUIREMENTS.md, CLAUDE.md engineering principles.
 
 Every item marked **⚑ DECISION** needs ChatGPT review and owner approval before Phase 3 is closed. They are collected in OPEN_QUESTIONS.md §B with options and trade-offs. Nothing here instructs implementation.
+
+**Phase 3 companion proposals:** `PARAMETER_ID_SPECIFICATION.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`, and `PHASE3_ARCHITECTURE_TRACEABILITY.md`. Consolidated review proposals are in `PHASE3_ARCHITECTURE_DECISION_REGISTER.md`.
 
 **Evidence convention (owner review of PR #2, 2026-11-27, item 3):** Where this document describes GR-MEGA behavior (e.g. "benchmark does X"), that claim is traceable to a GR_MEGA_FEATURE_MAP.md row and carries that row's evidence class (Manual-confirmed / Interpretation / Proposal / Unverified — see feature map §0). Where this document must specify an *algorithm* the manual does not document — the grain-stealing law (§6.3), the density-normalization law (§6.6), auto-slice detection, the tape slew law, the phase-vocoder overlap/window, or any other internal mechanism GR-MEGA does not publish — that algorithm is **GRANULAR SYNTH's own original design**, not a reconstruction of GR-MEGA's confirmed internal implementation, and is tagged [UNV]/[PROP] in the feature map (see feature map §15, risk R-08). Numeric engineering figures (CPU/memory/timing estimates) are separately marked as calculated estimates in §5.3 and §6.10 and must not be read as measured results.
 
