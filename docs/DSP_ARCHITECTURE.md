@@ -507,7 +507,7 @@ The following recommended ordering preserves the approved GS-ARC-007 chain (engi
 3. Sub-oscillator mix.
 4. LPF stage.
 5. HPF stage.
-5. Amp envelope.
+6. Amp envelope.
 6. Voice pan into the stereo layer sum.
 7. Per-layer live input is gain-staged and mixed into that layer before its four-slot FX chain; mono input is centered across the stereo path per DEC-040.
 8. A parallel dry live-input path is summed before the master, as required by GS-ARC-007.
@@ -516,4 +516,4 @@ The following recommended ordering preserves the approved GS-ARC-007 chain (engi
 11. Layer fader, mute and solo into the master mixer; parallel dry live input is also summed before the master.
 12. Stereo master output and master recording tap immediately before host/device output.
 
-Recommended recording semantics: layer stems ignore layer fader/mute/solo so they remain independently mixable; master mix reflects those controls. No parallel dry-input-to-master route is enabled by default. This proposal must be validated with impulse/routing fixtures and Standalone monitoring tests before implementation.
+Recommended recording semantics: layer stems capture the post-FX wet layer path and ignore layer fader/mute/solo so they remain independently mixable; master mix reflects those controls and includes the parallel dry live-input path required by GS-ARC-007. Validate with separate wet/dry impulse fixtures and Standalone monitoring tests before implementation.
