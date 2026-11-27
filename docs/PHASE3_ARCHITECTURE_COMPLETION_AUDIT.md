@@ -335,3 +335,17 @@ The corrected baseline is:
 This supersedes the earlier 47/77 arithmetic. No requirement tier, product behavior or approved decision changed. The 71 remaining requirements are now enumerated in PHASE5_TEST_DESIGN_BACKLOG.md with candidate test intent, evidence type and dependencies. No AC IDs, pass thresholds, test results or performance claims were invented. The backlog is planning only; Phase 5 owns final test design and acceptance wording.
 
 No code, Plugin Shell, host prototype, benchmark or merge was performed.
+
+## AU/VST3 callback and bus contract cross-check — 2026-11-27
+
+A review against current Apple Audio Toolbox and Steinberg VST3 public documentation found format-specific lifecycle details that the generic adapter contract had not yet stated precisely:
+
+- AU maximumFramesToRender is set before render-resource allocation and cannot change while resources are allocated; the host caches the render block before realtime rendering. AU parameter scheduling may be called from any thread, and a failed input pull invalidates the current input data.
+- VST3 sample rate and maxSamplesPerBlock cannot change while the component is active; the host must deactivate before setupProcessing() and then reactivate/restart. The host may call process() with no audio buses to flush parameters.
+- VST3 per-call bus arrays require careful handling: check numInputs/numOutputs, permit null sample pointers for inactive buses, and account for trailing inactive buses omitted from the current arrays. kDefaultActive does not guarantee host activation.
+- VST3 process context is optional and should be requested through IProcessContextRequirements when supported; returned context flags remain authoritative.
+- VST3 process() and setProcessing() may execute on the audio thread; offline state callbacks may occur on the same thread as processing.
+
+These constraints are now recorded in PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md §10, THREADING_AND_OWNERSHIP_SPECIFICATION.md §10, PHASE3_INTERFACE_CONTRACTS.md §3.5 and PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md §8. The normalized contract now distinguishes declared, present, active, arranged and buffer-valid bus state, plus audio-render versus parameter-flush process kind.
+
+This is a documentation refinement only. It does not resolve Q-P06/Q-P09, choose AUv2/AUv3 or aumu/aufm, approve the five-bus host topology, or authorize a prototype. No code, host test or benchmark was performed.
