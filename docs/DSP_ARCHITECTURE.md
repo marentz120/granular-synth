@@ -205,7 +205,7 @@ The previous sample keeps playing until the swap (GS-SMG-003). Analysis that is 
 ### 5.6 Plugin input for live granulation (product scope approved; implementation Q-P06)
 
 - **VST3:** instrument with an optional stereo audio input bus (main or sidechain) — widely supported.
-- **AU:** an instrument (`aumu`) has no main audio input in typical hosts, and side-chain support for instruments is host-dependent. The established route for a MIDI-played audio processor is the **music-effect** (`aumf`) type, which Logic Pro places in an audio-effect / MIDI-controlled-effect slot rather than the instrument slot. Option: ship both `aumu` and `aumf` variants of the same binary. Live input in plug-in contexts is an approved product requirement (DEC-020). The exact component/bus strategy remains an architecture decision: verify host behavior in Logic, Live and other target hosts before selecting the AU/VST3 implementation.
+- **AU:** retain `aumu` as the first validation candidate because R1 is a MIDI-playable instrument, but do not assume an instrument component receives a usable full-band input bus in a target host. Logic's documented side-chain source controls a plug-in and is not itself processed as the plug-in's audio input; a sidechain detector/modulation path therefore does not prove live-audio source support. The **music-effect** (`aufm`) role is semantically aligned with audio modification plus MIDI response, but note-event/MPE routing, host insertion workflow and multi-output behavior must be tested. A dual `aumu` + `aufm` package is a last-resort option only if distinct required workflows cannot be met by either single component. Live input in plug-in contexts remains required by DEC-020. Follow the evidence gate in `PHASE3_AU_COMPONENT_STRATEGY_AUDIT.md`; no AU subtype is selected.
 
 ---
 
@@ -497,7 +497,7 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 | Q-T10 | Spectral latency policy | Report latency only when processing live input |
 | Q-T11 | PV overlap/window | Hann, 4× overlap baseline |
 | Q-T12 | Parameter ID scheme & host exposure | Stable string IDs, expose all, grouped by layer |
-| Q-P06 | Plugin audio input / AU type | VST3 input bus + AU `aumu` and `aumf` variants |
+| Q-P06 | Plugin audio input / AU type | VST3 input bus + AU `aumu` and `aufm` candidates |
 | Q-P08 / DEC-025 | Unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect |
 | Q-P02 | Plugin formats | AU + VST3 (R1); CLAP optional |
 | Q-P03 | Distribution, signing, notarization | Decide before Phase 6 |
