@@ -27,6 +27,12 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 | DEC-020 | Live input, Freeze and recording are R1 capabilities across layers | **Approved** | Owner requires live input for each layer and per-layer/global Freeze; product-manager decision under explicit delegation adds per-layer capture plus stereo master-mix recording. Standalone and plug-in live-input support is a product requirement; exact format-specific implementation remains technical. |
 | DEC-021 | Universal MIDI-controller operation and sequencer editing are R1 requirements | **Approved** | Owner requires all sequencer functions, including editing, to be accessible through generic MIDI controllers; MIDI Learn + manual CC/channel/Note mapping; no R1 MIDI feedback or named-controller template. |
 
+
+| DEC-022 | R1 library uses a searchable desktop library with tags/favourites and an optional performance-bank/slot recall view; storage is not limited to benchmark fixed slot counts | **Approved** | Product-manager decision under the owner's explicit delegation (2026-11-27). Performance banks index library items; Pattern Library remains independent; preset recall does not replace active Pattern. See PRESET_LIBRARY_SPECIFICATION.md. |
+| DEC-023 | R1 effects are Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator and Compressor | **Approved** | Product-manager decision under the owner's explicit delegation (2026-11-27), resolving Q-P11. Large Reverb, Resonator, Flanger, Vibrato, Ring Mod, Reducer and Distortion remain L2; duplicate same-type instances OPT; master FX L3. See EFFECTS_SPECIFICATION.md. |
+| DEC-024 | Each R1 LFO has a selectable Poly/Mono phase mode; default is Mono (shared per-layer phase) | **Approved** | Product-manager decision under the owner's explicit delegation (2026-11-27), resolving Q-M11. Poly mode uses independent phase per voice; Mono shares one phase accumulator per layer. See MODULATION_SPECIFICATION.md. |
+| DEC-025 | DAW plugin state embeds unsaved recording buffers; existing library samples remain external references with relink/collect support | **Approved** | Product-manager decision under the owner's explicit delegation (2026-11-27), resolving the product policy in Q-P08. Exact serialization, size handling and host-state implementation remain Phase 3 technical decisions. See PRESET_LIBRARY_SPECIFICATION.md. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
