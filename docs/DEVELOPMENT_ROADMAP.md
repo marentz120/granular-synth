@@ -1,7 +1,7 @@
 # Development Roadmap
 
 **Status:** Proposal; gated by research and owner approval. No phase is automatically authorized by this roadmap. Do not build all features in parallel or skip real-time validation.
-**Version:** 0.6 (recommended routing defaults, 2026-11-27)
+**Version:** 0.7 (Freeze retention and global transaction contract, 2026-11-27)
 
 ## Change summary (v0.2 → v0.3)
 
@@ -9,6 +9,7 @@
 - Added the Phase 3 architecture completion audit and platform/plugin evidence note as supporting review documents.
 - Clarified that proposed architecture documents and host research do not approve a framework, component topology, numeric resource budgets or implementation.
 - Added the R1 cross-module interface contract specification (IF-01…IF-12), the candidate API/service boundaries, and the signal-flow/recording-tap proposal.
+- Specified rolling-source retention leases for off-thread Freeze snapshots and a single bounded global Freeze transaction; added ring-wrap, lease-exhaustion and mixed-layer failure acceptance coverage.
 
 ## Change summary (v0.1 → v0.2)
 
@@ -104,7 +105,7 @@ flowchart LR
 - `FREEZE_BEHAVIOR_SPECIFICATION.md` — approved Freeze behavior and state machine.
 - `PHASE3_ARCHITECTURE_TRACEABILITY.md` — every R1 requirement mapped to architecture modules/interfaces and validation obligations.
 - `PHASE3_INTERFACE_CONTRACTS.md` — cross-module contracts for host process, parameters, structural commands, snapshots, samples, recording, Freeze, transport, MIDI, audio routing, plugin state and deterministic rendering.
-- `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` — proposed framework-independent service boundaries, illustrative API/data contracts, render-block ordering, signal-flow graph, recording tap options and open routing decisions.
+- `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` — proposed framework-independent service boundaries, illustrative API/data contracts, render-block ordering, signal-flow graph, recording tap options, Freeze source-retention contract and global transaction semantics.
 - Updated `OPEN_QUESTIONS.md` and `DECISIONS_LOG.md` with final status of Q-T01…Q-T17 and related architecture decisions.
 
 **Measurable exit criteria**
@@ -117,6 +118,7 @@ flowchart LR
 6. Sample/state lifecycle implements the DEC-025 policy without changing it; Freeze semantics are explicitly approved and testable.
 7. Host component/bus decisions are supported by documented host/format evidence or explicitly deferred with an approved limitation.
 8. No stale Phase 2 product policy remains in the architecture documents; all proposed values are distinguished from measured results and approved decisions.
+9. Rolling-source Freeze/state readers have a bounded lifetime/retention contract, global Freeze cannot be split across render boundaries, and ring-wrap/lease-exhaustion/partial-failure tests are specified before implementation.
 
 ---
 
