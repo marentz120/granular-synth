@@ -83,7 +83,7 @@ States:
 
 Per-layer recorders and the stereo master recorder are separate assets. Recording is written into preallocated buffers/rings; disk writing and WAV export happen off-thread. A buffer-full or resource-exhaustion condition stops capture safely, preserves valid frames and informs the user.
 
-The exact start modes, stop semantics, loop/scroll behavior, and recording tap points must be specified in the audio signal-flow document and tested. Master capture is the post-layer-mix stereo output at the approved master tap. Per-layer capture uses a documented layer tap and is independent of other layers' mix level unless the product specification is changed.
+Recommended architecture defaults (pending product UX and host validation): per-layer capture is post-FX and pre-layer-fader, independent of layer fader/mute/solo; a muted or solo-isolated layer continues recording its own stem when armed. Master capture is the final stereo master mix after layer faders/mute/solo and before host output, including live input routed through the layer graph. No separate dry-to-master bypass is enabled by default. These tap positions are engineering recommendations, not new approved product requirements. Exact start modes, stop semantics and loop/scroll behavior remain to be specified and tested.
 
 ## 7. Plugin state and persistence — DEC-025 implementation
 
@@ -151,3 +151,15 @@ Numeric capture duration, memory budget, copy strategy, crossfade duration and s
 | Freeze interaction with recording | **Answered — DEC-042**; recorder continues at its defined tap, frozen snapshot remains immutable. Exact tap definition remains open in signal-flow design |
 
 **Status:** Proposed engineering specification aligned with approved product policies DEC-025 and DEC-042. It does not approve a memory ceiling or a serialization container.
+
+
+## 6.1 Recommended recording tap contract
+
+| Recorder | Tap | Includes | Excludes |
+|---|---|---|---|
+| Layer 1–4 | Post-layer FX, pre-layer fader | Engine output, live input routed through the layer, layer FX tails | Layer fader, mute and solo state |
+| Stereo master | Post-layer mix, pre-host output | Four layer contributions after fader/mute/solo, including their routed live input | Host-side processing after plugin output |
+
+The tap is fixed for a recording take and stored in recording metadata. The UI must label the source clearly (Layer Stem or Master Mix). A muted layer remains recordable as a stem; the master naturally reflects the mute/solo mix. Recording continues independently during Freeze per DEC-042.
+
+Validation must inject distinct test signals into each layer, toggle fader/mute/solo during capture, and compare captured stems/master against the corresponding graph nodes. No tap may read an uncommitted recording region.
