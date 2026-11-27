@@ -14,7 +14,7 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 ## 2. R1 engine and layer scope
 
 ### 2.1 Layers
-- Exactly **four independent Granular layers** are exposed in R1.
+- Exactly **four independent layers** are exposed in R1; each layer can select the Granular or Sampler engine.
 - Each layer has independent sample/source, synthesis parameters, voice allocation, modulation, effects and layer output/mix controls.
 - All four layers share the instrument's transport and central sequencer.
 - The product does not promise more than four user-facing layers in R1.
