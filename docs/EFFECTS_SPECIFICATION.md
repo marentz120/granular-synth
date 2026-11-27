@@ -1,8 +1,8 @@
 # Effects Specification
 
 **Version:** 0.1 — Phase 2 working specification  
-**Status:** Proposed; subject to owner review. No DSP implementation authorized.  
-**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-FX-001…008; R1_PRODUCT_SPECIFICATION.md; DEC-015…021.  
+**Status:** R1 effect inventory approved by DEC-023; parameter-level details remain proposed/open where noted. No DSP implementation authorized.  
+**Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-FX-001…008; R1_PRODUCT_SPECIFICATION.md; DEC-015…025.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §12 and §1.2.
 
 ## 1. R1 scope
@@ -104,7 +104,7 @@ The benchmark feature map provides the following controls. Ranges and defaults n
 | Exact ranges, units and defaults for Chorus, Compressor, Saturator and Reverb controls | OPEN; do not invent |
 | EQ3 crossover ordering and invalid-value behavior | OPEN |
 | Compressor detector topology, sidechain, lookahead and meter scope | Not specified; not R1 commitments |
-| FX send range −100…+24 dB | Benchmark-derived proposal; validate against product gain staging |
+| FX send range −100…+24 dB | Benchmark-derived candidate range; validate against product gain staging in Phase 3 |
 | Duplicate same-type effect instances | OPT; no R1 requirement |
 | FX chain/single-effect presets | L2 |
 | Master-bus FX | L3 |
