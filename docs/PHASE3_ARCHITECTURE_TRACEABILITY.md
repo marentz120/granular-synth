@@ -1,6 +1,6 @@
 # Phase 3 R1 Architecture Traceability
 
-**Version:** 0.2 — Phase 3 proposal  
+**Version:** 0.3 — Phase 3 proposal  
 **Status:** Initial 124-row mapping against `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0. This is an architecture coverage proposal, not evidence that the modules are implemented or tested.  
 **Baseline:** DEC-041 and `R1_RELEASE_SCOPE_MATRIX.md`.
 
@@ -79,9 +79,9 @@ The R1 mapping includes the R1 portion of split-tier requirements:
 
 See `PHASE3_INTERFACE_CONTRACTS.md` for IF-01…IF-12. It defines the cross-domain contract obligations for host processing, parameter registry, structural commands, UI snapshots, sample assets, recording, Freeze, transport, MIDI, audio routing, plugin state and deterministic rendering. The area-to-interface index in that document refines the broad interface column above.
 
-The 124 requirement rows are still grouped by area in this document; they have not yet each been expanded into a dedicated class/API mapping row. This remains an explicit refinement task before implementation approval.
+The 124 requirement rows now have individual module/interface/validation-family assignments. Exact C++ class/API signatures, method contracts, data layouts and per-test pass conditions remain an engineering specification task before implementation approval.
 
-## 6. Unmapped/uncertain status
+## 7. Unmapped/uncertain status
 
 - No R1 requirement is intentionally left unmapped in this initial pass.
 - The mapping is by domain and module boundary, not yet by individual class/API. Class-level design belongs in the architecture specification.
@@ -89,4 +89,4 @@ The 124 requirement rows are still grouped by area in this document; they have n
 - Numeric acceptance criteria, host-specific validation, measured budgets and test implementations remain Phase 5/7 deliverables.
 - The 124 count is reconciled to the approved R1 inventory; this table does not reclassify tiers.
 
-**Audit result:** 124/124 approved R1 requirements have a proposed architecture owner, and the cross-domain contract set IF-01…IF-12 is now documented. This is not yet per-requirement class/API traceability and does not show that tests pass. Implementation readiness remains blocked by open technical decisions, host evidence, signal-flow details and measured resource limits.
+**Audit result:** 124/124 approved R1 requirements have individual proposed module/interface/validation-family assignments, and the cross-domain contract set IF-01…IF-12 is documented. This is not yet concrete C++ class/API design and does not show that tests pass. Implementation readiness remains blocked by open technical decisions, host evidence, signal-flow details and measured resource limits.
