@@ -39,7 +39,7 @@ Every interface must define its producer, consumer, data ownership, execution co
 - Every cross-thread queue has one documented producer/consumer topology, fixed capacity, overflow policy and counter. Multiple independent producers must not be routed into an SPSC queue.
 - Audio-thread retirement must never perform final destruction. A bounded non-RT reclamation path and saturation fallback are required.
 - A committed frame count proves validity, not lifetime: rolling-source readers require a retention lease or equivalent protection against overwrite for the full read.
-- Global Freeze is one bounded transaction; four independent layer commands must not be allowed to land on different render boundaries.
+- Global Freeze is one bounded transaction; four independent layer commands must not be allowed to land on different render boundaries. The current successful-subset behavior for mixed preparation results is proposed, not approved; owner review must resolve it against an all-or-nothing alternative before implementation.
 - Host callback buffers and MIDI event memory are borrowed only for the callback unless copied into owned bounded storage.
 
 ### 3.2 Ordering and determinism
