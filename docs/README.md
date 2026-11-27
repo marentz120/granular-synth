@@ -17,3 +17,5 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Owner decisions, technical decisions, evidence gaps | Living, v0.4 |
 | [R1_REQUIREMENTS_MAPPING.md](R1_REQUIREMENTS_MAPPING.md) | Initial audit mapping requirements against R1_PRODUCT_SPECIFICATION.md; findings and non-binding recommendations | Initial pass, findings addressed 2026-11-27 |
 | [TESTING_STRATEGY.md](TESTING_STRATEGY.md) | Test approach and release validation | Initial principles (Phase 5) |
+
+- PHASE3_API_SYMBOL_TRACEABILITY.md — candidate class/API-operation mapping for all 124 R1 requirements; acceptance gaps and owner gates remain explicit.
