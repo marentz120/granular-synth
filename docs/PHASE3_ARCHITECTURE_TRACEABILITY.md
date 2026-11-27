@@ -81,10 +81,143 @@ See `PHASE3_INTERFACE_CONTRACTS.md` for IF-01…IF-12. It defines the cross-doma
 
 The 124 requirement rows now have individual module/interface/validation-family assignments. Exact C++ class/API signatures, method contracts, data layouts and per-test pass conditions remain an engineering specification task before implementation approval.
 
+## 6. Per-requirement interface mapping (124 R1 rows)
+
+The following expansion maps each approved R1 row individually to its primary module owner, applicable IF contracts and planned validation family. These are proposed design/validation assignments, not implementation evidence or passing tests. Requirement descriptions and tier authority remain in `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0 and `R1_RELEASE_SCOPE_MATRIX.md`.
+
+| Requirement | Primary module owner | Interfaces | Validation family (planned) |
+|---|---|---|---|
+| GS-PLT-001 | host/ | IF-01, IF-11, IF-12 | host callback, plugin state, deterministic render |
+| GS-PLT-002 | host/ | IF-01, IF-11, IF-12 | host callback, plugin state, deterministic render |
+| GS-PLT-003 | host/ | IF-01, IF-11, IF-12 | host callback, plugin state, deterministic render |
+| GS-PLT-004 | host/ | IF-01, IF-11, IF-12 | host callback, plugin state, deterministic render |
+| GS-ARC-001 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-002 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-003 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-004 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-005 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-006 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-007 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-ARC-008 | engine/layer, engine/voice, engine/grain, engine/fx | IF-01, IF-03, IF-09, IF-10, IF-12 | layer isolation, routing, voice/grain scheduling, overload |
+| GS-GRN-001 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-002 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-003 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-004 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-005 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-006 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-007 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-008 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-009 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-010 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-011 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-012 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-013 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-014 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-015 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-016 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-017 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-018 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-019 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-GRN-020 | engine/grain, core/dsp, sample/ | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | grain timing, parameter math, window/interpolation, aliasing, seeded render |
+| GS-CHD-001 | engine/voice, engine/grain, engine/seq | IF-08, IF-09, IF-12 | chord distribution, note ordering, scale/arp determinism |
+| GS-CHD-002 | engine/voice, engine/grain, engine/seq | IF-08, IF-09, IF-12 | chord distribution, note ordering, scale/arp determinism |
+| GS-CHD-003 | engine/voice, engine/grain, engine/seq | IF-08, IF-09, IF-12 | chord distribution, note ordering, scale/arp determinism |
+| GS-CHD-004 | engine/voice, engine/grain, engine/seq | IF-08, IF-09, IF-12 | chord distribution, note ordering, scale/arp determinism |
+| GS-CHD-005 | engine/voice, engine/grain, engine/seq | IF-08, IF-09, IF-12 | chord distribution, note ordering, scale/arp determinism |
+| GS-SMP-001 | engine/engines/SamplerEngine, sample/, engine/voice | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | playback/loop boundaries, note events, sample lifetime, interpolation |
+| GS-SMP-002 | engine/engines/SamplerEngine, sample/, engine/voice | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | playback/loop boundaries, note events, sample lifetime, interpolation |
+| GS-SMP-003 | engine/engines/SamplerEngine, sample/, engine/voice | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | playback/loop boundaries, note events, sample lifetime, interpolation |
+| GS-SMP-004 | engine/engines/SamplerEngine, sample/, engine/voice | IF-02, IF-03, IF-05, IF-09, IF-10, IF-12 | playback/loop boundaries, note events, sample lifetime, interpolation |
+| GS-VOI-001 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-002 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-003 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-004 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-005 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-006 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-008 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-009 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-VOI-010 | engine/voice, core/dsp, engine/mod | IF-02, IF-03, IF-09, IF-10, IF-12 | voice allocation/stealing, envelopes, filters, pitch/MPE |
+| GS-SMG-001 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-002 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-003 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-004 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-005 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-006 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-007 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-008 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-009 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-010 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-011 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-012 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-017 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-019 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-020 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-SMG-021 | sample/, host/, state/ | IF-01, IF-05, IF-06, IF-07, IF-11 | decode/load, record soak/taps, Freeze, state/relink |
+| GS-MOD-001 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-002 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-003 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-004 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-005 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-006 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-007 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-008 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-MOD-009 | engine/mod, state/, core/dsp | IF-02, IF-03, IF-04, IF-09 | registry reachability, modulation scope/order, smoothness |
+| GS-SEQ-001 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-002 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-003 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-004 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-005 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-008 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-009 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-011 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-SEQ-012 | engine/seq, engine/voice, engine/mod, state/ | IF-03, IF-08, IF-09 | transport timing, event order, live edits, controller path |
+| GS-MID-001 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-MID-002 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-MID-003 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-MID-005 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-MID-006 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-MID-007 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-MID-008 | host/, engine/voice, engine/seq, state/ | IF-01, IF-08, IF-09 | MIDI routing, MPE, CC, Program Change, clock/panic |
+| GS-FX-001 | engine/fx, engine/layer, state/ | IF-03, IF-10 | FX chain routing, automation, tails and swap |
+| GS-FX-002 | engine/fx, engine/layer, state/ | IF-03, IF-10 | FX chain routing, automation, tails and swap |
+| GS-FX-004 | engine/fx, engine/layer, state/ | IF-03, IF-10 | FX chain routing, automation, tails and swap |
+| GS-FX-006 | engine/fx, engine/layer, state/ | IF-03, IF-10 | FX chain routing, automation, tails and swap |
+| GS-PRS-001 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-002 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-003 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-004 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-005 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-006 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-007 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-008 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-PRS-009 | state/, sample/, engine/seq | IF-02, IF-05, IF-11 | save/restore, migration, relink/collect, undo |
+| GS-UI-001 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-UI-002 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-UI-003 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-UI-004 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-UI-005 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-UI-006 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-UI-007 | ui/, host/, state/ | IF-02, IF-04, IF-09 | snapshot safety, interaction, controller mapping |
+| GS-NFR-001 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-002 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-003 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-004 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-005 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-006 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-007 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-008 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-009 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-010 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-011 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-012 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+| GS-NFR-013 | core/rt, host/, sample/, state/, CI | IF-01…IF-12 | RT safety, determinism, CPU/RAM/latency, recovery, host matrix |
+
+**Count check:** 124 rows selected from the source inventory by an R1 tier marker. Mixed-tier rows are included only for their R1 commitment. No L2/L3/OPT-only row is promoted by this table.
+
 ## 7. Unmapped/uncertain status
 
-- No R1 requirement is intentionally left unmapped in this initial pass.
-- The mapping is by domain and module boundary, not yet by individual class/API. Class-level design belongs in the architecture specification.
+- No R1 requirement is intentionally left without a proposed module/interface/validation-family assignment.
+- Exact C++ class/API signatures, method contracts, data layouts and per-test pass conditions remain an engineering specification task before implementation approval.
 - Freeze product behavior is approved by DEC-042 and specified in `FREEZE_BEHAVIOR_SPECIFICATION.md` v1.0; engineering validation still requires sample/I/O, RT ownership, state persistence and host integration evidence.
 - Numeric acceptance criteria, host-specific validation, measured budgets and test implementations remain Phase 5/7 deliverables.
 - The 124 count is reconciled to the approved R1 inventory; this table does not reclassify tiers.
