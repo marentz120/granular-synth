@@ -9,9 +9,9 @@
 | Test ID | Requirement | Pass condition | Trace |
 |---|---|---|---|
 | AC-MOD-001 | Four LFOs per layer | Each of four layers exposes four independently configurable LFOs; changing one layer does not alter another | GS-MOD-001 |
-| AC-MOD-002 | LFO functions | Supported rate modes, waveforms, phase, amplitude quantization, polarity and key-sync modes produce defined repeatable output; Poly/Mono is selectable per LFO and defaults to Mono | GS-MOD-001/002; DEC-024 |
-| AC-MOD-003 | Matrix capacity | At least 50 rows can be created, enabled/disabled, edited, copied, pasted and deleted | GS-MOD-003/007 |
-| AC-MOD-004 | Source/destination coverage | All specified R1 sources and eligible continuous R1 destinations can be selected; unsupported structural parameters cannot | GS-MOD-004/005 |
+| AC-MOD-002 | LFO functions | Supported rate modes, waveforms, phase, amplitude quantization, polarity and key-sync modes produce defined repeatable output; Poly/Mono is selectable per LFO and defaults to Mono | GS-MOD-001, GS-MOD-002; DEC-024 |
+| AC-MOD-003 | Matrix capacity | At least 50 rows can be created, enabled/disabled, edited, copied, pasted and deleted | GS-MOD-003, GS-MOD-007 |
+| AC-MOD-004 | Source/destination coverage | All specified R1 sources and eligible continuous R1 destinations can be selected; unsupported structural parameters cannot | GS-MOD-004, GS-MOD-005 |
 | AC-MOD-005 | Quick assignment | User can assign a destination using the documented quick-assignment gesture | GS-MOD-006 |
 | AC-MOD-006 | Macro behavior | Exactly ten R1 macros per patch support multiple destinations, ranges, curve and invert; macro values can be modulated | GS-MOD-008; DEC-036 |
 | AC-MOD-007 | Modulation display | Controls show summed modulation and recent-destination monitor reflects active destinations | GS-MOD-009 |
@@ -49,14 +49,14 @@
 | Test ID | Requirement | Pass condition | Trace |
 |---|---|---|---|
 | AC-PRS-001 | Browser | User can browse by bank, tag, search and favourite state | GS-PRS-002 |
-| AC-PRS-002 | Data boundaries | Patch, Multi, Pattern, Performance Set, Template and Project save/recall preserve their respective state | GS-PRS-001/003 |
+| AC-PRS-002 | Data boundaries | Patch, Multi, Pattern, Performance Set, Template and Project save/recall preserve their respective state | GS-PRS-001, GS-PRS-003 |
 | AC-PRS-003 | Pattern independence | Recalling a Preset does not replace the active Pattern | R1_PRODUCT_SPECIFICATION.md §4.4 |
 | AC-PRS-004 | Template application | Applying a sample-free template does not overwrite sample-specific state unless explicitly requested | GS-PRS-003 |
 | AC-PRS-005 | Portable assets | Collect/export includes all referenced samples; relative paths and hashes resolve correctly | GS-PRS-005 |
 | AC-PRS-006 | Relink | Missing or changed samples are detected and can be relinked; filename alone does not silently substitute content | GS-PRS-005 |
 | AC-PRS-007 | Plugin state | DAW state restores full patch state and recorded unsaved buffers under the approved persistence policy | GS-PRS-006; Q-P08 |
 | AC-PRS-008 | Version migration | Supported older preset schema migrates without unintended parameter/sound change | GS-PRS-004 |
-| AC-PRS-009 | Undo/copy | Undo/Redo and copy/paste preserve complete relevant state | GS-PRS-007/008 |
+| AC-PRS-009 | Undo/copy | Undo/Redo and copy/paste preserve complete relevant state | GS-PRS-007, GS-PRS-008 |
 | AC-PRS-010 | Corrupt data | Corrupt preset or missing asset never crashes host and produces actionable status | GS-NFR-012 |
 
 ## 5. MIDI
@@ -94,13 +94,13 @@
 | AC-AUD-024 | Persistence | Freeze state and frozen snapshot restore with plugin state; snapshot audio is embedded under DEC-025 policy | DEC-025; DEC-042 |
 | AC-AUD-025 | Panic behavior | All Sound Off silences voices/effect tails but does not silently thaw the frozen source | DEC-042 |
 | AC-AUD-026 | RT safety | Freeze/thaw audio-thread transition performs no allocation, blocking, file I/O or unbounded work; snapshot preparation and retirement occur off-thread | DEC-042; GS-NFR-001 |
-| AC-AUD-027 | Rolling-source retention | During ongoing recording and forced ring-wrap pressure, Freeze copies exactly the committed source region under a retention lease; the recorder continues in a separate writable region; if retention cannot be reserved, Freeze fails before source switch and preserves valid source/capture without a data race | DEC-042; GS-NFR-001/008 |
+| AC-AUD-027 | Rolling-source retention | During ongoing recording and forced ring-wrap pressure, Freeze copies exactly the committed source region under a retention lease; the recorder continues in a separate writable region; if retention cannot be reserved, Freeze fails before source switch and preserves valid source/capture without a data race | DEC-042; GS-NFR-001, GS-NFR-008 |
 | AC-AUD-028 | Global Freeze transaction | **Proposed pending owner review:** with mixed per-layer preparation success/failure, all ready layers switch at the same logical boundary, failed layers remain unchanged, transaction publication failure changes none, and per-layer/partial status is accurate; confirm successful-subset behavior versus all-or-nothing before implementation | DEC-042 |
 | AC-AUD-006 | Layer recording | Each layer can be recorded independently and saved/exported as reusable audio | GS-SMG-020 |
 | AC-AUD-007 | Master recording | Stereo master mix can be recorded and exported | GS-SMG-020 |
-| AC-AUD-008 | Record modes | One-shot, loop, scrolling record, AUTO/fixed buffer and mono/stereo initialization operate as specified | GS-SMG-008…011 |
+| AC-AUD-008 | Record modes | One-shot, loop, scrolling record, AUTO/fixed buffer and mono/stereo initialization operate as specified | GS-SMG-008, GS-SMG-009, GS-SMG-010, GS-SMG-011 |
 | AC-AUD-009 | Monitor while recording | Granular and Sampler can play/process the recording buffer while capture continues | GS-SMG-009 |
-| AC-AUD-010 | Keep/discard/export | User can retain, discard and export valid recorded audio; discarded buffers do not remain hidden dependencies | GS-SMG-017/020 |
+| AC-AUD-010 | Keep/discard/export | User can retain, discard and export valid recorded audio; discarded buffers do not remain hidden dependencies | GS-SMG-017, GS-SMG-020 |
 | AC-AUD-011 | Resource exhaustion | Full buffer/resource exhaustion stops safely, preserves valid capture and informs user | GS-NFR-008 |
 | AC-AUD-012 | File formats | WAV, AIFF and FLAC load; WAV export is valid | GS-SMG-001/017 |
 | AC-AUD-013 | RT safety | Audio callback performs no allocation, lock, file/network I/O, logging or blocking wait | GS-NFR-001 |
