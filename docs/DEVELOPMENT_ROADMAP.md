@@ -1,13 +1,13 @@
 # Development Roadmap
 
 **Status:** Proposal; gated by research and owner approval. No phase is automatically authorized by this roadmap. Do not build all features in parallel or skip real-time validation.
-**Version:** 0.3 (Phase 3 architecture audit and deliverable expansion, 2026-11-27)
+**Version:** 0.4 (Phase 3 interface-contract expansion, 2026-11-27)
 
 ## Change summary (v0.2 → v0.3)
 
 - Expanded Phase 3 deliverables to include parameter identity, RT threading/ownership, sample/state lifecycle, plugin component/bus, Freeze behavior and 100% R1 architecture traceability specifications.
 - Added the Phase 3 architecture completion audit and platform/plugin evidence note as supporting review documents.
-- Clarified that proposed architecture documents and host research do not approve a framework, component topology, numeric resource budgets or implementation.
+- Clarified that proposed architecture documents and host research do not approve a framework, component topology, numeric resource budgets or implementation.\n- Added the R1 cross-module interface contract specification (IF-01…IF-12) and explicit per-requirement class/API traceability refinement.
 
 ## Change summary (v0.1 → v0.2)
 
@@ -101,17 +101,17 @@ flowchart LR
 - `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` v1.0 — loading, recording, sample assets, embedded buffers and state recovery.
 - `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` v1.0 — Standalone/AU/VST3 components, buses, MIDI and host capability matrix.
 - `FREEZE_BEHAVIOR_SPECIFICATION.md` — approved Freeze behavior and state machine.
-- `PHASE3_ARCHITECTURE_TRACEABILITY.md` — every R1 requirement mapped to architecture modules/interfaces and validation evidence.
+- `PHASE3_ARCHITECTURE_TRACEABILITY.md` — every R1 requirement mapped to architecture modules/interfaces and validation obligations.\n- `PHASE3_INTERFACE_CONTRACTS.md` — cross-module contracts for host process, parameters, structural commands, snapshots, samples, recording, Freeze, transport, MIDI, audio routing, plugin state and deterministic rendering.
 - Updated `OPEN_QUESTIONS.md` and `DECISIONS_LOG.md` with final status of Q-T01…Q-T17 and related architecture decisions.
 
 **Measurable exit criteria**
 1. DEC-005 (framework) *Approved* or replaced; Q-T01–Q-T17 each *Approved*, *Rejected* or explicitly deferred with a phase.
 2. Parameter-ID scheme approved (Q-T12) — recorded as irreversible after first public release.
 3. CPU feasibility confirmed: grain-rendering cost per grain-sample measured on the reference machine and the default global grain budget fixed (Q-T07). *This needs a throwaway benchmark spike; it requires explicit owner authorization because it is code.*
-4. Every R1 requirement maps to at least one architecture module and interface (traceability table, 100% coverage of the 124 approved R1 rows).
-5. Sample/state lifecycle implements the DEC-025 policy without changing it; Freeze semantics are explicitly approved and testable.
-6. Host component/bus decisions are supported by documented host/format evidence or explicitly deferred with an approved limitation.
-7. No stale Phase 2 product policy remains in the architecture documents; all proposed values are distinguished from measured results and approved decisions.
+4. Every R1 requirement maps to at least one architecture module and interface (traceability table, 100% coverage of the 124 approved R1 rows); the cross-domain interfaces have documented ownership, timing, boundedness, failure and validation obligations (IF-01…IF-12).\n5. Every R1 row has class/API-level traceability, or the missing detail is explicitly deferred with a target phase and rationale. Domain-level grouping alone is not sufficient for an implementation-readiness claim.
+6. Sample/state lifecycle implements the DEC-025 policy without changing it; Freeze semantics are explicitly approved and testable.
+7. Host component/bus decisions are supported by documented host/format evidence or explicitly deferred with an approved limitation.
+8. No stale Phase 2 product policy remains in the architecture documents; all proposed values are distinguished from measured results and approved decisions.
 
 ---
 
