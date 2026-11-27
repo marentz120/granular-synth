@@ -80,7 +80,7 @@ The five host output bus buffers and negotiated input buffers are normally borro
 
 The implementation may render directly into valid host output buffers where signal flow and bus activation permit. It may also require internal per-layer working planes for FX, stem taps, master summing or crossfades. Those planes must be explicitly enumerated in the implementation's memory ledger; the architecture must not assume either zero scratch or five unconditional full-bus copies.
 
-For input routing, the host adapter owns a negotiated collection of physical input buses/channels. It constructs logical per-layer source views for the four layers. A logical view may alias the same read-only host input samples used by another layer. Fan-out is not four extra copies. A copy is charged only if an explicit staging/format-conversion operation materializes one.
+For input routing, the host adapter owns a negotiated collection of physical input buses/channels and normalizes it into mono/stereo channel-pair views while preserving source bus/channel identity; a wider physical bus may therefore produce multiple normalized views. It constructs logical per-layer source views for the four layers. A logical view may alias the same read-only host input samples used by another layer. Fan-out is not four extra copies. A copy is charged only if an explicit staging/format-conversion operation materializes one.
 
 If the selected host exposes only one stereo input bus, all four layers may be routed from that source subject to the product's per-layer source controls. Additional independent physical inputs are available only where the host/device exposes and validates them. The one-stereo-input prototype configuration is not a fixed R1 product cap.
 
