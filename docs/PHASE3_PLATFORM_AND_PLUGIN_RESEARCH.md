@@ -154,3 +154,40 @@ Findings that materially refine the prior host assumptions:
 Across all four hosts, public manuals do not prove that the exact optional-bus activation, per-layer source mapping and session save/reopen behavior required by GRANULAR SYNTH works. Nor do they establish the exact maximum-block reconfiguration sequence that the plug-in will observe. These remain prototype evidence items, not assumptions.
 
 **No scope change:** DEC-020 (live input in Standalone and plug-in contexts), DEC-026 (AU + VST3 R1), and GS-ARC-006 (stereo master + four stereo layer outputs) remain unchanged. No framework, AU component subtype, bus default, host version, compatibility claim or prototype was approved. No code or benchmark was run.
+
+
+## 10. AU component strategy audit — 2026-11-28
+
+The detailed comparison and decision gate are maintained in `PHASE3_AU_COMPONENT_STRATEGY_AUDIT.md`. This section records the evidence that changes the architecture recommendation.
+
+### 10.1 Component semantics
+
+Apple's current Audio Toolbox documentation defines:
+- `kAudioUnitType_MusicDevice` (`aumu`): an instrument such as a sampler or synthesizer that responds to MIDI and creates notes/audio.
+- `kAudioUnitType_MusicEffect` (`aufm`): an effect unit that can respond to MIDI control messages, typically mapping MIDI messages to DSP parameters.
+
+Apple's archived Audio Unit guide describes the same role distinction: `aumu` is an audio-creation instrument; `aufm` modifies an audio stream while responding to MIDI. The modern `AUAudioUnit` API exposes generic input/output bus arrays, MIDI scheduling, host context and MPE capability, but that generic surface does not establish host support for an input bus on a particular `aumu` component.
+
+Official sources checked 2026-11-28:
+- https://developer.apple.com/documentation/audiotoolbox/kaudiounittype_musicdevice
+- https://developer.apple.com/documentation/audiotoolbox/kaudiounittype_musiceffect
+- https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/AudioUnit.html
+- https://developer.apple.com/documentation/audiotoolbox/auaudiounit
+- https://developer.apple.com/documentation/avfaudio/avaudiounitinstrument
+- https://developer.apple.com/documentation/avfaudio/avaudiouniteffect/init%28audiocomponentdescription%3A%29
+
+### 10.2 Revised recommendation
+
+Keep `aumu` as the first validation candidate because R1 is a MIDI-playable instrument, but do not treat the subtype as selected. It passes only if the target host exposes a full-band audio input bus to the Granular/Sampler source path while preserving note/MPE behavior, the master plus four layer outputs, automation and state persistence.
+
+If `aumu` fails that gate, test `aufm` against the entire R1 instrument workflow, not just MIDI CC. A music-effect component is a semantically natural live-audio processor, but note-triggered voice behavior, MPE, sequencer events and host insertion UX remain unproven.
+
+Do not ship both components solely because both types exist. A dual component package is justified only if tests demonstrate two distinct required workflows that cannot be served by one component, and if each component passes its own host/state/automation certification. Sharing the core or state schema does not imply host-level component substitution.
+
+### 10.3 Scope and evidence boundary
+
+- Q-P06's product requirement is answered by DEC-020; the AU subtype/topology implementation remains open.
+- AU component type and AUv2/AUv3 generation are separate decisions.
+- No current evidence certifies `aumu` or `aufm` live-input routing in Logic, REAPER or Ableton for GRANULAR SYNTH.
+- No AU host prototype, code, plugin shell or benchmark was run in this research pass.
+- VST3's single instrument-component candidate is unchanged; this audit does not infer AU type semantics for VST3.
