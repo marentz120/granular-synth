@@ -62,7 +62,7 @@ struct ConstAudioBusView {
 struct ProcessBlock {
     AudioBusView mainOutput;
     AudioBusView layerOutput[4];       // inactive/unconnected buses are explicit
-    std::span<const ConstAudioBusView> inputBuses; // negotiated physical host/device inputs
+    std::span<const ConstAudioBusView> inputBuses; // normalized mono/stereo views of negotiated physical host inputs
     ConstAudioBusView layerInput[4];   // logical per-layer routes; views may alias inputBuses
     FrameCount frames;
     SampleRateHz sampleRate;
