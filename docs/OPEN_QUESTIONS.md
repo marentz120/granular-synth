@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 0.2 (Issue #1 — Phase 1). Recommendations below are proposals only; nothing is decided until recorded as *Approved* in DECISIONS_LOG.md.
+**Version:** 0.3 (owner-decisions revision, 2026-11-27). Recommendations below are proposals only; nothing is decided until recorded as *Approved* in DECISIONS_LOG.md.
+
+**Change summary (v0.2 → v0.3):** Q-P19 is now **ANSWERED** (DEC-015: both studio and live performance are primary). A new core requirement, controller-only live operability, is recorded as **DEC-016** and detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; Q-P12 (specific controller target/template) is updated to reflect that baseline but remains open. No other question's status changed. See docs/DECISIONS_LOG.md for both decision records.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -17,7 +19,7 @@ Every item from the v0.1 list is kept and mapped:
 | Owner: First-release engines | Q-P20 | OPEN — recommendation given |
 | Owner: Approve framework after comparison | Q-T01 (comparison in DSP_ARCHITECTURE.md §2) | OPEN |
 | Owner: Minimum macOS / Apple Silicon–Intel | Q-T03 | OPEN |
-| Owner: Main use case (studio / live / both) | Q-P19 | OPEN |
+| Owner: Main use case (studio / live / both) | Q-P19 | **ANSWERED** — both (DEC-015) |
 | Research: Inspect manual 1.8.d with page/section refs | — | **Done** (GR_MEGA_FEATURE_MAP.md) |
 | Research: Manual vs firmware version differences | Q-I15 | **Partly done** — release notes 1.8.0–1.8.4 reviewed (feature map §16); roadmap 1.9–1.12 not reviewed |
 | Research: Verify numeric limits against manual | Q-M01…M19 | **Done**; 15 manual conflicts logged |
@@ -42,7 +44,7 @@ Every item from the v0.1 list is kept and mapped:
 | 5 | **Q-T01** — Approve C++20 + JUCE 8 with a framework-free DSP core | Every later assignment depends on it | Approve (subject to JUCE EULA review, Q-L04) |
 | 6 | **Q-P13** — Do we have access to a physical GR-MEGA for A/B reference? | Many behaviors are undocumented (§D); without a unit they become our own design | Strongly recommended; otherwise owner accepts "inspired-by" behavior for undocumented areas |
 
-Q-P19 (studio vs live use) and Q-P20 (first-release engines) shape answers #1–#3 and are best decided in the same session.
+**Q-P19 is now answered** (DEC-015: both studio and live performance are primary; the instrument must be a genuine performance tool, not merely a plugin wrapper). This informs, but does not by itself decide, #1–#3 above — it also establishes **DEC-016** (controller-only live operability is a core R1 requirement; see docs/LIVE_PERFORMANCE_SPECIFICATION.md) and prompts a reassessment of #2 (Q-P05, step sequencer) in that document, without approving a tier change. Q-P20 (first-release engines) remains open and still shapes answers #1–#3.
 
 ---
 
@@ -54,21 +56,21 @@ Q-P19 (studio vs live use) and Q-P20 (first-release engines) shape answers #1–
 | Q-P02 | Plugin formats | AU + VST3 (stated); CLAP (cheap with modern frameworks); AAX (Pro Tools; extra SDK, signing, cost); AUv3 (sandbox, iPad path) | AU + VST3 in R1; CLAP OPT | Phase 3 | PROPOSED |
 | Q-P03 | Commercial product or personal/internal tool? Distribution channel? Copy protection? | Affects licence tier (JUCE), notarization, installer, licensing system | Decide before Phase 6 | Phase 6 | OPEN |
 | Q-P04 | Layer model and R1 layer count | 4 fixed layers (benchmark) · more layers · configurable count | 4 fixed layers in R1, data model allowing N later | Phase 2–3 | PROPOSED |
-| Q-P05 | Step sequencer tier | R1 vs L2. Benchmark sequencer is deep (p-locks, mod lanes, ties) | L2; R1 has per-layer drone/play mode and host-synced LFOs | Phase 2 | PROPOSED |
+| Q-P05 | Step sequencer tier | R1 vs L2. Benchmark sequencer is deep (p-locks, mod lanes, ties). Reassessed in light of Q-P19 (DEC-015: live performance is primary, not secondary) — see docs/LIVE_PERFORMANCE_SPECIFICATION.md §"Sequencer reassessment" | Recommendation unchanged for now: L2; R1 has per-layer drone/play mode and host-synced LFOs. Reassessment document gives trade-offs, not a new tier | Phase 2 | PROPOSED |
 | Q-P06 | Live-input granulation in plugins | See Arch §5.6 | Yes, VST3 input + AU `aumf` variant | Phase 3 | PROPOSED |
 | Q-P07 | Library model | (a) Benchmark-style fixed slots: 50 projects × 128 presets × 128 multis; (b) desktop file library with browser, tags, favourites, plus an optional 128-slot "performance bank" view for MIDI program change | (b) with performance bank view | Phase 2/4 | PROPOSED |
 | Q-P08 | Recorded/edited samples in plugin state | (a) always embed audio in DAW project; (b) reference files + "collect" on save; (c) embed only unsaved recordings | (c) — embed unsaved recordings, reference library files | Phase 3 | PROPOSED |
 | Q-P09 | Host certification list | Logic Pro, Ableton Live, Bitwig, Reaper, Cubase, Studio One, MainStage? | Logic, Live, Bitwig, Reaper for R1 | Phase 7 | OPEN |
 | Q-P10 | Reference machine and minimum supported Mac | Defines CPU budget and acceptance tests | Reference: Apple Silicon M1 (base) as minimum performance target; also test latest M-series | Phase 5 | OPEN |
 | Q-P11 | R1 effect set | Proposal: Delay, PP Delay, Reverb, Chorus, EQ3, Saturator, Compressor | Approve or amend | Phase 2 | PROPOSED |
-| Q-P12 | Dedicated hardware-controller support? | Benchmark is a hardware instrument; owner may want a specific controller template (8 engine knobs, faders, 100 mm slider equivalent) | Generic MIDI learn in R1; templates later | Phase 4 | OPEN |
+| Q-P12 | Dedicated hardware-controller support (a *specific* controller template/target)? | **Baseline now settled by DEC-016 (Approved):** standalone must be fully operable for essential live operations via MIDI controller, without keyboard/mouse — this is no longer open. **Still open here:** whether R1 also ships a dedicated template for a *named* controller (8 engine knobs, faders, 100 mm slider equivalent), vs. generic MIDI Learn only. See docs/LIVE_PERFORMANCE_SPECIFICATION.md | Generic MIDI Learn (global + per-preset mappings) satisfies DEC-016 for R1; a dedicated named-controller template is a later (L2+) enhancement, not required for R1 | Phase 4 | OPEN |
 | Q-P13 | GR-MEGA unit access for A/B | Needed for §C/§D items | Yes if possible | Phase 2 | OPEN |
 | Q-P14 | Factory content | Who produces samples/presets; licensing of samples | Decide before Phase 8 | Phase 8 | OPEN |
 | Q-P15 | Fidelity policy | Where the benchmark has a *limitation* (linear interpolation in granular, window crackle, 128-grain bunching, crackling auto-slice, 8192-FFT mono), do we replicate or improve? | Improve by default; keep a "classic" option only where the artefact is musically useful (e.g. stealing OFF bunching, Draft interpolation) | Phase 2 | PROPOSED |
 | Q-P16 | Granular sample-length ceiling | Benchmark: 5m49s efficient limit | ≥ 6 min stereo per layer (GS-SMG-019); higher if memory allows | Phase 2 | PROPOSED |
 | Q-P17 | Document naming | Earlier chat drafts used `GR_MEGA_FEATURE_MAP.md` / `DSP_ARCHITECTURE.md`; the repository uses `GR_MEGA_FEATURE_MAP.md` / `DSP_ARCHITECTURE.md` | Repository names are canonical; drafts merged into them | Admin | RESOLVED-EVIDENCE |
 | Q-P18 | Engine scope after R1 | Order Tape (L2) before Spectral (L3)? | Yes: Tape reuses sampler infrastructure; Spectral is a separate DSP project | Phase 2 | PROPOSED |
-| Q-P19 | Main use case: studio sound design, live performance, or both? | Drives priority of sequencer, MIDI-controller templates, standalone features, CPU headroom targets | Both; if forced, live performance raises Q-P05 and Q-P12 priority | Phase 2 | OPEN |
+| Q-P19 | Main use case: studio sound design, live performance, or both? | Drives priority of sequencer, MIDI-controller templates, standalone features, CPU headroom targets | **ANSWERED (DEC-015, 2026-11-27):** both, and the instrument must be a genuine performance tool, not merely a plugin wrapper. Raises priority of Q-P05 (sequencer reassessment, docs/LIVE_PERFORMANCE_SPECIFICATION.md) and establishes DEC-016 (controller-only operability); does not itself decide Q-P12's specific-controller question | Phase 2 | **ANSWERED** |
 | Q-P20 | First-release engines | All five · granular-first · granular + spectral · granular + slice + sampler | Granular + Slice + Sampler (shared infrastructure, lowest risk); Tape L2, Spectral L3 | Phase 2 | PROPOSED |
 
 ---

@@ -1,10 +1,12 @@
 # DSP and Application Architecture
 
 **Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions (DEC-005 remains *Proposed*).
-**Version:** 0.2
+**Version:** 0.3
 **Inputs:** GR_MEGA_FEATURE_MAP.md, GRANULAR_SYNTH_REQUIREMENTS.md, CLAUDE.md engineering principles.
 
 Every item marked **⚑ DECISION** needs ChatGPT review and owner approval before Phase 3 is closed. They are collected in OPEN_QUESTIONS.md §B with options and trade-offs. Nothing here instructs implementation.
+
+**Evidence convention (owner review of PR #2, 2026-11-27, item 3):** Where this document describes GR-MEGA behavior (e.g. "benchmark does X"), that claim is traceable to a GR_MEGA_FEATURE_MAP.md row and carries that row's evidence class (Manual-confirmed / Interpretation / Proposal / Unverified — see feature map §0). Where this document must specify an *algorithm* the manual does not document — the grain-stealing law (§6.3), the density-normalization law (§6.6), auto-slice detection, the tape slew law, the phase-vocoder overlap/window, or any other internal mechanism GR-MEGA does not publish — that algorithm is **GRANULAR SYNTH's own original design**, not a reconstruction of GR-MEGA's confirmed internal implementation, and is tagged [UNV]/[PROP] in the feature map (see feature map §15, risk R-08). Numeric engineering figures (CPU/memory/timing estimates) are separately marked as calculated estimates in §5.3 and §6.10 and must not be read as measured results.
 
 ## 0. Baseline carried over from v0.1
 
@@ -157,16 +159,18 @@ Dependency rule: `ui → host → state/engine → sample → core`. `core` and 
 
 ### 5.3 Memory budget
 
-Stereo float32 @ 48 kHz = 384 kB/s.
+**[ESTIMATE — owner review item 2, 2026-11-27.]** The figures below are arithmetic from fixed constants (sample rate × bytes/sample × channels × duration) for raw audio payload only. They are **not measured process memory** and exclude allocator overhead, analysis buffers (peak pyramid, onset/centroid data), guard padding, and runtime structures — actual RSS will be higher and has not been measured on any build, because no build exists yet. Treat as a sizing-order-of-magnitude input to Q-T05, not a memory budget commitment.
 
-| Content | Size |
+Stereo float32 @ 48 kHz = 384 kB/s (exact arithmetic, not an estimate).
+
+| Content | Size (raw audio payload only) |
 |---|---|
 | 5 min 49 s stereo (benchmark granular ceiling) | ≈ 134 MB |
 | 6 min stereo per layer (GS-SMG-019) × 4 layers | ≈ 553 MB |
-| + full octave mip-map pyramid (L2, optional) | × ≈ 2.0 |
+| + full octave mip-map pyramid (L2, optional) | × ≈ 2.0 (rough multiplier, unmeasured) |
 | 60 min stereo sampler (L2) | ≈ 1.38 GB → disk streaming or 16-bit RAM storage |
 
-Recommendation: **RAM-resident** for granular/slice/spectral (grains access memory randomly; streaming is impractical), with a per-instance memory gauge (benchmark has RAM/disk gauges, SMG-09). Disk streaming only for the long-sample Sampler mode (L2, ⚑ Q-T05). Optional 16-bit integer storage (with float conversion on read) halves RAM at negligible cost if needed.
+Recommendation (proposal, not a decision): **RAM-resident** for granular/slice/spectral (grains access memory randomly; streaming is impractical), with a per-instance memory gauge (benchmark has RAM/disk gauges, SMG-09). Disk streaming only for the long-sample Sampler mode (L2, ⚑ Q-T05). Optional 16-bit integer storage (with float conversion on read) halves RAM at negligible cost if needed.
 
 ### 5.4 Loading pipeline (Loader thread)
 
@@ -285,12 +289,14 @@ This classification is part of the parameter registry (see §9).
 
 ### 6.10 CPU feasibility (key risk)
 
-Benchmark worst case ≈ 10,240 grains × 48,000 = **491 M grain-samples/s**. With cubic stereo interpolation (~25–30 flops per grain-sample) that is ≈ 12–15 GFLOP/s — **beyond a single CPU core** in practice (random memory access dominates). Therefore:
+**[ESTIMATE — owner review item 2, 2026-11-27: not a reproducible measurement.]** Benchmark worst case ≈ 10,240 grains × 48,000 = **491 M grain-samples/s** is a specification-derived maximum (manual grain/voice limits × sample rate), not a measured figure. With cubic stereo interpolation (~25–30 flops per grain-sample, itself a calculated assumption about our own future implementation) that is a **calculated estimate** of ≈ 12–15 GFLOP/s. Whether this is actually beyond one CPU core on the eventual reference machine (Q-P10) has not been benchmarked on any hardware or any GRANULAR SYNTH code — there is no code yet. Treat "beyond a single core" as a planning hypothesis that motivates the mitigations below, not an engineering conclusion. It must be confirmed by a real measurement in Phase 3 (DEVELOPMENT_ROADMAP.md Phase 3 exit criterion 3) before any budget default is fixed.
 
-1. **Global grain budget** (default set by benchmark measurement on reference hardware, Q-T07), click-free stealing above it.
-2. **Quality tiers** per layer (Draft/Standard/High).
-3. **Optional parallel rendering** of layers/voices on RT worker threads joined to the host's audio workgroup (⚑ Q-T08). Not all hosts expose workgroups; must fall back cleanly to single-threaded.
-4. Typical musical patches (density 4–40, 8 voices) are far below the worst case; the budget protects only extremes.
+Planned mitigations (proposals, not yet implemented or validated):
+
+1. **Global grain budget** (default to be set from an actual benchmark measurement on reference hardware, Q-T07 — no default exists yet), with **click-free stealing** above it. "Click-free" here is a design goal for the stealing algorithm (§6.3), not a measured or demonstrated property — it has not been implemented or listened to yet.
+2. **Quality tiers** per layer (Draft/Standard/High) — proposed, unimplemented.
+3. **Optional parallel rendering** of layers/voices on RT worker threads joined to the host's audio workgroup (⚑ Q-T08) — a strategy proposal, not a decision; feasibility and host support are unverified. Not all hosts expose workgroups; must fall back cleanly to single-threaded.
+4. Typical musical patches (density 4–40, 8 voices) are far below the calculated worst case; the budget is intended to protect only extremes — this too is an expectation, not a measured result.
 
 ---
 
@@ -396,6 +402,18 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 | Sample rate / block size | Fully variable; all time constants in seconds; `prepare()` rebuilds rate-dependent tables off the RT path |
 | Offline render | Deterministic; uses same code paths; respects host "realtime vs offline" flag only for quality-tier boosts (optional) |
 | Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI clock in/out, file-based projects |
+
+---
+
+## 12a. Live-performance / controller-only operability (owner decisions DEC-015, DEC-016, 2026-11-27)
+
+Architectural implications of DEC-015 (both studio and live performance are primary) and DEC-016 (standalone must be fully operable for essential live operations via MIDI controller alone). Full behavioral specification is in docs/LIVE_PERFORMANCE_SPECIFICATION.md; this section only notes what falls out of it for §4 (threading) and §9 (parameter system). None of this changes the framework decision (Q-T01) or any engine/scope decision (DEC-008/009/010).
+
+- **Parameter registry (§9):** the registry should be able to flag a parameter as "performance-critical" / grouped for fast controller mapping, independent of its automatable/modulatable flags. This is a registry *capability*, not a decision about which parameters get flagged — that is Phase 4/5 work.
+- **MIDI Learn (GS-MID-003) → structural state:** global and per-preset controller mappings are structural data (like a patch), not audio-thread state — they follow the existing Command-object / Structural-smoothing-class path (§4.2, §9.2), not a new communication mechanism.
+- **Controller feedback (where supported):** sending MIDI back to a controller (motorized faders, LED rings) is Message/UI-thread work (§4.1); it must never block or be read by the audio thread. No new RT constraint is introduced.
+- **Standalone MIDI I/O:** DEC-016 reinforces the existing "Standalone extras" row above (MIDI device selection, MIDI clock in/out) — bidirectional MIDI (for feedback) must be included in that standalone device-handling scope, which was previously input-only in intent.
+- **Sequencer (Q-P05) and plugin live input (Q-P06):** DEC-015 raises the practical importance of both, but neither is decided here — see OPEN_QUESTIONS.md and docs/LIVE_PERFORMANCE_SPECIFICATION.md for the (non-binding) reassessment.
 
 ---
 

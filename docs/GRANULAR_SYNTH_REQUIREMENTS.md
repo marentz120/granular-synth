@@ -1,8 +1,14 @@
 # GRANULAR SYNTH Requirements
 
-**Status:** Draft; subject to owner and architecture review. **No requirement or tier in this document is approved.** Tiers are *proposals* for the owner's Phase 2 decision (see OPEN_QUESTIONS.md §0); approval is recorded only in DECISIONS_LOG.md.
-**Version:** 0.2 (Issue #1 — Phase 1 refinement)
+**Status:** Draft; subject to owner and architecture review. **Almost no requirement or tier in this document is approved** — tiers are *proposals* for the owner's Phase 2 decision (see OPEN_QUESTIONS.md §0), with two named exceptions below. Approval is recorded only in DECISIONS_LOG.md.
+**Version:** 0.3 (owner-decisions revision, 2026-11-27)
 **Inputs:** GR_MEGA_FEATURE_MAP.md (manual 1.8.d + fw 1.8.x release notes), PRODUCT_VISION.md, CLAUDE.md.
+
+## Change summary (v0.2 → v0.3)
+
+- **Added two owner-approved requirements** reflecting DEC-015/DEC-016 (owner decisions on PR #2, 2026-11-27): GS-MID-008 and GS-UI-007 (§3.13, §3.16). These are the **only** requirements in this document with Tier status **Approved**; every other requirement and tier is still Proposed/Pending as before. Full detail in docs/LIVE_PERFORMANCE_SPECIFICATION.md.
+- Updated §1/§2 to record that both studio and live-performance use cases are now confirmed primary (DEC-015), and updated §6/§7 counts and dependencies accordingly.
+- No other requirement, tier, or wording changed.
 
 ## Change summary (v0.1 → v0.2)
 
@@ -41,6 +47,8 @@ GRANULAR SYNTH is a professional, sample-based granular instrument for macOS, de
 
 - **Standalone macOS application** (own audio/MIDI device handling, live audio input).
 - **Audio plugins:** AU and VST3 (target formats subject to confirmation — see OPEN_QUESTIONS Q-P02).
+
+**Use case (DEC-015, Approved 2026-11-27):** both studio sound design and live performance are primary use cases; the instrument must be a genuine performance tool, not merely a plugin wrapper. This does not by itself decide layer count, engine scope, sequencer tier, or plugin live input (DEC-008/009/010 remain Proposed) — see docs/LIVE_PERFORMANCE_SPECIFICATION.md for the live-performance consequences that *are* specified (GS-MID-008, GS-UI-007).
 
 Functional benchmark: Tasty Chips GR-MEGA (manual 1.8.d) — DEC-001. We reproduce *documented behavior and workflows*, not firmware, code, UI artwork or file formats, and we add improvements where software allows (marked **[PROP]** in the feature map).
 
@@ -249,6 +257,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MID-005 | Program change → preset recall (standalone; plugin where host allows). | R1 | MID-06 |
 | GS-MID-006 | Channel-mode messages: all notes off, all sound off (incl. FX tails), reset controllers. | R1 | MID-12 |
 | GS-MID-007 | MIDI clock in (standalone). | L2 | MID-08 |
+| GS-MID-008 | Standalone operation shall be fully operable via MIDI controller alone for all *essential live-performance* operations, without requiring a computer keyboard or mouse. "Essential" excludes one-time setup/configuration tasks (sample loading, patch editing detail, initial mapping). | **R1 — Approved** | DEC-016 (owner decision, PR #2, 2026-11-27). Detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Does not decide a specific target controller (Q-P12, still OPEN). |
 
 ### 3.14 Effects (FX)
 
@@ -288,6 +297,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-UI-004 | Resizable, HiDPI, keyboard-navigable UI; tooltips; value readout on hover. | R1 | PRF-03 [PROP] |
 | GS-UI-005 | CPU meter by category (voices / FX / housekeeping). | R1 | PRF-07 |
 | GS-UI-006 | Plugin UI and standalone UI are the same component. | R1 | GS-PLT-004 |
+| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery, and controller feedback where the connected controller supports it — sufficient to satisfy GS-MID-008. | **R1 — Approved** | DEC-016. Mapping architecture, conflict handling and acceptance criteria detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Does not decide parameter-exposure scope (Q-T12, still OPEN) or a specific controller target (Q-P12, still OPEN). |
 
 ---
 
@@ -340,12 +350,12 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | Samples/recording (SMG) | 14 (1 split R1/L2) | 5 | — | — | — |
 | Modulation (MOD) | 9 | 1 | 1 | 1 | — |
 | Sequencer/performance (SEQ) | 2 | 6 | 1 | — | 1 pending Q-M12 |
-| MIDI (MID) | 5 | 2 | — | — | — |
+| MIDI (MID) | 6 (1 Approved: GS-MID-008) | 2 | — | — | — |
 | Effects (FX) | 4 | 2 | 1 | 1 | — |
 | Presets/state (PRS) | 9 | — | — | 1 | — |
-| UI (UI) | 6 | — | — | — | — |
+| UI (UI) | 7 (1 Approved: GS-UI-007) | — | — | — | — |
 | Non-functional (NFR) | 13 | — | — | — | — |
-| **Total (162)** | **116** | **28** | **9** | **8** | **1** |
+| **Total (164)** | **118** (2 Approved, 116 still Proposed) | **28** | **9** | **8** | **1** |
 
 ## 7. Dependencies between requirement areas
 
@@ -364,6 +374,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | FX | Parameter registry, ARC-007 | Slot host + registered FX params |
 | PRS | Parameter registry, SMG (sample refs), Q-P07/Q-P08 | Serialization of every registered parameter + sample references |
 | MID | Parameter registry, VOI (MPE voice mapping) | MIDI learn binds to parameter IDs; MPE binds to voices |
+| GS-MID-008, GS-UI-007 (live performance) | GS-MID-003 (MIDI learn), parameter registry, UI | Controller mapping/feedback binds to registered parameters; see docs/LIVE_PERFORMANCE_SPECIFICATION.md |
 | UI | Everything above | UI reads state snapshots only |
 
 ## 8. Traceability

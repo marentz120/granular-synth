@@ -18,7 +18,7 @@ Every row carries a **manual reference** (`p.NN — Section`) and a **classifica
 | **[PROP]** | Proposal | GRANULAR SYNTH design recommendation beyond the documented behavior |
 | **[UNV]** | Unverified | Manual silent, ambiguous or self-contradictory; evidence still required |
 
-A fifth tag, **[RN]**, marks facts confirmed only by Tasty Chips' official firmware release notes (fw 1.8.0–1.8.4, public text files on the support page), not by the manual. It is manufacturer evidence but weaker than the manual for behavior details; reviewers may fold it into Manual-confirmed or Unverified. See §16.
+**[RN]** is not a fifth evidence class. Per owner review of PR #2 (2026-11-27, item 1), the four classes above remain canonical and exhaustive. **[RN]** is a *supplemental source marker* — it is always attached to one of the four canonical tags, never used alone — noting that the attached classification rests on Tasty Chips' official firmware release notes (fw 1.8.0–1.8.4, public text files on the support page) rather than the manual itself. In this document a fact "confirmed via [RN]" is written **[MC via RN]** (manufacturer-confirmed, sourced from release notes, same confidence tier as manual text) or, where the release notes are themselves terse or still leave behavior ambiguous, **[UNV] (partially confirmed via [RN])** / **[INT] via [RN]**. See §16.
 
 All page numbers refer to the PDF page numbering of **GR-MEGA User Manual 1.8.d** (printed page number = PDF page number in this revision).
 
@@ -257,7 +257,7 @@ Audio In (stereo/mono) ──► SPL (sample buffer / recorder) ─────�
 | SPC-13 | Formant shift + formant lock | Lock ON: shift relative to original formant; OFF: shift relative to pitched note ("chipmunk"). Range ±24 st. | p.50; p.57; NRPN 393 | [MC] |
 | SPC-14 | Fold spectrum | Folds bins back → metallic timbres. | p.50; NRPN 1130 | [MC] |
 | SPC-15 | Spectral shaping by window knobs | Tilt/Curve/AM shape the spectrum like a grain window; AM as comb filter; Shift+Curve = spectral contrast; "Spec depth" applies the window to the spectrum (0 = bit-exact bypass). | p.50 Spectral shaping; NRPN 1133–1134 | [MC] |
-| SPC-16 | FFT reducer | Mentioned in p.49 and NRPN 331, but the p.37 table assigns C+Shift to Amp smear. Release notes 1.8.0: FFT reducer was **merged into amp threshold** (overlapping function) — so the p.49/NRPN mentions are leftovers. | p.37; p.49; p.148; RN 1.8.0 | [RN] (resolved) |
+| SPC-16 | FFT reducer | Mentioned in p.49 and NRPN 331, but the p.37 table assigns C+Shift to Amp smear. Release notes 1.8.0: FFT reducer was **merged into amp threshold** (overlapping function) — so the p.49/NRPN mentions are leftovers. | p.37; p.49; p.148; RN 1.8.0 | [MC via RN] (ambiguity resolved) |
 | SPC-17 | RTPGHI mode | Higher-quality, transient-preserving spectral engine (more CPU; newer hardware only). RTPGHI = published *Real-Time Phase Gradient Heap Integration* method. | p.57 | [MC]; algorithm identity [INT] |
 | SPC-18 | Chord mode ×12 | Pitch-shifted copies with timing preserved, almost no CPU. | p.50 | [MC] |
 | SPC-19 | Sequencer as chord source | 3 voices × 7-note steps for large polyphony. | p.75 | [MC] |
@@ -552,8 +552,8 @@ Refs: p.37–50, p.56, p.74, p.99–100, p.120–121, p.162. Long-sample limits 
 | PRS-09 | Sample name → patch name | One-click copy. | p.52 | [MC] |
 | PRS-10 | Save semantics | Context-sensitive Save (1 layer → preset, multiple layers → mtpreset, after recording → choose sample/preset/mtpreset); expert save dialog; save-on-shutdown option. | p.94; p.109–110 | [MC] |
 | PRS-11 | Import compatibility | Loads GR-1 patches (.grp + .wav folders) and performances; files interchangeable with GR-2. | p.108; p.111; p.171 | [MC] |
-| PRS-12 | Sample references & portability | Samples live in internal storage paths; the manual does not say how patches reference samples. Release notes indicate samples are saved with presets/projects (optional HLAC compression) — see RN-16/18. | p.65; p.109; p.114; RN 1.8.1, 1.8.4 | [UNV] / [RN] partial |
-| PRS-13 | Patch file format | Not documented in manual (FX presets are JSON, p.84). Release notes 1.8.4 refer to preset `.json` files with accompanying files. Internal schema unknown (and not needed — see Q-L01). | p.84; RN 1.8.4 | [RN] partial |
+| PRS-12 | Sample references & portability | Samples live in internal storage paths; the manual does not say how patches reference samples. Release notes indicate samples are saved with presets/projects (optional HLAC compression) — see RN-16/18. | p.65; p.109; p.114; RN 1.8.1, 1.8.4 | [UNV] (partially confirmed via [RN]) |
+| PRS-13 | Patch file format | Not documented in manual (FX presets are JSON, p.84). Release notes 1.8.4 refer to preset `.json` files with accompanying files. Internal schema unknown (and not needed — see Q-L01). | p.84; RN 1.8.4 | [UNV] (partially confirmed via [RN]; internal JSON schema still unverified) |
 | PRS-14 | Factory content | Write-protected factory projects/samples; downloadable factory packs. | p.65; support page | [MC] |
 | PRS-P1 | Portable bundles | "Collect & save" with relative sample paths + content hash, plus embedded-sample option for plugin state. | — | [PROP] |
 
@@ -610,7 +610,7 @@ Refs: p.37–50, p.56, p.74, p.99–100, p.120–121, p.162. Long-sample limits 
 | Item | Evidence | Class |
 |---|---|---|
 | Manual 1.8.d applies to firmware 1.8.x (1.8.0, 1.8.1, …); manual letter suffix = documentation fixes only | p.6 Document version | [MC] |
-| Latest firmware at time of research: 1.8.4 (10 Nov 2026); 1.8.1–1.8.4 are bug-fix/QoL releases | Support page; RN 1.8.1–1.8.4 | [RN] |
+| Latest firmware at time of research: 1.8.4 (10 Nov 2026); 1.8.1–1.8.4 are bug-fix/QoL releases | Support page; RN 1.8.1–1.8.4 | [MC via RN] |
 | Manual screenshots show firmware 1.8.0 pre-release builds (e.g. "FW 1.8.0-a14") | p.54 screenshot | [MC] |
 | NRPN table generated from fw 1.8.0 source enum | p.142 | [MC] |
 | Hardware revision Oct 2025 changes capabilities: RTPGHI spectral mode, ~10,000 vs ~5,000 total grains, faster internal storage, display switching | p.57; p.162; p.164; p.28 | [MC] |
@@ -618,33 +618,35 @@ Refs: p.37–50, p.56, p.74, p.99–100, p.120–121, p.162. Long-sample limits 
 
 ### 16.2 Feature-relevant changes documented in firmware 1.8.0 release notes (not, or only partly, in the manual)
 
+Every row below is, by construction, release-note-sourced. The Class column still names one of the four canonical classes (§0) for each fact, with **[MC via RN]** meaning "stated as fact in the release notes with the same confidence as a manual statement" — it is not a separate evidence tier.
+
 | ID | Change | Relevance | Class |
 |---|---|---|---|
-| RN-01 | Grain probability on Shift + knob A | Resolves GRN-15 control location | [RN] |
-| RN-02 | Pitch-quantization per voice / per grain; pitch spray polarity (voicing menu) | Confirms PQ-03, GRN-14 | [RN] |
-| RN-03 | Draw XY touchscreen modulator with waypoints | Clarifies MTX-12 | [RN] |
-| RN-04 | FFT reducer merged into amp threshold | Resolves SPC-16 / C-09 | [RN] |
-| RN-05 | "voice retrigger" renamed "voice sync" | Clarifies SCH-04 / C-13 | [RN] |
-| RN-06 | Filter slopes added (Shift + LP/HP cutoff); SVF notch mode is the classic SVF notch | Confirms FLT-02; FLT-03 includes a notch mode | [RN] |
-| RN-07 | EQ-3 FX: per-band bypass and visualization | Extends FX-T06 | [RN] |
-| RN-08 | Master EQ: Q up to 18, band gain up to 24 dB | Extends SIG-12 | [RN] |
-| RN-09 | Elektron-style preset switching while sequencing (System menu → preset change) | Performance workflow not in manual | [RN] |
-| RN-10 | Patches saved on ≥1.8.0 change some parameter scaling (e.g. grain rate) vs older firmware | Lesson: version the parameter scaling in our preset format | [RN] |
-| RN-11 | Destination lists in matrix/macro menus filtered by category | UX pattern for 149 destinations | [RN] |
-| RN-12 | Resonator BANDS/SCALE/MODE no longer assignable to FX knobs (discrete params) | Supports our "Stepped" parameter class | [RN] |
-| RN-13 | Bug fix: Random1–4 sources all had the same value | Indicates per-source independent RNG streams intended | [RN] |
-| RN-14 | Sub-oscillator quantizes with the main voice quantization | Confirms PQ-04 | [RN] |
-| RN-15 | Favorites (stars) in file chooser/manager | Browser UX | [RN] |
+| RN-01 | Grain probability on Shift + knob A | Resolves GRN-15 control location | [MC via RN] |
+| RN-02 | Pitch-quantization per voice / per grain; pitch spray polarity (voicing menu) | Confirms PQ-03, GRN-14 | [MC via RN] |
+| RN-03 | Draw XY touchscreen modulator with waypoints | Clarifies MTX-12 | [MC via RN] |
+| RN-04 | FFT reducer merged into amp threshold | Resolves SPC-16 / C-09 | [MC via RN] |
+| RN-05 | "voice retrigger" renamed "voice sync" | Clarifies SCH-04 / C-13 | [MC via RN] |
+| RN-06 | Filter slopes added (Shift + LP/HP cutoff); SVF notch mode is the classic SVF notch | Confirms FLT-02; FLT-03 includes a notch mode | [MC via RN] |
+| RN-07 | EQ-3 FX: per-band bypass and visualization | Extends FX-T06 | [MC via RN] |
+| RN-08 | Master EQ: Q up to 18, band gain up to 24 dB | Extends SIG-12 | [MC via RN] |
+| RN-09 | Elektron-style preset switching while sequencing (System menu → preset change) | Performance workflow not in manual | [MC via RN] |
+| RN-10 | Patches saved on ≥1.8.0 change some parameter scaling (e.g. grain rate) vs older firmware | Lesson: version the parameter scaling in our preset format | [MC via RN] |
+| RN-11 | Destination lists in matrix/macro menus filtered by category | UX pattern for 149 destinations | [MC via RN] |
+| RN-12 | Resonator BANDS/SCALE/MODE no longer assignable to FX knobs (discrete params) | Supports our "Stepped" parameter class | [MC via RN] |
+| RN-13 | Bug fix: Random1–4 sources all had the same value | Indicates per-source independent RNG streams intended | [MC via RN] |
+| RN-14 | Sub-oscillator quantizes with the main voice quantization | Confirms PQ-04 | [MC via RN] |
+| RN-15 | Favorites (stars) in file chooser/manager | Browser UX | [MC via RN] |
 
 ### 16.3 Changes in 1.8.1–1.8.4 relevant to the model
 
 | ID | Change | Relevance | Class |
 |---|---|---|---|
 | RN-16 | "Patch samples as HLAC" — patch/project saves can compress their samples (1.8.1) | Indicates samples are stored with patches/projects (PRS-12) | [RN] / [INT] |
-| RN-17 | Project folders renamed `NNN-projectname` (1.8.2); "patch" renamed "preset", `presets` folder (1.8.3) | Storage naming; terminology "preset" | [RN] |
-| RN-18 | Presets stored as `.json` with accompanying files; loadable via template type (1.8.4) | Answers PRS-13 partially: preset format is JSON + sample files | [RN] |
+| RN-17 | Project folders renamed `NNN-projectname` (1.8.2); "patch" renamed "preset", `presets` folder (1.8.3) | Storage naming; terminology "preset" | [MC via RN] |
+| RN-18 | Presets stored as `.json` with accompanying files; loadable via template type (1.8.4) | Answers PRS-13 partially: preset format is JSON + sample files | [MC via RN] |
 | RN-19 | POS X **and POS Y** can modulate per-voice destinations (1.8.4) | A "Pos Y" source exists beyond the manual's source table | [RN] / [UNV] |
 | RN-20 | USB-C mode "IMPROVED" (1.8.4); interrupt-storm fix (1.8.1) | Hardware-only | N/A |
-| RN-21 | Bug fixes: last slice silent at direction −100 %; looping slices became one-shots; free vs snapped scan mismatch; ping-pong scan not restarting at fader position | Edge cases to cover in our test suite | [RN] |
+| RN-21 | Bug fixes: last slice silent at direction −100 %; looping slices became one-shots; free vs snapped scan mismatch; ping-pong scan not restarting at fader position | Edge cases to cover in our test suite | [MC via RN] |
 
 *End of GR_MEGA_FEATURE_MAP.md*
