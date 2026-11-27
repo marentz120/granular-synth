@@ -56,6 +56,8 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 
 ## A. Product decisions (Owner)
 
+Q-P21 was added after the owner approved Freeze Source Snapshot semantics on 2026-11-27 (DEC-042).
+
 | ID | Question | Context / options | Recommendation | Blocks | Status |
 |---|---|---|---|---|---|
 | Q-P01 | Final product name and visual identity. Is "GRANULAR SYNTH" a working title? | Must avoid confusion with Tasty Chips trademarks/trade dress (see Q-L03) | Keep as working title; brand decision before Phase 8 | Phase 8 | OPEN |
