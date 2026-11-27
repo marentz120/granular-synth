@@ -9,15 +9,15 @@
 | Test ID | Requirement | Pass condition | Trace |
 |---|---|---|---|
 | AC-MOD-001 | Four LFOs per layer | Each of four layers exposes four independently configurable LFOs; changing one layer does not alter another | GS-MOD-001 |
-| AC-MOD-002 | LFO functions | Supported rate modes, waveforms, phase, amplitude quantization, polarity and key-sync modes produce defined repeatable output | GS-MOD-001 |
+| AC-MOD-002 | LFO functions | Supported rate modes, waveforms, phase, amplitude quantization, polarity and key-sync modes produce defined repeatable output; Poly/Mono is selectable per LFO and defaults to Mono | GS-MOD-001/002; DEC-024 |
 | AC-MOD-003 | Matrix capacity | At least 50 rows can be created, enabled/disabled, edited, copied, pasted and deleted | GS-MOD-003/007 |
 | AC-MOD-004 | Source/destination coverage | All specified R1 sources and eligible continuous R1 destinations can be selected; unsupported structural parameters cannot | GS-MOD-004/005 |
 | AC-MOD-005 | Quick assignment | User can assign a destination using the documented quick-assignment gesture | GS-MOD-006 |
-| AC-MOD-006 | Macro behavior | Ten macros per patch support multiple destinations, ranges, curve and invert; macro values can be modulated | GS-MOD-008 |
+| AC-MOD-006 | Macro behavior | Exactly ten R1 macros per patch support multiple destinations, ranges, curve and invert; macro values can be modulated | GS-MOD-008; DEC-036 |
 | AC-MOD-007 | Modulation display | Controls show summed modulation and recent-destination monitor reflects active destinations | GS-MOD-009 |
 | AC-MOD-008 | Random determinism | Random 1–4 are independent per note/layer and reproducible under fixed test seeds | GS-MOD-004 |
 | AC-MOD-009 | Envelope follower | Follower responds to selected input/layer source and attack/release/gain settings | GS-MOD-004 |
-| AC-MOD-010 | XY pad | X and Y operate as independent modulation sources | GS-MOD-004 |
+| AC-MOD-010 | XY pad | X and Y operate as independent normalized 0.0–1.0 sources; new patch defaults to (0.5, 0.5) and saved patch recalls its stored position | GS-MOD-004; DEC-032 |
 
 ## 2. Effects
 
@@ -26,7 +26,7 @@
 | AC-FX-001 | Four-slot chain | Every layer has four independent serial slots | GS-FX-001 |
 | AC-FX-002 | Reorder | Reordering moves the complete effect state and does not reset parameters | GS-FX-001 |
 | AC-FX-003 | Slot mix and sends | Each slot's dry/wet and layer synth/audio-input sends operate independently | GS-FX-001 |
-| AC-FX-004 | Effect inventory | Every effect in the owner-approved R1 set is available and produces its documented behavior | GS-FX-002; Q-P11 |
+| AC-FX-004 | Effect inventory | Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator and Compressor are available and produce their documented behavior | GS-FX-002; DEC-023 |
 | AC-FX-005 | Modulation/automation | Every eligible continuous parameter responds to modulation and automation within its legal range | GS-FX-004 |
 | AC-FX-006 | Tail behavior | Preset switch follows selected Linger or Cut mode | GS-FX-006 |
 | AC-FX-007 | Safe transitions | Bypass, replacement and preset recall do not crash or produce uncontrolled discontinuities | GS-FX-006; GS-NFR-003 |
@@ -40,8 +40,8 @@
 | AC-SMP-003 | Playback modes | One-shot, loop and ping-pong respect valid playback/loop boundaries | GS-SMP-002 |
 | AC-SMP-004 | Scan and spray | Scan, spray, pan spray and direction affect new note starts/playback as specified | GS-SMP-001 |
 | AC-SMP-005 | Interpolation | High-quality interpolation option operates without out-of-bounds reads or unstable output | GS-SMP-003 |
-| AC-SMP-006 | Env pile-up | Enabled/disabled modes produce the documented same-note retrigger behavior | GS-SMP-004 |
-| AC-SMP-007 | Loop release | ON/OFF behavior passes only after Q-M05 is resolved and evidence is attached | GS-SMP-002; Q-M05 |
+| AC-SMP-006 | Env pile-up | Toggle changes same-note retrigger behavior as documented; Sampler default is OFF | GS-SMP-004; DEC-037 |
+| AC-SMP-007 | Loop release | ON continues looping through voice release; OFF exits at the next valid loop boundary and continues toward Stop | GS-SMP-002; DEC-030 |
 | AC-SMP-008 | Missing source | Empty/missing sample produces safe silence/status and never crashes | GS-NFR-012 |
 
 ## 4. Presets, projects and library
@@ -63,13 +63,13 @@
 
 | Test ID | Requirement | Pass condition | Trace |
 |---|---|---|---|
-| AC-MID-001 | Layer channels | Four layers independently receive on configured MIDI channels; shared-channel behavior is deterministic | GS-MID-001 |
-| AC-MID-002 | MPE | Per-note pitch, pressure and timbre remain associated with the correct note/voice | GS-MID-002 |
+| AC-MID-001 | Layer channels | Four layers independently receive on configured MIDI channels; if multiple layers share a channel, all matching layers receive the event | GS-MID-001; DEC-034 |
+| AC-MID-002 | MPE | Per-note pitch (48-semitone range), pressure and timbre remain associated with the correct note/voice | GS-MID-002; DEC-038 |
 | AC-MID-003 | High-resolution control | 14-bit CC/NRPN input updates mapped parameter correctly; malformed/incomplete messages are ignored safely | GS-MID-003 |
 | AC-MID-004 | Soft takeover | Mapped control does not jump before physical value crosses/picks up current software value | GS-MID-003 |
-| AC-MID-005 | Program Change | Configured Program Change recalls its assigned item; unmapped values do not recall arbitrary content | GS-MID-005 |
+| AC-MID-005 | Program Change | Program Change recalls the explicitly assigned item in the active performance bank; unmapped values are ignored | GS-MID-005; DEC-033 |
 | AC-MID-006 | Channel-mode | All Notes Off, All Sound Off and Reset Controllers have distinct documented effects | GS-MID-006 |
-| AC-MID-007 | MIDI Clock | Standalone MIDI Clock synchronizes the shared transport; clock loss does not create runaway timing | GS-MID-007; GS-SEQ-005 |
+| AC-MID-007 | MIDI Clock | Start resets, Continue resumes and Stop halts; loss of pulses for two expected beat intervals stops clock-dependent progression at the current position; SPP is ignored in R1 | GS-MID-007; GS-SEQ-005; DEC-039 |
 | AC-MID-008 | Controller-only | Every essential live operation in LIVE_PERFORMANCE_SPECIFICATION.md §1 is reachable without keyboard/mouse | GS-MID-008 |
 | AC-MID-009 | Feedback exclusion | R1 acceptance does not require MIDI feedback or named-controller templates | DEC-021 |
 
@@ -90,7 +90,7 @@
 | AC-AUD-011 | Resource exhaustion | Full buffer/resource exhaustion stops safely, preserves valid capture and informs user | GS-NFR-008 |
 | AC-AUD-012 | File formats | WAV, AIFF and FLAC load; WAV export is valid | GS-SMG-001/017 |
 | AC-AUD-013 | RT safety | Audio callback performs no allocation, lock, file/network I/O, logging or blocking wait | GS-NFR-001 |
-| AC-AUD-014 | Sample-rate behavior | Musical behavior remains consistent across the approved sample-rate matrix | GS-NFR-010; Q-T17 |
+| AC-AUD-014 | Sample-rate behavior | Musical behavior remains consistent across the sample-rate matrix validated and approved in Phase 3/5 | GS-NFR-010; Q-T17 |
 
 ## 7. Cross-domain release gates
 
