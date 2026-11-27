@@ -42,16 +42,16 @@ The VST3 API supports multiple dynamic audio input/output buses and event buses.
 
 ### 3.2 Audio Unit
 
-Candidate primary instrument component:
-- `aumu` instrument with MIDI input and stereo master output.
-- Use one optional stereo input as the minimum live-input validation configuration, not as a product-wide input limit. The normalized adapter model must represent the negotiated input bus/channel collection and map those physical inputs to logical per-layer source views without assuming one physical bus per layer.
-- Validate whether target hosts permit the required live-input routing to this component and whether output buses are exposed as needed.
+Current validation candidate (not selected):
+- Retain `aumu` as the first AU prototype candidate because R1 is a MIDI-playable Granular/Sampler instrument and instrument-track identity is the clearest primary workflow.
+- Test one optional full-band stereo input bus as a baseline configuration only. The generic AU inputBusses API does not prove that hosts expose this bus on an `aumu` component or route it to the engine's sample-source path.
+- A sidechain/detector/modulation input is not a pass unless the raw audio samples are available to the layer's Granular/Sampler source path.
 
 Alternative:
-- Separate `aufm` music-effect component for MIDI-controlled audio processing/live-input workflows.
-- If both `aumu` and `aufm` are shipped, they must share the same core and state format, and the product must explain their distinct host insertion workflows.
+- Test `aufm` as a MIDI-responsive audio-processing component. Its audio-effect role is a natural fit for live audio input, but it must also pass the complete R1 instrument workflow: Note On/Off, velocity, channel routing, MPE, sequencer events, required outputs, automation and state.
+- A dual `aumu` + `aufm` package is a last-resort product option only if evidence proves that distinct required workflows cannot be served by either single component.
 
-Do not ship both components solely because the API has both types. Choose based on tested host workflows, user discoverability, state interchange and maintenance burden.
+AU component type (`aumu`/`aufm`) and AU generation (v2/v3) are separate decisions. Neither is selected here. Sharing a core/state schema does not guarantee host-level substitution or automatic state transfer between distinct component identities.
 
 ### 3.3 Standalone
 
@@ -146,8 +146,9 @@ The adapter owns host SDK objects and host callback buffers. The shared core rec
 
 Before choosing the final AU/VST3 component topology:
 1. Build a minimal instrument prototype with MIDI input, stereo output and one optional stereo input as a baseline configuration only; do not treat this as the product's maximum input topology.
-2. Test AU instrument live-input routing in Logic Pro and at least one additional target host.
-3. Test whether the AU music-effect alternative supports the required MIDI/live-input workflow and compare the insertion UX.
+2. Test the `aumu` candidate in Logic Pro and at least one additional target AU host: prove a full-band input bus reaches the layer source path while MIDI instrument behavior and five-output semantics remain intact.
+3. If `aumu` fails the live-input gate, test `aufm` in the same hosts for full-band audio input plus Note On/Off, MPE, sequencer, five outputs and save/reopen. Compare the actual insertion workflow; do not assume MIDI CC support proves note-event support.
+4. Consider dual AU components only if both single-component candidates fail to cover distinct required workflows and the dual arrangement passes state/UX/certification review.
 4. Test VST3 input plus five stereo outputs (master + four layers) in each proposed host.
 5. Test bus activation/deactivation and channel arrangements after session save/reopen.
 6. Test host state save/restore with a deliberately sized embedded recording and external sample reference.
@@ -163,13 +164,13 @@ This prototype is an architecture validation spike. It is not production DSP imp
 | R1 formats | AU + VST3 + Standalone | Approved by DEC-026 |
 | VST3 live-input bus | Optional stereo input on instrument component | Proposed; validate |
 | VST3 outputs | Stereo master + four stereo layer outputs | Required product output; host exposure validate |
-| AU component | Start with `aumu`; test `aufm` as alternative/companion | Open |
+| AU component | `aumu` first validation candidate; `aufm` fallback; dual only on demonstrated distinct workflow need | Open — no subtype selected |
 | AU live input | Must satisfy DEC-020 through a tested host workflow | Open |
 | Host matrix | Logic, Live, Bitwig, Reaper | Proposed Q-P09; exact versions open |
 | MIDI/transport behavior | Adapter-specific mapping to shared transport | Open details |
 | Offline rendering equivalence | Define exact deterministic boundary | Open |
 
-**Status:** This proposal translates the approved format and live-input requirements into testable architecture options. It does not select final AU component types or claim host certification.
+**Status:** This proposal translates the approved format and live-input requirements into testable architecture options. The evidence-based decision gate is in `PHASE3_AU_COMPONENT_STRATEGY_AUDIT.md`. It does not select final AU component types or claim host certification.
 
 
 ## 9. Recommended output and live-input routing semantics
