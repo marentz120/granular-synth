@@ -11,7 +11,7 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [GRANULAR_SYNTH_REQUIREMENTS.md](GRANULAR_SYNTH_REQUIREMENTS.md) | Requirements with proposed tiers and traceability | Draft v0.4 |
 | [DSP_ARCHITECTURE.md](DSP_ARCHITECTURE.md) | Architecture options, RT model, framework comparison | Investigation v0.3 |
 | [UI_UX_SPECIFICATION.md](UI_UX_SPECIFICATION.md) | UI/UX specification | Discovery not started (Phase 4) |
-| [LIVE_PERFORMANCE_SPECIFICATION.md](LIVE_PERFORMANCE_SPECIFICATION.md) | Controller-only live-performance workflow, MIDI mapping architecture, acceptance criteria | Draft (owner-decisions revision, 2026-11-27) |
+| [LIVE_PERFORMANCE_SPECIFICATION.md](LIVE_PERFORMANCE_SPECIFICATION.md) | Controller-only live-performance and R1 sequencer behavior; detailed UI/acceptance work remains later-phase | Product behavior approved; UI design pending |
 | [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) | Phases, dependencies, exit criteria, milestone plan | Proposal v0.2 |
 | [DECISIONS_LOG.md](DECISIONS_LOG.md) | Decision records and approval status | Living |
 | [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Owner decisions, technical decisions, evidence gaps | Living, v0.4 |
