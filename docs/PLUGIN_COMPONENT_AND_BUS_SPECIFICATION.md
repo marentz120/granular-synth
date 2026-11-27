@@ -135,7 +135,7 @@ This prototype is an architecture validation spike. It is not production DSP imp
 The product output model remains one stereo master plus four optional stereo layer outputs. Recommended semantic tap positions:
 
 - Each Layer 1–4 output is post-layer-FX and pre-layer-fader/mute/solo. This provides stable stems for DAW mixing and aligns the layer output with its recording tap.
-- The stereo master output is the sum of the four layer signals after layer gain, mute and solo logic.
+- The stereo master output is the sum of the four layer signals after layer gain, mute and solo logic, plus the required parallel dry live-input path (GS-ARC-007).
 - Master recording captures the same stereo master signal immediately before it is handed to the host/device output.
 - Each layer's live input feeds that layer before its FX chain; mono input is centered across the stereo layer path (DEC-040).
 - A parallel dry live-input path is also summed before the master, as required by GS-ARC-007. This is intentional product routing, not an optional bypass. Master recording includes the dry path; layer stem outputs remain post-FX/pre-layer-fader. Host adapters must prevent accidental duplicate summing of layer buses.
