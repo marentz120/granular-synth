@@ -139,3 +139,18 @@ This pass cross-checked the proposed normalized host contract against Apple's cu
 6. No host prototype was run. The behavior of Logic Pro, Ableton Live, Bitwig and Reaper for the proposed live-input and five-output layout remains unverified. Q-P06/Q-P09 are still open.
 
 No framework, component subtype, bus activation default, deployment target or host compatibility claim is approved by this research update. No code, prototype or benchmark was performed.
+
+## 9. Target-host capability evidence cross-check — 2026-11-28
+
+The R1 host candidates in Q-P09 were checked against current official documentation from Apple/Logic Pro, Ableton, Bitwig and Cockos/REAPER. The detailed host × format matrix, evidence vocabulary, validation backlog and source register are in `PHASE3_HOST_CAPABILITY_EVIDENCE_MATRIX.md`.
+
+Findings that materially refine the prior host assumptions:
+
+- **Logic Pro:** official documentation confirms multi-output Audio Unit instruments and aux-channel-strip routing. Its documented side-chain source menu can select audio tracks, software-instrument tracks, hardware inputs and buses, but Apple states that the side-chain signal controls the plug-in and is not processed by it. This is not proof of a general `aumu` live-audio source input.
+- **Ableton Live:** official documentation confirms up to 16 stereo outputs from one multi-out plug-in and external side-chain routing for third-party AU/VST plug-ins that expose side-chain functionality. The side-chain path is not proof of the full granular source-input requirement.
+- **Bitwig Studio:** official documentation confirms multi-out VST chains and access to their outputs. Bitwig explicitly states that it does not support Audio Units, so the Bitwig AU cell is N/A while VST3 remains relevant. Its Audio Sidechain/modulator and plug-in side-chain support do not prove a raw main audio input bus to the granular engine.
+- **REAPER:** official documentation lists VST3 and AU on macOS, multichannel tracks up to 128 individually routable channels, pin connectors, and a multi-output VSTi example with four stereo outputs. This is strong routing evidence, but the exact five-stereo-output topology and live-input delivery to an instrument remain untested.
+
+Across all four hosts, public manuals do not prove that the exact optional-bus activation, per-layer source mapping and session save/reopen behavior required by GRANULAR SYNTH works. Nor do they establish the exact maximum-block reconfiguration sequence that the plug-in will observe. These remain prototype evidence items, not assumptions.
+
+**No scope change:** DEC-020 (live input in Standalone and plug-in contexts), DEC-026 (AU + VST3 R1), and GS-ARC-006 (stereo master + four stereo layer outputs) remain unchanged. No framework, AU component subtype, bus default, host version, compatibility claim or prototype was approved. No code or benchmark was run.
