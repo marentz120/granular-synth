@@ -1,7 +1,7 @@
 # Development Roadmap
 
 **Status:** Proposal; gated by research and owner approval. No phase is automatically authorized by this roadmap. Do not build all features in parallel or skip real-time validation.
-**Version:** 0.5 (Phase 3 API and signal-flow proposal, 2026-11-27)
+**Version:** 0.6 (recommended routing defaults, 2026-11-27)
 
 ## Change summary (v0.2 → v0.3)
 
@@ -217,3 +217,10 @@ flowchart TD
 2. Third-party licence notices complete (0 unlicensed dependencies).
 3. User documentation covers every R1 feature.
 4. Owner release approval recorded in DECISIONS_LOG.md.
+
+
+### 2026-11-27 routing-default refinement
+- Added a consistent recommended R1 signal-flow contract across API, DSP, sample/state and plugin bus documents.
+- Recommended layer stems and layer outputs are post-FX/pre-fader; per-layer recording ignores fader/mute/solo; master capture is post-mix/pre-host-output; live input enters each layer before FX; no parallel dry-to-master path by default.
+- Voice ordering proposal: engine source sum → sub-oscillator → voice filter → amp envelope → pan → layer sum.
+- These defaults remain architecture proposals pending host/UX validation; no product decision or implementation authorization is implied.
