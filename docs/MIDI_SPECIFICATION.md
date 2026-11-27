@@ -1,7 +1,7 @@
 # MIDI Specification
 
 **Version:** 0.1 — Phase 2 working specification  
-**Status:** Proposed; subject to owner review. No MIDI implementation authorized.  
+**Status:** R1 MIDI product behavior specification; DEC-033/034/038/039 settle product-level mapping and transport behavior. MPE zone and protocol implementation remain Phase 3.  
 **Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-MID-001…008; R1_PRODUCT_SPECIFICATION.md §5; LIVE_PERFORMANCE_SPECIFICATION.md; DEC-016, DEC-019, DEC-021.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §11.1.
 
@@ -52,7 +52,7 @@ Standalone essential live-performance operations, including all sequencer functi
 - Program Change receive can be enabled/disabled.
 - In Standalone, Program Change recalls a preset as required by GS-MID-005.
 - Plugin behavior is supported only where the host/format permits it.
-- The mapping from bank select/program number to the searchable, unbounded library and Performance Set is unresolved; do not assume the benchmark's fixed 128-slot structure.
+- Program Change recalls an explicitly assigned item in the active performance bank; unmapped values are ignored (DEC-033). The bank is a recall index over the unbounded library, not a fixed storage cap.
 - Program Change must not silently interrupt the active Pattern; the R1 rule that changing Preset does not replace or stop the active Pattern still applies.
 
 ## 7. Clock and transport
