@@ -448,7 +448,7 @@ This ordering is a candidate deterministic contract. Sample-accurate events spli
 
 ## 6. Recommended voice and layer signal flow (proposal)
 
-The current DSP architecture describes grain summation before voice filters and layer FX after layer synthesis. The following is the recommended R1 topology for review. It preserves grain summation before the voice filter and places live input inside each layer's FX path.
+The approved GS-ARC-007 signal chain requires a per-voice engine + sub-oscillator path through LPF then HPF, a per-layer four-slot FX/M-S/patch-volume/layer-mix/wet path, and a parallel dry live-input path summed before the master. The following is the recommended R1 topology for review; it preserves those requirements while making recording and output taps explicit.
 
 ```text
 MIDI / Sequencer / Note Events
@@ -483,7 +483,11 @@ Input Gain / Mono Centering              |
                        |
                  Layer Input Sum
                        |
-                  Layer FX Chain
+                Four-Slot FX Chain
+                       |
+                  M-S / Patch Gain
+                       |
+                Layer Mix / Wet Path
                        |
                 Post-FX Layer Signal
                        |
@@ -501,8 +505,8 @@ Layer Stem Output + Recording       Layer Fader / Mute / Solo
 
 Notes:
 - This is the recommended topology for architecture review; it remains a proposal pending owner review and host/UX validation. Numeric DSP behavior and framework-specific routing remain unapproved.
-- The proposed R1 voice order is: Granular/Sampler source sum → sub-oscillator mix → voice filter → amp envelope → voice pan → layer voice sum. This is the current recommended order, not an approved implementation detail; validate against voice-level acceptance fixtures before implementation.
-- Live input enters each layer before its FX chain, with input gain and DEC-040 mono-centering. No separate dry-to-master bypass is present by default; a separate bypass would duplicate signal and complicate Freeze/record taps.
+- The approved GS-ARC-007 voice chain is engine + sub-oscillator → LPF → HPF. The proposed placement of amp envelope and pan after the filters and before layer summation remains an engineering detail to validate against voice-level acceptance fixtures.
+- Live input has a wet path into its layer before the four-slot FX chain and a separate dry path summed before the master, as explicitly required by GS-ARC-007. Mono input is centered under DEC-040. The dry path is intentional product behavior, not an optional bypass; its gain staging and monitoring behavior require validation.
 - Layer output buses and master output mapping must follow the negotiated plugin bus topology. The AU input/component strategy remains open (Q-P06).
 - Freeze captures the approved source snapshot for that layer. It does not freeze the FX chain, transport, modulation or recording process.
 
@@ -539,7 +543,7 @@ Proposed output model:
 - A layer output represents the defined final layer signal at its selected bus tap. It must not be double-counted into the master if the host separately routes layer outputs.
 - Main output continues to provide the master mix even when optional layer buses are inactive, unless a host-specific topology explicitly requires a different mapping.
 - Inactive/unconnected outputs are ignored safely; the engine must not write through null bus pointers.
-- Live input is routed into its layer before that layer's FX chain. No separate direct/dry-to-master bypass is enabled by default; validate monitoring latency and feedback safety in Standalone and target hosts.
+- Live input feeds the layer FX path and the required parallel dry-to-master path under GS-ARC-007. Validate gain staging, monitoring latency, channel mapping and feedback safety in Standalone and target hosts.
 
 **Recommended default:** each layer output is post-FX and pre-layer-fader, matching the per-layer recording tap and preserving independently mixable stems for DAW workflows. Master output applies layer fader/mute/solo. This remains a proposed architecture default pending host validation; it does not change the approved five-output product model.
 
@@ -621,7 +625,7 @@ For consistency across the engine, recorder and plugin adapters, the following d
 | Layer output bus | Post-FX, pre-layer fader | Not affected; host receives a mixable stem |
 | Master recording | Final stereo master, pre-host output | Includes layer faders, mute/solo and any live input routed through layers |
 | Live input | Per-layer input, before layer FX | Affects the layer FX and its stem/master contribution |
-| Separate dry input path | Not enabled by default | Avoids duplicate/phase-conflicting monitoring route |
-| Voice processing | Granular/Sampler sum → sub-osc mix → voice filter → amp envelope → pan → layer sum | Per-voice processing before layer FX |
+| Dry live-input path | Required by GS-ARC-007; summed before master | Parallel dry feed is intentional; validate gain staging and avoid unintended double-counting in host bus adapters |
+| Voice processing | Engine + sub-oscillator → LPF → HPF → proposed amp envelope/pan → layer sum | Preserves GS-ARC-007 filter order; validate envelope/pan placement |
 
 These are coherent engineering defaults, not changes to the approved product feature set. They require validation against Standalone monitoring latency, host bus behavior and the recording UX. If host constraints require a different AU/VST3 topology, adapters must preserve the same semantic signal taps where possible and document any limitation.
