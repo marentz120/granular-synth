@@ -270,7 +270,7 @@ Contract:
 - A snapshot exposes only committed frames. Uncommitted/writer-owned frames are excluded from Freeze and serialization.
 - Buffer exhaustion stops capture safely, preserves committed audio and reports an overrun; it must not silently wrap and corrupt an existing take.
 - Independent recording continues during Freeze (DEC-042).
-- **Open signal-flow decision:** which tap(s) are selected for per-layer recording and master recording; see §8. The enum is a candidate list, not a product decision.
+- **Recommended engineering defaults (pending owner review and host/UX validation):** per-layer recording uses `LayerPostFxPreLayerGain`; stereo master recording uses `MasterPreOutput`. These defaults are defined in §§7–8 and are not new product-level decisions. The enum retains other candidate positions for future use, but R1 does not expose additional recorder modes by implication.
 
 ### 4.7 Freeze source publication — IF-07
 
@@ -446,7 +446,7 @@ This ordering is a candidate deterministic contract. Sample-accurate events spli
 
 **Ordering caveat:** steps 5–8 cannot be finalized until the tap/routing decisions in §8 are approved. The recorder tap is a point in the graph, not a post-hoc copy of an arbitrary buffer.
 
-## 6. Candidate voice and layer signal flow
+## 6. Recommended voice and layer signal flow (proposal)
 
 The current DSP architecture describes grain summation before voice filters and layer FX after layer synthesis. The following is the recommended R1 topology for review. It preserves grain summation before the voice filter and places live input inside each layer's FX path.
 
@@ -500,13 +500,13 @@ Layer Stem Output + Recording       Layer Fader / Mute / Solo
 ```
 
 Notes:
-- This is the recommended topology for architecture review; numeric DSP behavior and framework-specific routing remain unapproved.
-- The current DSP architecture proposal places filters after grain summation at voice level; the exact ordering of sub-oscillator, filter, amp and pan needs one reconciled normative diagram.
+- This is the recommended topology for architecture review; it remains a proposal pending owner review and host/UX validation. Numeric DSP behavior and framework-specific routing remain unapproved.
+- The proposed R1 voice order is: Granular/Sampler source sum → sub-oscillator mix → voice filter → amp envelope → voice pan → layer voice sum. This is the current recommended order, not an approved implementation detail; validate against voice-level acceptance fixtures before implementation.
 - Live input enters each layer before its FX chain, with input gain and DEC-040 mono-centering. No separate dry-to-master bypass is present by default; a separate bypass would duplicate signal and complicate Freeze/record taps.
 - Layer output buses and master output mapping must follow the negotiated plugin bus topology. The AU input/component strategy remains open (Q-P06).
 - Freeze captures the approved source snapshot for that layer. It does not freeze the FX chain, transport, modulation or recording process.
 
-## 7. Recording tap semantics — explicit unresolved choice
+## 7. Recording tap semantics — recommended R1 defaults (proposal)
 
 The recorder interface supports these candidate positions:
 
@@ -518,18 +518,18 @@ The recorder interface supports these candidate positions:
 | Layer Post-Layer-Gain | Final layer signal after gain/mute/solo logic | Matches what layer contributes to mix |
 | Master Pre-Output | Final master mix before host output | Captures complete mix, subject to dry path and master processing position |
 
-**Recommended default for Phase 3 architecture (not a new product decision):** expose two explicit record sources per instance:
+**Recommended R1 architecture default (not a new product decision):** define two fixed recording sources:
 - Per-layer recording: Layer Post-FX Pre-Layer-Gain, so a layer take includes its effect character but can be mixed later.
 - Stereo master recording: Master Pre-Output, so the recorded mix matches the master signal sent to the host.
 - Keep raw/input capture as a separately selectable source only if product requirements and UI scope justify it; do not silently add a third recorder mode.
 
-Open sub-decisions:
-1. Does per-layer recording include layer mute/solo and layer fader? Recommendation above: no fader/mute/solo; record the post-FX signal before layer gain.
-2. Does master recording include the direct/dry live-input monitor path? Must match the audible master path; if dry input is routed to master, it is included.
-3. Does master recording occur before or after any master safety/limiter stage? R1 has no approved master FX chain; do not introduce one here.
-4. Does recording continue when a layer is muted or solo-isolated? Product/recording spec must define this explicitly; architecture should keep tap selection separate from UI mute/solo state.
+Validation questions (not unresolved product semantics):
+1. Confirm in Standalone and each target host that the per-layer tap is post-FX and pre-layer-fader, excluding fader/mute/solo.
+2. Confirm the master tap is the final stereo master before host/device output and includes only live input routed through the layer graph.
+3. R1 has no approved master FX chain; do not introduce one in this specification.
+4. Verify that an armed layer continues recording its stem while muted or solo-isolated.
 
-Freeze and recording relationship is not open at product level: recording continues independently during Freeze (DEC-042). The exact selected tap is still an engineering specification gap.
+Freeze and recording relationship is not open at product level: recording continues independently during Freeze (DEC-042). The recommended recording taps are defined here; implementation equivalence remains a validation gate.
 
 ## 8. Output bus and dry-input routing
 
@@ -539,7 +539,7 @@ Proposed output model:
 - A layer output represents the defined final layer signal at its selected bus tap. It must not be double-counted into the master if the host separately routes layer outputs.
 - Main output continues to provide the master mix even when optional layer buses are inactive, unless a host-specific topology explicitly requires a different mapping.
 - Inactive/unconnected outputs are ignored safely; the engine must not write through null bus pointers.
-- Live-input dry monitoring must have one explicit route and gain control. It must not bypass the intended layer FX unless the owner approves a separate dry path.
+- Live input is routed into its layer before that layer's FX chain. No separate direct/dry-to-master bypass is enabled by default; validate monitoring latency and feedback safety in Standalone and target hosts.
 
 **Recommended default:** each layer output is post-FX and pre-layer-fader, matching the per-layer recording tap and preserving independently mixable stems for DAW workflows. Master output applies layer fader/mute/solo. This remains a proposed architecture default pending host validation; it does not change the approved five-output product model.
 
@@ -586,10 +586,10 @@ These are obligations, not evidence of passing tests. No benchmark code, product
 | Q-T12 parameter IDs/host exposure | Proposal only | Owner approval required before first public release |
 | Q-P06 AU live-input/component strategy | Open | Validate AU component types and live-input behavior in target hosts |
 | Q-P09/Q-P10 host/reference machine | Open | Owner supplies or approves host/device matrix and reference machine |
-| Recording tap positions | Open | Owner review of §7 recommendations; reconcile with Audio I/O and lifecycle specs |
-| Dry input and mute/solo capture semantics | Open | Normative routing choice before implementation |
-| Exact filter/sub-osc/amp order | Open | Reconcile DSP architecture with voice-level acceptance tests |
-| Layer output tap position | Open | Reconcile host buses, stems and standalone live workflow |
+| Recording tap positions | Proposed defaults defined in §§7–8 | Owner review plus host/UX validation; verify against Audio I/O and lifecycle specs |
+| Dry input and mute/solo capture semantics | Proposed defaults defined in §§7–8 | Validate monitoring, stem independence and master correspondence |
+| Exact filter/sub-osc/amp order | Proposed order defined in §6 | Validate against voice-level acceptance fixtures before implementation |
+| Layer output tap position | Proposed post-FX/pre-fader tap | Validate host buses, stems and Standalone live workflow |
 | Queue capacities and retirement bounds | Open | Derive from burst analysis and tests; do not invent numeric limits |
 | State container/chunking and maximum size | Open | Host evidence and DEC-025-compliant serialization design |
 | FX order/slot count | Open | Reconcile Effects Specification and DSP graph; preserve DEC-023 seven effects |
@@ -601,7 +601,7 @@ This document advances IF-01…IF-12 from abstract contracts to candidate servic
 Still required:
 1. Owner review of the explicit recording/routing recommendations and open choices.
 2. Concrete class/API traceability for each of the 124 R1 rows, including exact ownership of each behavior.
-3. Reconciled normative signal-flow diagram and recording tap specification.
+3. Owner-reviewed signal-flow proposal, then host-validated recording tap and bus semantics.
 4. Host/component evidence for AU live input and VST3 buses.
 5. Final parameter ID and framework decisions.
 6. RT queue and retirement design with capacities justified by analysis/testing.
