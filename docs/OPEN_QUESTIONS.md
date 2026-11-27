@@ -15,8 +15,8 @@ Every item from the v0.1 list is kept and mapped:
 |---|---|---|
 | Owner: Relationship to GR-MEGA (parity / inspired-by / baseline + differentiation) | Q-P15 | OPEN — recommendation given |
 | Owner: Confirm formats | Q-P02 | OPEN — recommendation given |
-| Owner: Layer model (4 fixed, more, configurable) | Q-P04 | OPEN — recommendation given |
-| Owner: First-release engines | Q-P20 | OPEN — recommendation given |
+| Owner: Layer model (4 fixed, more, configurable) | Q-P04 | **ANSWERED — DEC-017** |
+| Owner: First-release engines | Q-P20 | **ANSWERED — DEC-018** |
 | Owner: Approve framework after comparison | Q-T01 (comparison in DSP_ARCHITECTURE.md §2) | OPEN |
 | Owner: Minimum macOS / Apple Silicon–Intel | Q-T03 | OPEN |
 | Owner: Main use case (studio / live / both) | Q-P19 | **ANSWERED** — both (DEC-015) |
