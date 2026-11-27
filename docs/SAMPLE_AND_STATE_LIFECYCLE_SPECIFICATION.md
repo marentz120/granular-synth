@@ -25,14 +25,17 @@ A patch refers to an asset identity, not a raw pointer or transient filesystem p
 ## 3. Load and replacement lifecycle
 
 1. Resolve the asset reference and verify existence/readability.
-2. Decode and validate off-thread; reject unsupported/malformed input without changing the active sample.
-3. Convert to the internal sample representation and prepare guard regions and any required metadata.
-4. Build waveform overview progressively; optional analyses (onsets, centroid, zero crossings) are separate cancellable jobs.
-5. Publish the completed immutable prepared sample to the audio thread using the bounded structural-command protocol.
-6. Swap at a documented safe point, preserving old sample until no active voice/grain can read it.
-7. Retire old data off-thread.
+2. Reserve the expected memory admission for decode output, guard regions, metadata and any required conversion before committing to the load. Reservation is accounting, not an allocation on the audio thread; if reservation fails, reject before disturbing the active asset.
+3. Decode and validate off-thread; reject unsupported/malformed input without changing the active sample.
+4. Convert to the internal sample representation and prepare guard regions and required metadata.
+5. Build waveform overview progressively; optional analyses (onsets, centroid, zero crossings) are separate cancellable jobs and must not hold the audio publication slot.
+6. Assign a monotonically increasing request generation per asset slot. A newer request may supersede an older prepared-but-not-published request; a stale completion must not replace a newer accepted request.
+7. Publish the completed immutable prepared sample to the audio thread using the bounded structural-command protocol. Ownership transfers only after successful publication; if publication fails, the producer retains responsibility for the prepared object and its reservation.
+8. Swap at a documented safe point. The active handle changes atomically; any existing voice, grain or sampler head that still reads the old asset must retain its own valid lifetime handle until it has stopped referencing it.
+9. Retire the old runtime handle off-thread only after all audio readers have relinquished it. Retirement-queue saturation must retain ownership in a preallocated bounded fallback and must never drop, destroy or block on the audio thread; the required fallback capacity and saturation proof remain engineering gates.
+10. Release unused reservation and prepared resources on the non-RT owner path after cancellation, stale-generation rejection or failed publication.
 
-Missing library files do not crash the host. User can relink by content hash or explicit file selection. A failed replacement leaves the currently active sample intact.
+Missing library files do not crash the host. User can relink by content hash or explicit file selection. A failed replacement leaves the currently active sample intact. The system must report whether a request was rejected, superseded, prepared, published or activated; “load complete” must not be reported merely because decoding finished.
 
 ## 4. Sample-rate policy
 
