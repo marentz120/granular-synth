@@ -1,7 +1,7 @@
 # Audio, I/O and Recording Specification
 
 **Status:** Phase 2 product behavior specification; host/device implementation remains Phase 3.
-**Authority:** DEC-020; R1_PRODUCT_SPECIFICATION.md §3; GS-SMG-001…021; GS-PLT-003/006; GS-NFR-001…013; GR_MEGA_FEATURE_MAP.md §1.2 and §9.
+**Authority:** DEC-020 and DEC-040; R1_PRODUCT_SPECIFICATION.md §3; GS-SMG-001…021; GS-PLT-003/006; GS-NFR-001…013; GR_MEGA_FEATURE_MAP.md §1.2 and §9.
 
 ## 1. Product behavior and scope
 
