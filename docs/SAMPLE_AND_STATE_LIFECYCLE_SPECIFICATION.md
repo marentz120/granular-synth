@@ -135,7 +135,7 @@ The maximum embedded state size, compression policy, chunking strategy and failu
 - Existing grains/voices, new notes, sequencer, MIDI, modulation, envelopes, shared transport and layer FX continue normally.
 - Independent recording continues at its defined tap. Freeze does not start/stop the recorder or mutate the frozen snapshot.
 - Thaw crossfades back to the prior live/rolling source. Static library samples report already static or disable redundant capture.
-- Global Freeze is prepared and published as one bounded transaction with four per-layer outcomes, not four independent queue commands. All ready layers switch at the same logical boundary; failed layers remain on their previous source, and partial failure is visible. Failure to publish the transaction leaves all layers unchanged.
+- Global Freeze is prepared and published as one bounded transaction with four per-layer outcomes, not four independent queue commands. All ready layers switch at the same logical boundary; failed layers remain on their previous source, and partial failure is visible. Failure to publish the transaction leaves all layers unchanged. **Owner-review item:** the proposed partial-preparation behavior lets ready layers switch together while failed layers remain unchanged; confirm this interpretation versus an all-or-nothing global operation before implementation.
 - Freeze state and snapshot audio persist in plugin state; the snapshot is treated as an unsaved recording buffer and embedded under DEC-025.
 - Memory exhaustion or source loss must fail safely, preserve the prior valid source and report status. All Sound Off does not thaw.
 
