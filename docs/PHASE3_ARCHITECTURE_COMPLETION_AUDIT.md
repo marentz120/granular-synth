@@ -1,6 +1,6 @@
 # Phase 3 Architecture Completion Audit
 
-**Version:** 0.3  
+**Version:** 0.4  
 **Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
 **Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
 **Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
@@ -349,3 +349,33 @@ A review against current Apple Audio Toolbox and Steinberg VST3 public documenta
 These constraints are now recorded in PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md §10, THREADING_AND_OWNERSHIP_SPECIFICATION.md §10, PHASE3_INTERFACE_CONTRACTS.md §3.5 and PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md §8. The normalized contract now distinguishes declared, present, active, arranged and buffer-valid bus state, plus audio-render versus parameter-flush process kind.
 
 This is a documentation refinement only. It does not resolve Q-P06/Q-P09, choose AUv2/AUv3 or aumu/aufm, approve the five-bus host topology, or authorize a prototype. No code, host test or benchmark was performed.
+
+## AU/VST3 render-capacity and transient-memory audit — 2026-11-27
+
+A focused capacity review connected the host-specific maximum block contracts to the sample/state memory ledger. The previous documents stated that scratch is preallocated and that AU/VST3 maximum block sizes are negotiated, but did not define one shared `B`/actual-`N` invariant, distinguish borrowed host bus memory from engine-owned staging, or quantify the conditional five-output-plus-live-input scratch case.
+
+The new `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md` and companion updates now define:
+
+- AU `maximumFramesToRender`, VST3 `ProcessSetup::maxSamplesPerBlock` and Standalone device maximum as the prepared capacity source for each render-resource generation.
+- Actual render frames `N` must satisfy `N <= B`; over-capacity calls take a bounded adapter failure path and never trigger an in-callback allocation or resize.
+- VST3 zero-bus parameter flush is not an audio render and must not touch audio scratch or advance audio/transport.
+- Host input/output buffers are borrowed callback views; the memory ledger counts only engine-owned working planes and materialized staging copies.
+- Five stereo output buses represent ten channels when all are exposed. If all five are copied to float32 scratch, the conditional payload is `40 × B` bytes; one additional stereo input staging copy adds `8 × B`.
+- Physical host input buses are distinct from four logical per-layer source views. A read-only input may fan out to multiple layers without four duplicate copies.
+- The one-stereo-input prototype configuration is explicitly a minimum host-validation case, not a product-wide maximum; DEC-020's no-fixed-product-cap policy remains intact.
+- Checked wide byte arithmetic and checked conversion to `size_t` are required. Float32 sample width and a 32-bit frame-count type do not imply a 32-bit process; Q-T03 remains open.
+
+The audit also reconciled the API sketch's prior `mainInput + layerInput[4]` ambiguity by making the physical input-bus collection explicit and describing the per-layer views as logical routed views that may alias it.
+
+The arithmetic examples (1,024 and 4,096 frames) are illustrative only. They do not approve Q-T17's block range, a host bus topology, a memory budget, or a 32-bit target. The raw six-minute sample/Freeze figures remain unchanged and exclude runtime overhead.
+
+Updated companion documents:
+- `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` §5.2
+- `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` §§3, 7, 11
+- `THREADING_AND_OWNERSHIP_SPECIFICATION.md` §10.4
+- `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` §3.1
+- `PHASE3_INTERFACE_CONTRACTS.md` §3.6
+- `docs/README.md`
+
+Open gates remain Q-T03, Q-T05, Q-T07, Q-T17, Q-P06/Q-P09, AR-01/AR-02 and the DEC-042 Global Freeze owner review. No code, host prototype, benchmark, numeric memory budget or product decision was added.
+
