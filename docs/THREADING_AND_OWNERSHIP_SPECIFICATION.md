@@ -396,3 +396,15 @@ The [Cross-Host State Callback & Snapshot Freshness Evidence Matrix](PHASE3_CROS
 - Restore parsing and candidate preparation remain separate from render-owned objects. Publish one complete candidate at the existing safe point; retire old state off-render after all readers release it.
 
 No queue capacity, lock-free primitive, capture-token ABI, retry count, callback deadline or host thread guarantee is selected. AR-06 and Q-T15 remain open.
+
+
+## 17. AU state getter result and CF-object ownership — 2026-11-28
+
+- AUv3 **fullState** / **fullStateForDocument** expose nullable dictionary properties with no separate getter error result in their signatures. Their AUv2 bridge mapping for nil is not documented; do not assume nil aborts a host save.
+- AUv2 **AudioUnitGetProperty** returns OSStatus. A successful Core Foundation object result is an owned reference that the caller must release. Ownership of that reference is distinct from ownership or copying of nested immutable Data backing.
+- The non-render state adapter owns the returned state object through serialization/transfer and releases it on a non-render owner. Do not move potentially non-bounded CF object destruction onto the render callback.
+- Apple's ClassInfoFromDocument fallback to ClassInfo is a restore rule. It does not authorize a save worker to substitute a preset snapshot for required DEC-025 document payloads.
+- Any dictionary/Data materialization and actual copies are charged to aggregate state-I/O memory admission only when they are plug-in-owned/observed. Unknown host-internal copies remain an evidence gap.
+- The getter callback context remains host-specific and unverified. No lock, callback deadline, OSStatus constant or copy factor is selected.
+
+See **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md**.
