@@ -26,3 +26,6 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 - [PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md](PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md) — VST3 instrument category, processor/controller split, event/live-audio buses, five outputs, MPE Note Expression and host-validation gates; recommendation only, no category or bus type selected.
 - [PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md](PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md) — AU/VST3/Standalone event timestamps, automation curves, MPE note identity, transport validity and loop-discontinuity parity; proposal and test design only.
 - [PHASE3_VST3_HOST_CAPABILITY_MATRIX.md](PHASE3_VST3_HOST_CAPABILITY_MATRIX.md) — host-by-host VST3 evidence for instrument discovery, raw live input, MPE, five stereo outputs, bus activation and session persistence; evidence map only, no host certified.
+
+
+- [PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md](PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md) — AU cable/member-channel versus VST3 noteId lifecycle, per-note expression mapping, bounded identity ownership and AR-03…AR-05 review gates; proposal only, no final matching or type mapping selected.
