@@ -421,6 +421,7 @@ The new `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` compares Apple AU 
 
 Key findings:
 - AU uses absolute sample-time event timestamps and parameter ramps with a duration; VST3 uses block-relative discrete-event offsets and separate per-parameter automation queues describing piecewise-linear curves.
+- AUValue is in the AU parameter's declared range/unit, while VST3 ParamValue is normalized [0,1]; both require canonical-ID resolution and descriptor-based conversion before shared-core evaluation.
 - VST3's documented relative position -1 is a previous-block continuity anchor. It must not enter the unsigned discrete-event offset path.
 - VST3 Note Expression uses explicit note IDs. AU MPE arrives through MIDI 1.0 cable/member-channel and note lifecycle, requiring an explicit internal note-identity adapter and a still-open retrigger policy.
 - AU musical-context and transport-state callbacks are independently optional. VST3 ProcessContext fields require per-field validity flags and SDK 3.7+ context requirements.
