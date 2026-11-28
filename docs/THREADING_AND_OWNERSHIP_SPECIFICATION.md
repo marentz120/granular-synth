@@ -351,3 +351,18 @@ Parse, validate, migrate, prepare assets/recordings and reserve memory off RT. C
 VST3 setProcessing(false) may run on UI or processing thread and must remain light, lock-free and allocation-free. AU reset caller-thread behavior remains host validation. Retire old graph/assets off RT only after all readers/voices/grains release them.
 
 Restore admission counts old graph + candidate graph + embedded recording/Freeze chunks + staging + pending retirement. Generation wrap must never alias a live handle; quiesce/reinitialize off RT or reject admission. See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md. AR-06 remains open.
+
+
+## 14. State container stream and migration ownership — 2026-11-28
+
+- The state-capture coordinator owns the immutable, generation-consistent snapshot and its recording/Freeze retention leases. The serializer owns those immutable handles until all required chunks are emitted and verified or the save fails.
+- The audio/render domain publishes only bounded capture descriptors and performs the documented safe-point handoff. It never serializes JSON, computes whole-payload digests, compresses audio, reads/writes host streams, performs file I/O or allocates state staging.
+- Manifest construction, schema migration, checksum calculation, compression/decompression, chunk staging and restore preparation are non-render operations. They still require bounded memory admission and cancellation/failure ownership.
+- Host state callbacks must be treated according to the actual host contract, not assumed to be a generic background thread. VST3 documents state interfaces as UI-thread operations, but offline-host behavior must not be assumed to be equivalent to a live UI callback; existing offline-processing caveats remain in force. If a host invokes state handling on a processing thread, no unbounded capture, compression, large allocation or audio-thread acknowledgement wait is permitted.
+- The host adapter writes/reads the canonical container through the host-owned transport. For VST3 IBStream, every transfer uses a bounded int32-sized request and checks the reported byte count; short transfer, error and zero progress terminate the operation safely. For AU, the adapter validates the actual dictionary/Data materialization behavior and does not assume streaming or an unlimited payload.
+- A host-owned stream is not a file transaction owned by the plug-in. The serializer cannot promise rename, fsync, rollback or preservation of the previous DAW project. The completion marker makes a partial container detectable; host-level durability is separately evidenced per host.
+- The standalone file owner may use a temporary-file/replace transaction, but only on the non-RT file worker. The previous valid file remains authoritative until final replacement succeeds.
+- Schema migration is deterministic and off-render. It operates on a validated metadata representation, preserves the original source state, and prepares a complete candidate before publication. A migration failure never mutates the active runtime.
+- Restore publication remains one bounded safe-point transaction. The old runtime is retained until the render domain has relinquished it; retirement and final destruction remain non-RT. AR-06 still governs the audible handling of old voices and is not resolved by this section.
+
+No transfer-slice size, callback deadline, queue capacity, maximum state size, codec, checksum algorithm or host threading guarantee is frozen here. See PHASE3_STATE_CONTAINER_AND_MIGRATION_AUDIT.md.
