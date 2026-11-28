@@ -378,7 +378,7 @@ Updated companion documents:
 - `PHASE3_INTERFACE_CONTRACTS.md` §3.6
 - `docs/README.md`
 
-Open gates remain Q-T03, Q-T05, Q-T07, Q-T17, Q-P06/Q-P09, AR-01/AR-02 and the DEC-042 Global Freeze owner review. No code, host prototype, benchmark, numeric memory budget or product decision was added.
+Open gates remain Q-T03, Q-T05, Q-T07, Q-T17, Q-P06/Q-P09, AR-01/AR-02 and the owner-gated interpretation of mixed-layer Global Freeze preparation failure (successful-subset versus all-or-nothing); DEC-042 Source Snapshot product semantics remain approved. No code, host prototype, benchmark, numeric memory budget or product decision was added.
 
 
 
