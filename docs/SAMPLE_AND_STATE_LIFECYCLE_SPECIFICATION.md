@@ -231,3 +231,12 @@ See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md.
 - AU fullState/fullStateForDocument and VST3 component/controller state have distinct persistence semantics; host callback limits remain prototype gates.
 
 AR-06 remains open: owner must choose whether voices already sounding at state-restore commit terminate or finish as non-addressable tails under the old immutable runtime generation.
+
+
+## 12. Cross-host persistence evidence — 2026-11-28
+
+See [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md) for the Logic Pro, Ableton Live, Bitwig Studio and REAPER evidence map.
+
+The host manuals support different levels of general project/preset persistence, but none of the reviewed material proves the complete DEC-025 custom embedded-recording payload plus DEC-042 Freeze-snapshot round-trip, atomic failure behavior, callback timing or bus activation persistence for GRANULAR SYNTH. Keep these as host-prototype gates. Do not reduce the product's required embedded payload to fit a host assumption; if a host cannot meet DEC-025 within its permitted state contract, report a compatibility blocker rather than silently omit audio.
+
+The matrix also distinguishes host UI reset, plug-in process reload, AU/VST3 processing lifecycle and project-state restore. AR-06 remains open; no old-voice audible policy is selected.
