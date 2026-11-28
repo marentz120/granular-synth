@@ -10,7 +10,9 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [PHASE1_REFERENCE_SUMMARY.md](PHASE1_REFERENCE_SUMMARY.md) | Executive summary of the reference analysis | Phase 1 draft (Issue #1) |
 | [GRANULAR_SYNTH_REQUIREMENTS.md](GRANULAR_SYNTH_REQUIREMENTS.md) | Requirements with proposed tiers and traceability | Draft v0.5 |
 | [DSP_ARCHITECTURE.md](DSP_ARCHITECTURE.md) | Architecture options, RT model, framework comparison | Investigation v0.4 |
-| [UI_UX_SPECIFICATION.md](UI_UX_SPECIFICATION.md) | UI/UX specification | Discovery not started (Phase 4) |
+| [UI_UX_SPECIFICATION.md](UI_UX_SPECIFICATION.md) | Screen layout, workspace behavior, touch/encoder interaction and performance UX | Phase 4 draft v0.1 — owner review required |
+| [MIDI_MAPPING_UX_SPECIFICATION.md](MIDI_MAPPING_UX_SPECIFICATION.md) | MIDI Learn, manual mapping, scopes, conflicts and performance-time mapping UX | Phase 4 draft v0.1 — owner review required |
+| [SCREEN_STATE_AND_NAVIGATION_SPECIFICATION.md](SCREEN_STATE_AND_NAVIGATION_SPECIFICATION.md) | Instrument/UI/transient state boundaries, navigation and recovery behavior | Phase 4 draft v0.1 — owner review required |
 | [LIVE_PERFORMANCE_SPECIFICATION.md](LIVE_PERFORMANCE_SPECIFICATION.md) | Controller-only live-performance and R1 sequencer behavior; detailed UI/acceptance work remains later-phase | Product behavior approved v0.3; UI design pending |
 | [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) | Phases, dependencies, exit criteria, milestone plan | Proposal v0.2 |
 | [DECISIONS_LOG.md](DECISIONS_LOG.md) | Decision records and approval status | Living |
