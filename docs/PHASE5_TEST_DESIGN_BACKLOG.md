@@ -355,3 +355,18 @@ These planning-only fixtures extend Q-T15/DEC-025/DEC-042 and the host evidence 
 | Logic/Live persistence round-trip | Save/reopen AU and VST3 documents with deterministic recording/Freeze payloads | Exact payload hash and host-visible failure semantics | Q-P09/Q-T15 |
 
 Execution requires pinned host/OS/plugin builds and explicit host-prototype authorization. Any performance benchmark or numeric memory-limit exercise requires separate authorization. The fixture design does not close host evidence gates.
+
+
+## 15. AU state failure-signalling and restore-fallback fixtures
+
+| Fixture family | Stimulus | Required observable/assertion | Gate |
+|---|---|---|---|
+| AUv3 nil bridge mapping | Return nil from fullStateForDocument in an authorized prototype | Record bridge result, host save outcome and whether host retries/falls back; do not assume nil means save abort | Q-T15/Q-P09 |
+| AUv2 getter OSStatus | Return success and non-success from ClassInfoFromDocument getter | Record exact OSStatus and host save outcome separately | Q-T15/Q-P09 |
+| Document restore fallback | Make ClassInfoFromDocument fail/unavailable while ClassInfo exists | Observe fallback; reject parameter-only state as complete DEC-025 document restore | DEC-025/Q-P09 |
+| Preset/document scope mismatch | Required recording chunks exist only in document state | Detect any host path that restores only preset state without required chunks | DEC-025/Q-T15 |
+| AUv3 base-property fallback | Omit a document-property override in a controlled fixture | Observe use of fullState and verify actual payload completeness; do not infer from the API note alone | Q-T15/Q-P09 |
+| CF object ownership | Repeated AUv2 ClassInfo reads and releases | No leaked owned CF references; nested Data copy/retain behavior recorded, not guessed | Q-T15; memory prototype |
+| Save/restore failure separation | Inject failure independently in getter and setter paths | Save rollback and restore fallback are recorded as separate host outcomes | Q-P09 |
+
+These fixtures are planned only. Host prototypes require explicit authorization; no AC IDs, status constants, pass results, copy multipliers or payload limits are created.
