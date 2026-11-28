@@ -366,3 +366,17 @@ Restore admission counts old graph + candidate graph + embedded recording/Freeze
 - Restore publication remains one bounded safe-point transaction. The old runtime is retained until the render domain has relinquished it; retirement and final destruction remain non-RT. AR-06 still governs the audible handling of old voices and is not resolved by this section.
 
 No transfer-slice size, callback deadline, queue capacity, maximum state size, codec, checksum algorithm or host threading guarantee is frozen here. See PHASE3_STATE_CONTAINER_AND_MIGRATION_AUDIT.md.
+
+## 15. State I/O scheduling and capture watermark — 2026-11-28
+
+- The recorder publishes a bounded commit record for each completed block/page, including source generation and committed-frame watermark. A capture descriptor identifies only fully committed ranges; it never reads an in-flight writer region.
+- The capture coordinator owns generation validation and retention-lease acquisition. The serializer owns immutable handles until all required reads/transfers finish or fail.
+- A host callback never waits for the render thread, disk I/O, global quiescence or an unbounded worker acknowledgement. Prefer a prebuilt immutable snapshot; a callback-time capture is allowed only where the actual host contract permits bounded non-render work.
+- A prepared descriptor must match the latest committed-watermark publication observed at the capture boundary. A stale descriptor must not be returned as a successful DEC-025 document save.
+- Required recording and Freeze chunks are acquired as one document-state transaction. Partial lease acquisition rolls back off-render; no incomplete snapshot is published.
+- The recorder continues into separately reserved writable capacity while pages are leased. It never waits for lease release and never overwrites a leased page. If retention plus writable headroom cannot be guaranteed, capture fails without stopping or mutating the recording.
+- Save jobs, capture descriptors and in-flight leases are bounded. Queue/admission saturation returns a bounded failure; it does not create an unbounded backlog.
+- Cancellation does not release a lease until the serializer/copy reader confirms quiescence. Final release and destruction remain non-render.
+- Save, Freeze, sample replacement and restore share one physical-allocation/retention ledger. Concurrent jobs are admitted against their aggregate peak, not independent feature budgets.
+
+See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md` for the transaction state machine, host-specific scheduling, accounting model and Phase 5 fixtures. No queue capacity, lock-free primitive, callback deadline or numeric memory limit is selected here.
