@@ -1,9 +1,13 @@
 # Effects Specification
 
-**Version:** 0.1 — Phase 2 working specification  
-**Status:** R1 effect inventory approved by DEC-023; parameter-level details remain proposed/open where noted. No DSP implementation authorized.  
+**Version:** 0.2 — R1 scope retained; implementation sequenced to final milestone  
+**Status:** R1 effect inventory approved by DEC-023; implementation deferred to final Phase 6 milestone M14 by DEC-056. Parameter-level details remain proposed/open where noted. No DSP implementation authorized.  
 **Authority:** GRANULAR_SYNTH_REQUIREMENTS.md GS-FX-001…008; R1_PRODUCT_SPECIFICATION.md; DEC-015…025.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §12 and §1.2.
+
+## 0. Delivery sequencing (DEC-056)
+
+The seven-effect R1 inventory below remains approved and mandatory for R1. The FX subsystem is intentionally scheduled as the final Phase 6 integration milestone, after the core engines, layer/state system, sequencer and primary UI. Until that milestone, do not implement effect DSP or FX-specific UI. Earlier architecture and parameter planning must avoid blocking later FX integration, but must not invent or freeze an FX API, add-in SDK, framework, parameter IDs or DSP algorithms without the relevant technical approvals. The FX parameter contract in §8 must be closed before M14 begins. M14 must integrate the slot host, seven effect types, send paths, FX-specific UI, automation/modulation, persistence, tail behavior and acceptance coverage before R1 release.
 
 ## 1. R1 scope
 
