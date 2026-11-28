@@ -75,7 +75,7 @@ The detailed candidate test intent, evidence and dependency for each row remain 
 | GS-VOI-008 | Per-voice filters | DEC-052: LPF and HPF only, each with 0–20 kHz cutoff and resonance; verify LPF-only, LPF+HPF and HPF-only routing, chain bypass preserving settings, independent 6/12/18/24 dB/oct slopes and LPF→HPF order. No notch/band-pass/peak response modes in R1. | Filter response/topology and resonance range oracle gate |
 | GS-VOI-006 | ADSR | Four envelopes expose 0.1 ms–45 s for every time-valued stage; no zero-duration stage exists and values below minimum resolve to 0.1 ms. Stage curves, bipolar amount and inversion match numerical/timing oracles. Sustain is level-only. | Host/MIDI mapping and timing tolerance gate |
 | GS-VOI-009 | Key tracking | Note changes produce the approved cutoff-tracking response across the specified note range. | Curve/range specification gate |
-| GS-VOI-010 | Sub-oscillator | −1/−2 octave, level, poly balance and quantize behavior match the canonical pitch model. | Shared pitch-contract gate |
+| GS-VOI-010 | Sub-oscillator | DEC-054: fixed sine waveform with no R1 waveform selector; verify −1/−2 octave tracking, level, poly balance and quantization against the canonical pitch model. | Shared pitch-contract and oscillator-response gate |
 | GS-SMG-002 | Import / audition UI | Finder/DAW drag-drop and in-app audition complete with visible status; audition output corresponds to the selected asset. | Host/UI gate |
 | GS-SMG-003 | Asynchronous sample swap | During load, the prior valid sample remains active; publication occurs only after preparation; render continuity and ownership traces remain valid. | IF-03/IF-05 gate |
 | GS-SMG-004 | Normalize on import | ON applies the approved normalization target/algorithm; OFF preserves source amplitude and source asset. | Algorithm specification gate |
@@ -273,7 +273,7 @@ A test with a missing expected result, unpinned fixture or unresolved behavior i
 | Q-I07 | GS-VOI-008 | Product mode scope approved by DEC-052; verify the three routes, chain bypass, per-filter slope selection and absence of deferred response modes. Filter topology and resonance range/curve remain technical gates. |
 | Q-M18 | GS-VOI-006 | Product minimum approved by DEC-051; verify 0.1 ms lower bound, 45 s upper bound, below-minimum clamping, and no zero-duration stage. |
 | Q-I08 | GS-GRN-006 | Product curve approved by DEC-053; verify uniform and triangular distributions, zero amount, per-grain independence and legal-boundary renormalization using seeded statistical fixtures. |
-| Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement so the test oracle is unambiguous. |
+| Q-I12 | GS-VOI-010 | Fixed sine/no selector approved by DEC-054; verify waveform, octave tracking, level, poly balance and quantization. |
 | Effects parameter contract | GS-FX-002/004/006 | Specify Delay units/ranges/divisions/sync, Chorus/Compressor/Saturator/Reverb ranges and defaults, EQ3 crossover ordering/invalid-value behavior, send range and effect-specific automation. |
 | Modulation destination inventory (MTX-05) | GS-MOD-005 | Reconcile the exact eligible R1 continuous-destination inventory against the R1 parameter catalogue; exclude deferred-only destinations. |
 | Sampler interpolation contract | GS-SMP-003 | Specify available interpolation modes, default, filter length and transition behavior; keep CPU qualification separate from correctness. |
