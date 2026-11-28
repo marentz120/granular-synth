@@ -359,7 +359,7 @@ Instance
 
 - **Voice allocation:** reuse same-note voice when env pile-up is ON; otherwise steal: released & not sustained → oldest → keyboard-position heuristic (benchmark VOI-02), with a 2–5 ms fade instead of an abrupt cut (GS-VOI-001).
 - **MPE:** each voice binds to a member channel; per-note pitch, pressure, timbre feed voice-level mod sources.
-- **Filters:** TPT state-variable filter (benchmark hints "trap-SVF", FLT-03); 6 dB = 1-pole TPT; 12/18/24 dB by cascading; cutoff modulation at audio rate safe by construction.
+- **Filters (candidate implementation only):** a TPT state-variable filter is one possible realization; 6/12/18/24 dB slopes may be built from suitable stages. DEC-052 approves only the R1 LPF/HPF response functions, routing, bypass and slope choices; it does not approve TPT topology, cascade architecture, resonance response or cutoff-modulation implementation.
 
 ---
 
