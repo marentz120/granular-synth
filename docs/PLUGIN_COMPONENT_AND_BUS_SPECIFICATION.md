@@ -1,6 +1,6 @@
 # Plugin Component and Bus Specification
 
-**Version:** 0.6 — AU and VST3 component decision gates clarified  
+**Version:** 0.7 — cross-format event and transport parity clarified  
 **Status:** Proposed; host validation and owner approval required. No plugin implementation is authorized.  
 **Authority:** DEC-020/026, GS-PLT-001/004/005, GS-ARC-006, GS-SMG-020, Q-P06/Q-P09/Q-T01/Q-T03.
 
@@ -283,3 +283,44 @@ The detailed equations, illustrative 1,024/4,096-frame calculations, admission l
 - VST3 instrument category, processor/controller split and candidate bus topology: `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md`.
 
 These documents are evidence inventories, not host certification. In particular, a documented side-chain/modulator path is not proof of raw full-band audio reaching the granular source reader, and generic project-state persistence is not proof that optional bus activation and routing survive save/reopen.
+
+
+## 12. Cross-format event, automation and transport parity
+
+AU and VST3 must present the same musical behavior to the shared core, but their adapter representations are not interchangeable. The detailed evidence register and validation matrix are in `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md`.
+
+### 12.1 Event timestamps
+
+- AU MIDI/parameter render events use AU sample-time timestamps. Convert to block-relative offsets from a valid render-block sample-time anchor using checked signed arithmetic. Preserve cable and source-local order. Resolve `AUEventSampleTimeImmediate` at the AU boundary; never pass the scheduling sentinel to the core.
+- VST3 discrete events use `Event::sampleOffset` relative to the current block. Preserve `busIndex`, `ppqPosition`, event type, note ID and event-list order.
+- Both adapters emit discrete events only after validating that the offset is inside the current audio block. Future/stale/invalid events are not silently clamped.
+
+### 12.2 Parameter automation
+
+- AU parameter ramps preserve start sample time, duration and target value. Check the AU parameter's rampable capability; a non-rampable nonzero-duration request must not be reinterpreted as an immediate step.
+- VST3 `IParameterChanges`/`IParamValueQueue` is a piecewise-linear curve per changed parameter, not one step per queue. Preserve implicit initial values, jump pairs and the signed previous-block anchor at relative position -1.
+- The normalized core receives a curve representation separate from discrete `TimedEvent::ParameterChange`. Parameter smoothing is applied only according to the parameter-class policy; do not double-ramp.
+- Stable canonical parameter IDs and format-specific numeric ID mapping remain Q-T12.
+
+### 12.3 MIDI/MPE identity
+
+- VST3 Note Expression uses explicit note IDs and is delivered in the event list after the corresponding Note On. Missing IDs do not satisfy per-note expression.
+- AU MPE arrives through MIDI 1.0 cable/channel/note lifecycle. The AU adapter must map member-channel expression to an internal note instance using the negotiated MPE zone and active note lifecycle. Ambiguous same-pitch retriggers remain an engineering gate.
+- DEC-038's ±48-semitone per-note range remains unchanged. Channel-wide pitch bend is not an acceptable substitute for per-note expression.
+
+### 12.4 Transport and authority
+
+- AU musical context and transport state are separate host callbacks with independent validity. VST3 ProcessContext is optional and each field is valid only under its state flag; SDK 3.7+ adapters request needed fields through `IProcessContextRequirements`.
+- The normalized transport snapshot contains explicit validity for sample/PPQ position, tempo, time signature, play/record state and cycle range. No missing field is replaced with a guessed value.
+- Valid host transport remains the single plugin authority. MIDI Clock cannot run as a second master in AU/VST3. Standalone uses one explicitly selected authority.
+- Hosts may differ in whether they split a process block at a cycle/loop boundary. Intra-block loop scheduling is not certified until verified per host/version.
+
+### 12.5 Control-only process calls
+
+A VST3 parameter flush with no audio buses is not an audio render. It may apply permitted bounded parameter/control changes, but it must not access audio buffers, advance transport or sequencer time, or increment rendered-frame counters.
+
+### 12.6 Parity exit evidence
+
+The same deterministic fixture must be exercised through Standalone, each AU candidate and VST3: note on/off, per-note expression, automation steps/ramps, same-offset writer batches, transport validity, tempo change, seek, cycle wrap, variable block partitions and parameter flush. Format/API documentation alone is not host certification.
+
+AR-01, Q-T12, Q-T13, host transport-loss fallback, AU MPE note-retrigger mapping, Q-P09 and numeric event capacity remain open. No component strategy or host support claim is selected by this section.
