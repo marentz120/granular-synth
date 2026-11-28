@@ -31,6 +31,13 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 - Grain Key Trigger modes (DEC-048): Off ignores MIDI Note On for key-triggered grain spawning; On issues a new trigger for each accepted Note On; Legato triggers only on the transition from no held key-trigger notes to at least one held note, without retriggering for additional overlapping notes. These modes do not alter Note Off/voice-release behavior or the independent grain clock.
 - This engine selection does not prescribe DSP implementation or engine-internal limits.
 
+### 2.3 Envelopes
+
+- R1 provides four ADSR envelopes: Pitch, Filter, Amp and Aux.
+- Every time-valued envelope stage has a range of **0.1 ms to 45 s** (DEC-051). R1 does not expose a zero-duration stage; values below the minimum resolve to 0.1 ms.
+- Sustain is a level, not a time stage. Stage curves, bipolar amount and inversion remain part of the R1 envelope contract.
+- The 0.1 ms floor does not guarantee click-free output for every signal or modulation condition. Host/MIDI parameter mapping and timing tolerances remain technical/acceptance details.
+
 ## 3. Live audio, Freeze and recording
 
 - Every layer can receive live external audio as a source for granular processing.
