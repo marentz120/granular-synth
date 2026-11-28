@@ -38,6 +38,15 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 - Sustain is a level, not a time stage. Stage curves, bipolar amount and inversion remain part of the R1 envelope contract.
 - The 0.1 ms floor does not guarantee click-free output for every signal or modulation condition. Host/MIDI parameter mapping and timing tolerances remain technical/acceptance details.
 
+### 2.4 Granular pan spray
+
+- R1 exposes Uniform and Centre Weighted pan-spray distributions (DEC-053).
+- The pan-spray amount defines the maximum spread around the base pan, constrained to the legal stereo interval [−1,+1]. Amount zero keeps every grain at the base pan.
+- Uniform samples evenly over the available legal interval.
+- Centre Weighted uses a normalized triangular probability density: its peak is at the base pan and its density decreases linearly toward the available left and right spread limits. At stereo boundaries, the distribution is truncated to the legal interval and renormalized rather than clamped into endpoint piles.
+- Each grain samples its pan independently at spawn and retains that pan for its lifetime. Pan-spray remains independent from the base pan control.
+- Random-seed behavior and statistical tolerances are test/engineering details.
+
 ### 2.4 Per-voice filters
 
 - Each voice has an LPF followed by an HPF in the R1 signal chain.
