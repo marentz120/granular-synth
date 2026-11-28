@@ -270,3 +270,29 @@ These fixtures extend §9's MPE reset/restore backlog. They are cross-cutting ho
 ### 10.2 Evidence discipline
 
 No host test, callback trace, payload-size limit, memory threshold, AC ID or pass result is created by this backlog. Pin exact host/OS/architecture/plug-in builds before execution. Any host prototype or benchmark requires separate explicit owner authorization.
+
+
+## 11. State container, stream transport and schema migration fixtures
+
+These are candidate Phase 5 fixtures for Q-T15, DEC-025 and DEC-042. They add no R1 requirements or formal AC/test IDs. A pass result requires execution against a pinned host/OS/architecture/plugin build; none is claimed here.
+
+| Fixture family | Deterministic stimulus | Required assertion | Dependency / evidence gate |
+|---|---|---|---|
+| Envelope framing | Valid header, wrong magic, truncated header, unsupported envelope version | Reject invalid framing before large allocation; accept only supported versions | Q-T15; container prototype |
+| Manifest bounds | Huge lengths/counts, integer overflow, duplicate fields/IDs, malformed UTF-8/JSON, nesting/field-limit violations | No overflow, unbounded recursion or large allocation before bounds validation | Q-T15; parser limits |
+| Chunk directory | Duplicate chunk ID, overlapping/out-of-range extents, length mismatch, missing required chunk | Reject incomplete/ambiguous required state; optional chunks skipped only when explicitly optional | Q-T15; container prototype |
+| Stream short transfer | VST3 read/write returns fewer bytes than requested, zero progress, end-of-stream and explicit error | Continue only on valid progress; fail without reporting a complete state | Q-T15; IBStream adapter |
+| Transfer-width boundary | Logical chunk larger than one signed int32 transfer | Split into bounded calls; no narrowing overflow or oversized request | Q-T15; VST3 adapter |
+| Completion marker | Interrupt before footer or corrupt footer | Incomplete container is never accepted as a valid reduced state | Q-T15; save-failure fixture |
+| Integrity | Alter payload bytes, digest, stored length or decoded length | Detect mismatch before restore publication; previous active runtime remains authoritative | Q-T15; digest algorithm still open |
+| Forward compatibility | Unknown optional field/chunk versus unknown required feature/type | Ignore only optional unknown data; reject unsupported required behavior | Q-T15; schema policy |
+| Schema migration | Each supported historical schema, ordered multi-step migration, unsupported future schema | Deterministic migration to current schema; unsupported future state rejected without mutation | Q-T15; migration map |
+| Migration failure | Missing migration step, invalid migrated value, migration allocation failure | Preserve original state and active runtime; report explicit recovery status | Q-T15; restore transaction |
+| AU scope and payload | fullState user-preset path versus fullStateForDocument path; binary Data candidate at representative and large payload sizes | Preserve scope distinction; verify actual host representation, size and round-trip; no assumption of unlimited streaming | Q-T15/Q-P09; AU host prototype |
+| VST3 component/controller state | Save and restore component state plus controller-specific state | Processor state is restored before controller synchronization; no duplicate host parameter writes | Q-T15; VST3 host prototype |
+| Host stream versus owned file | Inject host-stream write failure; separately interrupt standalone temp-file save before replacement | Host failure is reported and incomplete stream rejected; standalone previous valid file remains until replacement succeeds | Q-T15; host and file transaction evidence |
+| Peak memory admission | Old graph + snapshots + candidate graph + AU materialization or VST3 transfer buffer + decode/codec staging + retirement | Admission includes peak coexistence and checked arithmetic; failure leaves active state and required recordings intact | Q-T15/Q-T07; authorized measurement only for numeric limits |
+| Callback context | Capture state under each target host's normal and offline modes | Record actual callback thread/context and duration; no unbounded work on render/processing thread | Q-P09/Q-T15; host prototype |
+| DEC-025/042 round-trip | Four-layer state with unsaved recordings, Freeze snapshots and missing external library asset | Required embedded payload hashes/lengths restore; external asset is relink-required without losing unrelated state | DEC-025/DEC-042; host prototype |
+
+The exact container bytes, checksum, codec, maximum state size, callback deadline, transfer slice and migration retention window remain open. These fixtures are plans, not executed tests or benchmarks.
