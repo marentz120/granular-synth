@@ -25,6 +25,7 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 - Granular Slice is not an R1 engine; defer it to a later release for separate scoping.
 - Tape is L2; Spectral is L3, per the approved release-tier classification in DEC-041.
 - Granular Scan modes (DEC-045): exactly Bounce, Wrap and Kill. One-Shot is not a fourth Scan mode; it is a separate behavior: complete the current scan cycle, stop spawning new grains at its boundary, and allow already-spawned grains to continue through their existing envelopes (DEC-044). Exact Kill/Stop/Panic transitions remain open in Q-M04.
+- Grain-count normalization (DEC-046): when enabled, per-grain gain scales by 1/√N relative to the single-grain reference, where N is the active grain count in the applicable normalization domain. This is an energy-oriented gain law, not a limiter or a universal no-clipping guarantee. The counting domain, smoothing and ON/OFF reference details remain technical/acceptance work; density-17 benchmark matching requires separate measurement.
 - This engine selection does not prescribe DSP implementation or engine-internal limits.
 
 ## 3. Live audio, Freeze and recording
