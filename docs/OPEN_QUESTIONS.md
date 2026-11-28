@@ -124,7 +124,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-M12 | Patch spray / patch bias semantics | p.19 "grain counts boosted based on which part of the screen you focus on" | Deferred to L2; benchmark semantics remain unverified and are not an R1 dependency | **ANSWERED — DEC-029** (tier decision only; behavior research may continue for L2) |
 | Q-M13 | Spectral C+Shift: Amp smear vs FFT reducer | p.37 vs p.49, p.148 | Firmware 1.8.0 release notes: FFT reducer merged into amp threshold → C+Shift = Amp smear; no separate reducer needed | RESOLVED-EVIDENCE |
 | Q-M14 | Grain key trigger values (On/Off vs Off/On/Legato) | p.54 vs p.135 | Implement Off/On/Legato | PROPOSED |
-| Q-M15 | Sequencer "Rate sets time signature" | p.22 vs p.134 | Treat as rate division; time signature not modelled per layer | PROPOSED |
+| Q-M15 | Sequencer "Rate sets time signature" | p.22 vs p.134 | Benchmark behavior only. R1 defines pattern length/edit resolution and shared timing grids; it does not require per-layer time-signature emulation. Keep outside R1 unless scope is explicitly added. | DEFERRED — not an R1 requirement |
 | Q-M16 | "Voice sync" vs "Clock retrigger" | p.55 text vs p.54 screenshot | Release notes 1.8.0-a19: "voice retrigger" renamed "voice sync" (screenshot is from 1.8.0-a14). Very likely the same control; confirm on unit | PROPOSED |
 | Q-M17 | Spawn modes 3 vs 4 | p.55 vs p.162 | Implement 4 | PROPOSED |
 | Q-M18 | Envelope minimum 0 vs 0.1 ms | p.143 vs p.163 | 0.1 ms minimum (click-safe) | PROPOSED |
@@ -151,9 +151,9 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-I13 | Phase-vocoder hop/overlap/window | — | Our own design (Q-T11) | PROPOSED |
 | Q-I14 | Resonator scale list ("inharmonic e.g. metal rods") | p.86 | Physical-model mode tables (bars, plates) — our design | PROPOSED |
 | Q-I15 | Firmware changes and roadmap | Release notes 1.8.0–1.8.4 reviewed → feature map §16. Roadmap 1.9–1.12 (Dec 2026–Jul 2027) not yet reviewed | Review roadmap at Phase 2 start | OPEN |
-| Q-I16 | Voice-stealing keyboard-position heuristic | p.120 | Our own design (protect lowest/highest held notes) | PROPOSED |
-| Q-I17 | "Pos Y" modulation source | RN 1.8.4 mentions POS X and POS Y; manual table lists only Pos X | Verify; our XY pad covers both | OPEN |
-| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Capture semantics before Phase 4/5 acceptance design for the R1 sequencer | OPEN |
+| Q-I16 | Voice-stealing keyboard-position heuristic | p.120 | Not an R1 requirement. GS-VOI-001 defines the R1 priority as released, non-sustained, then oldest voices; do not add a keyboard-position rule without a scope decision. | DEFERRED — not R1 |
+| Q-I17 | "Pos Y" modulation source | RN 1.8.4 mentions POS X and POS Y; manual table lists only Pos X | DEC-032 and GS-MOD-004 define the R1 source as a normalized two-axis XY performance pad; separate benchmark Pos Y semantics are not required. | DEFERRED — benchmark-only; R1 behavior defined |
+| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Not an R1 requirement. R1 separately defines end-of-bar Pattern switching and states that Preset recall does not replace the active Pattern. Retain only as optional benchmark research unless scope is added. | DEFERRED — not R1 |
 
 ---
 
