@@ -1,9 +1,10 @@
 # Open Questions
 
-**Version:** 0.7 (Phase 3 state I/O scheduling addendum, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 0.8 (cross-host state callback and snapshot freshness addendum, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
 
 **Change summary (v0.5 → v0.6):** Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16, Q-M01, Q-M05, Q-M06, Q-M11 and Q-M12 were resolved or tiered under the owner's explicit product-management delegation and recorded in DEC-022…DEC-037. Q-P18 is answered by DEC-018; MIDI and audio product behaviors were further settled by DEC-038…DEC-040; DEC-041 approves all 168 release-tier assignments. Six domain specifications, R1 Release Scope Matrix and R1 Acceptance Criteria are included. Architecture, numeric feasibility, remaining evidence and legal questions stay open for their proper gates.
 **Change summary (v0.6 → v0.7):** Added Q-T15 state I/O scheduling, capture-watermark, retention-lease, callback-context, cancellation and aggregate peak-admission evidence gates. No product decision or requirement tier changed.
+**Change summary (v0.7 → v0.8):** Added cross-host state-callback thread, AU failure-signalling, VST3 offline-context and coherent multi-source snapshot-freshness evidence gates. No product decision or requirement tier changed.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -209,3 +210,18 @@ The State I/O Scheduling Audit adds engineering evidence gates without changing 
 - Preserve the distinction between required DAW document payloads and unresolved user-preset payload scope.
 
 See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. These are Q-T15/Q-P09 engineering gates, not new owner-approved product behavior. AR-06 and the mixed-layer Global Freeze preparation-failure policy remain open; no decision is inferred here.
+
+
+## I. Cross-host state callback and snapshot freshness evidence — 2026-11-28
+
+The new \`PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md\` records additional Q-T15/Q-P09 engineering gates:
+
+- Determine the actual AU state-property callback thread and render overlap in Logic Pro, Ableton Live and REAPER. Apple's reviewed property documentation does not specify a universal thread or explicit getter error result.
+- Verify how each AU host treats a nil/failed \`fullStateForDocument\` result. Do not assume that nil aborts project save; DEC-025 still requires every unsaved recording payload.
+- Verify VST3 component state callbacks while Processing and host-visible handling of non-success \`tresult\`, short stream transfers and invalid state.
+- Include the Steinberg offline same-thread get/set-state clarification as supplemental evidence; do not generalize it into a guarantee for every host.
+- Publish/read one coherent capture-boundary vector across all required recording/Freeze sources. Independent per-source watermark reads can produce a torn snapshot.
+- Reject stale descriptors; never report a successful DEC-025 document save with stale or missing required audio.
+- Record Bitwig hosting mode and per-process/aggregate memory in any future authorized prototype.
+
+These are technical evidence gates, not owner product decisions. Q-T15 and Q-P09 remain open; DEC-025/DEC-042 and AR-06 are unchanged. No host prototype or benchmark is authorized by this update.
