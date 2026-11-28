@@ -213,3 +213,16 @@ The 124-row R1 requirement inventory and the 53/124 acceptance/release-gate link
 - [IEditController](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IEditController.html)
 - [VST3 Persistence](https://steinbergmedia.github.io/vst3_dev_portal/pages/FAQ/Persistence.html)
 - [Steinberg developer clarification — offline get/setState thread](https://forums.steinberg.net/t/is-icomponent-getstate-setstate-thread-safe/201734/2)
+
+
+## 11. AU failure-signalling refinement — 2026-11-28
+
+The earlier shorthand “AU has no explicit getter error result” is corrected by separating AUv3 and AUv2 surfaces:
+
+- AUv3 **fullState** and **fullStateForDocument** are nullable dictionary properties bridged to AUv2 ClassInfo properties. Their public signatures do not expose a separate OSStatus, throws or NSError result. Apple does not document the exact nil-to-AUv2-status mapping or host save behavior.
+- AUv2 **AudioUnitGetProperty** returns an OSStatus. This is an explicit API-level result, but it does not establish whether Logic, Live or REAPER aborts a document save on failure.
+- Apple's **ClassInfoFromDocument** documentation specifies a **restore** fallback: if the document property errors or is not implemented, the host should use the same preset with **ClassInfo**. This must not be generalized into a save-time fallback or rollback rule.
+- The fallback can be unsafe for DEC-025 if the preset-scoped state lacks the required unsaved-recording/Freeze chunks. A parameter-only fallback is not a complete document restore.
+- AUv2 **AudioUnitGetProperty** returns an owned CF object reference that the caller must release. This does not prove a deep copy of nested audio Data; memory accounting follows actual backing allocations and observed materialization.
+
+Save failure, restore fallback, AUv3 nil bridging and host-visible rollback are separate observations. No host behavior is certified. See [AU State Failure Signalling & DEC-025 Compatibility Audit](PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md).
