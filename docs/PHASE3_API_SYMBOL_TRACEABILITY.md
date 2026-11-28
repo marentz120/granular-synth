@@ -332,3 +332,22 @@ This adds lifecycle coverage to existing rows; it does not add a requirement or 
 | Q-P09 / AR-06 | AU/VST3 host lifecycle adapters | Host note-key lifetime, state callback order and audible old-voice policy are evidenced, not inferred |
 
 The three generation domains are separate. This is candidate traceability, not an ABI commitment. The 124-row inventory and 53/124 acceptance-link baseline remain unchanged.
+
+
+## 15. State container and migration traceability extension
+
+The following candidate symbols make the DEC-025/DEC-042 persistence path explicit. They are conceptual service boundaries, not final class names, ABI or implementation authorization.
+
+| Requirement / decision | Candidate operation or boundary | Contract / evidence | Gate |
+|---|---|---|---|
+| DEC-025 | StateCaptureCoordinator.captureDocumentSnapshot | Immutable generation-consistent snapshot containing every required unsaved recording payload | Recording retention lease; host callback constraints |
+| DEC-042 | FreezeSnapshotChunkSource.enumerateRequiredChunks | Snapshot audio and metadata share the same source generation/frame range | Freeze retention and memory admission |
+| Q-T15 | StateContainerWriter.writeHeaderManifestChunksFooter | Versioned envelope, complete chunk directory, bounded writes and explicit completion marker | Final framing/codec/checksum not approved |
+| Q-T15 | StateContainerReader.validateEnvelopeAndChunkDirectory | Checked 64-bit bounds, unique IDs, valid extents and required-feature validation before large allocation | Parser limits and corruption fixtures |
+| Q-T15 | SchemaMigrator.migrateMetadata | Deterministic ordered metadata migrations off render; preserve source state | Migration map and retention window |
+| Q-T15 | HostStateAdapter.read/write | AU dictionary/document-state mapping or VST3 component IBStream mapping; host controller state remains separate | AU Data/size prototype; VST3 short-transfer tests |
+| DEC-025 / DEC-042 | RestoreTransaction.prepareAndCommit | Preflight, memory admission, decode, candidate graph and one safe-point publication | AR-06 old-voice policy; host state prototype |
+| GS-NFR-001 | RenderStateHandoff.publishPreparedRestore | Bounded publication only; no parse, checksum, compression, allocation or final destruction on render | RT instrumentation and lifecycle tests |
+| Q-P09 | HostPersistenceEvidence.capture | Host/format/version, callback context, payload size, round-trip and failure evidence | Approved host matrix and prototypes |
+
+The 124-row R1 requirement inventory and the 53/124 existing acceptance-or-release-gate link baseline are unchanged. No AC IDs or formal test IDs are created by this extension.
