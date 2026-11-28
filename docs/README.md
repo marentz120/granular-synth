@@ -14,6 +14,7 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [MIDI_MAPPING_UX_SPECIFICATION.md](MIDI_MAPPING_UX_SPECIFICATION.md) | MIDI Learn, manual mapping, scopes, conflicts and performance-time mapping UX | Phase 4 draft v0.1 — owner review required |
 | [SCREEN_STATE_AND_NAVIGATION_SPECIFICATION.md](SCREEN_STATE_AND_NAVIGATION_SPECIFICATION.md) | Instrument/UI/transient state boundaries, navigation and recovery behavior | Phase 4 draft v0.1 — owner review required |
 | [PHASE4_R1_UI_TRACEABILITY_AUDIT.md](PHASE4_R1_UI_TRACEABILITY_AUDIT.md) | Maps all 124 R1 requirement IDs to proposed UI surfaces or internal/non-UI handling; records remaining design and Phase 5 acceptance gaps | Phase 4 draft v0.1 — owner review required |
+| [PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md](PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md) | Proposed four-encoder assignments per workspace, variable-length Pattern viewport, persistent performance controls and MIDI reachability | Phase 4 draft v0.1 — owner review required |
 | [LIVE_PERFORMANCE_SPECIFICATION.md](LIVE_PERFORMANCE_SPECIFICATION.md) | Controller-only live-performance and R1 sequencer behavior; detailed UI/acceptance work remains later-phase | Product behavior approved v0.3; UI design pending |
 | [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) | Phases, dependencies, exit criteria, milestone plan | Proposal v0.2 |
 | [DECISIONS_LOG.md](DECISIONS_LOG.md) | Decision records and approval status | Living |
