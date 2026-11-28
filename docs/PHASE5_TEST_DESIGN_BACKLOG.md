@@ -92,7 +92,7 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | GS-VOI-006 | Verify four ADSR envelopes, DEC-051 0.1 ms–45 s time-stage range, below-minimum clamping, absence of zero-duration stages, stage curves, bipolar amount and inversion. | Envelope stage/property tests and deterministic control-rate/audio-rate renders. | Define host/MIDI mapping and timing tolerance at short/long extremes; do not infer a universal click-free guarantee. |
 | GS-VOI-008 | Verify DEC-052 per-voice LPF/HPF 0–20 kHz ranges, resonance, 6/12/18/24 dB slopes, three routing options, chain bypass state preservation and LPF→HPF order. | Filter response/reference tests, frequency sweeps and routing assertions. | Filter topology and resonance range/curve require engineering specification; exclude notch/band-pass/peak modes from R1. |
 | GS-VOI-009 | Verify filter key tracking across note range and configured tracking response. | Pitch-to-cutoff mapping/property tests and response captures. | Tracking curve/range must be explicit in the voice/filter specification. |
-| GS-VOI-010 | Verify per-voice sub-oscillator −1/−2 octave, level, poly balance and quantize option. | Pitch/level tests and deterministic render captures. | Quantized behavior must match GS-CHD-005. |
+| GS-VOI-010 | Verify DEC-054 fixed-sine per-voice sub-oscillator (no waveform selector), −1/−2 octave tracking, level, poly balance and quantize option. | Waveform, pitch/level tests and deterministic render captures. | Quantized behavior must match GS-CHD-005; oscillator implementation remains technical. |
 
 ### Sample management and recording
 
@@ -155,7 +155,7 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | Q-I07 | GS-VOI-008 | DEC-052 closes the R1 filter mode list; define topology/resonance response technically and test routes, bypass and slope options. |
 | Q-M18 | GS-VOI-006 | DEC-051 approves 0.1 ms–45 s time-stage range and below-minimum clamp; define host/MIDI mapping and timing tolerances. |
 | Q-I08 | GS-GRN-006 | DEC-053 approves the normalized triangular Centre Weighted curve; define seeded sample size/tolerance and verify boundary renormalization alongside Uniform. |
-| Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement. |
+| Q-I12 | GS-VOI-010 | DEC-054 approves fixed sine/no selector; verify waveform, octave tracking, level, poly balance and quantization. |
 | Effects parameter contract | GS-FX-002/004/006 | Specify Delay units/ranges/sync, effect parameter ranges/defaults, EQ3 crossover behavior, send range and effect-specific automation. |
 | Modulation destination inventory (MTX-05) | GS-MOD-005 | Reconcile the eligible R1 continuous destinations against the R1 parameter catalogue; exclude deferred-only targets. |
 | Sampler interpolation contract | GS-SMP-003 | Specify interpolation modes, default, filter length and transition behavior; keep CPU qualification separate. |
