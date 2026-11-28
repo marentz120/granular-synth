@@ -157,3 +157,16 @@ The format adapters preserve host semantics and normalize only the representatio
 - Cycle/loop jumps inside a host block remain host-dependent; no intra-block musical continuity is claimed unless host evidence proves it.
 
 See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for API evidence, candidate normalized types and the Phase 5 validation families. This refinement does not change the 124-row product requirement inventory, the 53/124 acceptance-link baseline, or any approved product decision.
+
+
+### 3.8 MPE source-note identity and layer fan-out — IF-09 / IF-03
+
+- IF-09 carries a SourceNoteIdentity separate from the layer-local NoteInstanceId. One input note may fan out to multiple matching layers under DEC-034; each layer voice keeps the same source identity and its own voice identity.
+- VST3 identity is event-bus index plus valid noteId. A missing ID (-1), duplicate live key or stale Note Expression is explicit; it must not be aliased to another note.
+- AU identity is cable + known zone + member channel + note lifecycle. A member channel is an expression scope, not necessarily a unique note. If notes share a member channel, the same member-channel expression applies to all active notes in that group.
+- A released AU voice must not receive expression from a later member-channel lease. Snapshot its last expression and detach it at the approved lifecycle boundary; exact Note Off matching, sustain and zone-reconfiguration rules remain AR-03.
+- VST3 Note Expression identity may remain valid through the voice release. Retire the mapping only when the associated voice lifecycle is complete.
+- Per-note pitch, pressure and timbre remain separate semantic dimensions. VST3 Pressure/Timbre type IDs and public range metadata remain AR-04/AR-05.
+- Identity maps, channel groups and fan-out lists are fixed-capacity, generation-checked and audio-thread-owned. Overflow is counted and explicit; no render-time allocation, lock or silent channel-wide fallback is permitted.
+
+See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md for format evidence and the Phase 5 test design. These are candidate engineering contracts; they do not alter GS-MID-002 or DEC-038.
