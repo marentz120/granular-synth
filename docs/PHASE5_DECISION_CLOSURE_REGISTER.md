@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Phase 5 Decision Closure Register
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** 2026-11-28  
 **Status:** Consolidated decision register; no unresolved decision is silently approved by this document.  
 **Authority:** `DECISIONS_LOG.md`, `OPEN_QUESTIONS.md`, `R1_PRODUCT_SPECIFICATION.md`, `PHASE5_ALL_REQUIREMENTS_AUDIT.md`.
@@ -31,7 +31,7 @@ These questions affect existing R1 requirements. They must be resolved or explic
 | Q-M17 | GS-GRN-015 | **Approved — DEC-049:** Gradual builds from empty; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer, otherwise falls back to Gradual | Define exact scheduler phase, initial count/rounding, randomization distribution, reusable-state mapping and resource-limit behavior; keep Recycle distinct from grain stealing | Spawn-mode tests |
 | Q-M18 | GS-VOI-006 | **Approved — DEC-051:** all time-valued R1 ADSR stages range 0.1 ms–45 s; no zero-duration stage; values below minimum resolve to 0.1 ms | Define host/MIDI parameter mapping and timing tolerance; do not claim the floor guarantees click-free output | Envelope boundary tests |
 | Q-I07 | GS-VOI-008 | **Approved — DEC-052:** LPF and HPF only; LPF-only / LPF+HPF / HPF-only routing; chain bypass; independent 6/12/18/24 dB/oct slopes and resonance; no notch/band-pass/peak modes in R1 | Define filter topology and resonance range/curve as technical decisions; verify routing and slope behavior | Filter response tests |
-| Q-I08 | GS-GRN-006 | Uniform and centre-weighted pan-spray shapes are required | Define the centre-weighted probability curve, normalization and seeded statistical tolerance | Pan-spray tests |
+| Q-I08 | GS-GRN-006 | **Approved — DEC-053:** Uniform over legal spread interval; Centre Weighted uses normalized triangular density peaking at base pan and tapering linearly to available spread limits; amount zero preserves base pan; each grain samples independently at spawn | Define seeded statistical tolerance and sample size; verify legal-boundary truncation/renormalization | Pan-spray tests |
 | Q-I12 | GS-VOI-010 | Sub-oscillator is R1; waveform/default is unspecified | Select waveform/default or narrow the requirement explicitly | Sub-oscillator tests |
 | FX parameter contract | GS-FX-002/004/006 | Effect inventory is approved; many units/ranges/defaults remain TBD | Define Delay units/range/sync, Chorus/Compressor/Saturator/Reverb ranges/defaults, EQ3 crossover behavior, send range and automation scaling | FX acceptance and host parameter registry |
 | MTX-05 | GS-MOD-005 | R1 destination coverage must exclude deferred-only targets | Reconcile the eligible R1 destination inventory against the canonical parameter catalogue | Modulation and parameter registry tests |
