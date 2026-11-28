@@ -103,7 +103,22 @@ GitHub Actions run [#46056952540](https://github.com/marentz120/granular-synth/a
 | `macos-15` Debug | macOS 15.8.2 | arm64 | AppleClang 17.0.0 | 4.5.1 | Build passed; 6/6 CTest passed |
 | `macos-15` Release | macOS 15.8.2 | arm64 | AppleClang 17.0.0 | 4.5.1 | Build passed; 6/6 CTest passed |
 
-The advisory `clang-format` job failed: clang-format 23.1.6 reported formatting violations across tracked C++ files. Because the job has `continue-on-error: true`, the workflow conclusion is success; this must not be represented as a clean formatting check. Formatting cleanup remains outstanding.
+The advisory `clang-format` job failed in that run: clang-format 23.1.6 reported formatting violations across tracked C++ files. Because the job has `continue-on-error: true`, the workflow conclusion was success; that must not be represented as a clean formatting check.
+
+### Formatting remediation — resolved locally, CI confirmation pending
+
+The violations were fixed by running the repository's committed `.clang-format` with the same clang-format version the CI job installs. Measured with the exact CI command (`files=$(git ls-files '*.h' '*.cpp'); clang-format --dry-run --Werror $files`, run under bash):
+
+| | Violations | Exit code |
+|---|---|---|
+| Before | **82** across 6 files | 1 |
+| After | **0** | 0 |
+
+Per-file before: `tests/support/src/RtGuard.cpp` 42, `tests/support/include/gs/test/Harness.h` 22, `tests/support/src/Harness.cpp` 9, `src/core/src/Version.cpp` 4, `tests/unit/RtGuardTest.cpp` 3, `tests/support/src/TestMain.cpp` 2.
+
+The change is formatting only, verified mechanically: with all whitespace stripped, five of the six files are byte-identical to their previous contents. The sixth, `tests/unit/RtGuardTest.cpp`, differs only by two swapped `#include` lines — `SortIncludes` treats `RtGuard.h` as that file's main header (LLVM's `IncludeIsMainRegex`) and promotes it; its non-include content is byte-identical ignoring whitespace. Local verification after formatting: `macos-debug` and `macos-release` both build with 0 warnings and pass 6/6 CTest entries (harness 12/12), and both `-Werror` CI presets are clean.
+
+**Still unconfirmed by CI.** The clang-format job has not yet been observed passing on a GitHub runner for the formatted tree; a run on the formatting commit is required before the formatting check may be described as green. The toolchain used locally is clang-format 23.1.6 built from source on macOS 12/x86_64 (no Homebrew bottle exists for that configuration), which matches the CI job's version but not its host.
 
 ### Explicitly NOT validated
 
@@ -114,7 +129,8 @@ Stated plainly so no reader over-reads the green build/test result:
 - **No AU/VST3/Standalone validation**, no `auval`, no `pluginval`, no host scan.
 - **No realtime-safety proof.** The allocation guard is test instrumentation with documented blind spots (see `tests/support/include/gs/test/RtGuard.h`): it sees only global `operator new`/`delete` in this binary, not `malloc`, locks, blocking calls or I/O.
 - **No performance data.** No benchmark was built or run; Q-T07 numeric budgets remain unmeasured and unauthorized.
-- **No clang-tidy enforcement.** A configuration exists but clang-tidy is not run by CI. The clang-format advisory job now has a confirmed runner/toolchain and exposed formatting violations; it remains non-blocking until the source files are formatted and the check passes.
+- **No clang-tidy enforcement.** A configuration exists but clang-tidy is not run by CI.
+- **The clang-format job is still advisory (`continue-on-error: true`)** and has not been observed passing on a runner since the formatting fix. Making it blocking is a reasonable follow-up once a green run exists, but that is a CI policy change and is not part of this remediation.
 
 ## 7. Next gated step
 
