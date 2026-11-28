@@ -191,3 +191,28 @@ Do not ship both components solely because both types exist. A dual component pa
 - No current evidence certifies `aumu` or `aufm` live-input routing in Logic, REAPER or Ableton for GRANULAR SYNTH.
 - No AU host prototype, code, plugin shell or benchmark was run in this research pass.
 - VST3's single instrument-component candidate is unchanged; this audit does not infer AU type semantics for VST3.
+
+
+## 11. VST3 instrument component audit — 2026-11-28
+
+The detailed decision gate is maintained in `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md`. This research pass corrects an important terminology risk: VST3 does not use a distinct processor interface solely for instruments. The processor implements `IComponent` and `IAudioProcessor`; the edit controller is a separate `IEditController`. Instrument/effect identity is communicated through class subcategories. The SDK's `AudioEffect` helper can declare audio and event buses and should not be confused with the plug-in's host-visible category.
+
+Evidence checked:
+- The VST3 API documentation describes the processor/controller separation and notes that a host may process without instantiating the controller: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/API%2BDocumentation/Index.html
+- The AudioEffect SDK helper exposes audio input/output and event input/output bus declaration methods: https://steinbergmedia.github.io/vst3_doc/vstsdk/classSteinberg_1_1Vst_1_1AudioEffect.html
+- Instrument subcategories include `Instrument|Synth|Sampler`: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/group__plugType.html
+- Dynamic I/O supports multiple audio/event buses, but the host controls bus activation and may not honor the default-active request: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Change%2BHistory/3.0.0/Multiple%2BDynamic%2BIO.html
+- Complex instrument structures document simple mode, Units and host routing associations: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Complex%2BStructures/Index.html
+- Steinberg's FAQ documents the `Fx|Instrument` subcategory and a historical instrument-mode audio-input caveat for Steinberg sequencers up to 5.5: https://steinbergmedia.github.io/vst3_dev_portal/pages/FAQ/Miscellaneous.html
+- VST3 MIDI documentation maps MPE to Note Expression, not ordinary channel pitch bend: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/About%2BMIDI/Index.html
+- `INoteExpressionController` and `NoteExpressionValueEvent` define note-scoped expression and note-ID association: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/Change%2BHistory/3.5.0/INoteExpressionController.html and https://steinbergmedia.github.io/vst3_doc/vstinterfaces/structSteinberg_1_1Vst_1_1NoteExpressionValueEvent.html
+
+Architecture implications:
+1. Keep one instrument-classified VST3 component as the first validation candidate; `Instrument|Synth|Sampler` is a candidate category, not a selected value.
+2. Use one 16-channel event input bus as the baseline and route events internally to layers. DEC-034 does not require four event buses: multiple layers on the same channel must all receive the matching event.
+3. Declare one full-band audio input for the first validation configuration. The `kMain` versus `kAux` bus type remains open until raw audio is proven to reach the Granular/Sampler source path in each target host.
+4. Preserve one main stereo master output plus four auxiliary stereo layer outputs. Default activation is a request; the host may activate only a subset.
+5. Do not claim VST3 simple mode: the current product topology includes multiple output buses, multiple MIDI channels and MPE. Do not claim four VST3 Units; product layers are internal engine layers unless a concrete host workflow requires host-visible units.
+6. DEC-038's per-note ±48-semitone pitch behavior requires note identity and Note Expression handling. Channel pitch bend alone does not prove per-note behavior. Wrapper MPE translation interfaces are not the same as the direct VST3 host event contract.
+
+No VST3 host prototype was run. Logic Pro, Ableton Live, Bitwig and REAPER still require exact-version tests for instrument discovery, full-band input routing, MPE Note Expression, five outputs, bus activation and save/reopen. No framework, category, bus type, simple-mode flag or host compatibility claim is approved.
