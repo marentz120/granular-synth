@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — All Requirements Audit
 
-**Version:** 0.1  
+**Version:** 0.2  
 **Date:** 2026-11-28  
 **Branch:** `phase4/ui-ux-specification`  
 **Status:** Documentation audit; owner and technical gates remain open.  
@@ -68,7 +68,15 @@ These are not all new product-scope requests. They are unresolved details needed
 | Q-I08 | GS-GRN-006 | Mathematical definition of the centre-weighted pan-spray distribution and its test tolerance |
 | Q-I12 | GS-VOI-010 | Sub-oscillator waveform/default, or an explicit narrowing of the requirement |
 
-The Phase 5 design also correctly identifies broader specification gaps that must be closed before final pass conditions: `GS-GRN-006/008/012/013`, `GS-CHD-003/004`, `GS-VOI-004/006/009`, `GS-SMG-004` and `GS-NFR-004/005/009`. These include distribution curves, window reference behavior, arp ordering, chord-capture overlap, velocity/filter curves, import normalization, latency definition, RNG cross-platform policy and progressive-analysis responsiveness.
+The Phase 5 design also identifies broader specification gaps that must be closed before final pass conditions: `GS-GRN-006/008/012/013`, `GS-CHD-003/004`, `GS-VOI-004/006/009`, `GS-SMG-004` and `GS-NFR-004/005/009`. These include distribution curves, window reference behavior, arp ordering, chord-capture overlap, velocity/filter curves, import normalization, latency definition, RNG cross-platform policy and progressive-analysis responsiveness.
+
+The expanded domain-spec gate register now also covers:
+- R1 effect parameter ranges/defaults, Delay sync, EQ3 crossover behavior and effect-specific automation (`GS-FX-002/004/006)).
+- The exact eligible R1 modulation destination inventory (MTX-05 / `GS-MOD-005)).
+- Sampler interpolation modes/default and transition behavior (`GS-SMP-003)).
+- Decoder/resampling, format-specific live input, recording-buffer limits and layer/master tap equivalence (`GS-SMG-001/008/009/012/020)).
+- MPE zone configuration, host expression delivery and NRPN message handling (`GS-MID-002/003/007/008)).
+- Preset serialization, atomic save/recovery, migration and embedded-audio admission (`GS-PRS-004/006`, `GS-NFR-012`).
 
 ### 4.2 Benchmark questions explicitly kept out of R1
 
@@ -105,6 +113,8 @@ All six architecture questions remain open:
 These affect R1 implementation and test oracles. Candidate directions and fixture plans exist, but no final policy is selected.
 
 ### 4.5 Freeze transaction detail
+
+A cross-document audit found stale statements in the Sampler, Audio I/O, MIDI and canonical requirement documents that still described Freeze semantics as undecided in Phase 3. These have been corrected to point to DEC-042 and `FREEZE_BEHAVIOR_SPECIFICATION.md`. The product behavior is approved; only implementation, memory admission, crossfade/retirement and host validation remain open.
 
 DEC-042 approves Source Snapshot Freeze behavior. One detail remains for owner confirmation: if a global Freeze request prepares successfully for some layers but fails for others, should the successful layers switch together while failed layers remain unchanged, or should the entire four-layer transaction abort? `AC-AUD-028` is explicitly proposed pending this decision. This does not reopen the approved Freeze semantics.
 
