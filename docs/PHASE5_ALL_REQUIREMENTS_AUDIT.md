@@ -96,6 +96,9 @@ The following are still open or proposed and must receive an explicit dispositio
 - **Parameters/state:** Q-T12 stable parameter IDs and host exposure; Q-T15 serialization format and state-size policy; Q-T16 audio decoding.
 - **Audio compatibility:** Q-T17 supported sample rates, buffer sizes and latency.
 - **Hosts/reference environment:** Q-P06 AU/VST3 live-input component/bus implementation, Q-P09 exact host/version certification matrix and Q-P10 reference Mac/performance baseline.
+- **Commercial/release:** Q-P03 distribution model, installer, licensing and copy-protection policy must be decided before Phase 6; Q-P01 final name/visual identity and Q-P14 factory content are Phase 8 decisions.
+- **Legal/IP:** Q-L01…Q-L07 remain open or proposed as recorded in `OPEN_QUESTIONS.md`. GR-1/GR-MEGA patch import is optional and blocked pending Q-L01; framework and third-party library licensing must be resolved before distribution. These do not expand R1 functionality.
+- **Benchmark research:** Q-P13 physical GR-MEGA access is deferred and is not an R1 blocker; Q-I15 firmware roadmap research is also a separate evidence task.
 - **Spectral-only later scope:** Q-T10 and Q-T11 concern the L3 Spectral engine and do not block R1 if Spectral remains deferred.
 
 A recommendation in an architecture document is not an approved technical decision. The Phase 3 roadmap requires each Q-T01…Q-T17 item to be approved, rejected or explicitly deferred with a target phase.
