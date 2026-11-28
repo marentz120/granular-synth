@@ -194,3 +194,24 @@ No product requirement, tier, approved decision or acceptance ID was changed.
 2. [MPE specification adopted](https://midi.org/midi-polyphonic-expression-mpe-specification-adopted) — member-channel sharing and its loss of unique per-note control.
 
 **Review outcome:** the shared identity model and lifecycle boundaries are now explicit enough for architecture review and Phase 5 test design. AU same-pitch matching, VST3 Pressure/Timbre type mapping and final public pitch-range metadata remain open. No code, host prototype, benchmark or product decision was made.
+
+
+## 12. Host-delivery qualification — 2026-11-28
+
+The shared identity model above must not be interpreted as one identical host event path. See [PHASE3_MPE_HOST_COMPATIBILITY_EVIDENCE_AUDIT.md](PHASE3_MPE_HOST_COMPATIBILITY_EVIDENCE_AUDIT.md) for the full official-documentation matrix.
+
+The most important correction is Ableton Live's documented plug-in behavior:
+
+- Live's AU path can query the AU MPE capability property. In MPE mode, Live sends MIDI 1.0 member-channel messages: one note per channel where possible, per-note Pitch Bend, CC74 slide and Channel Pressure; RPN 6 communicates the active zone/member-channel count.
+- Live's VST3 path has no VST3 MPE capability flag for automatic recognition. Automatic mode requires Ableton's recognized-plug-in list, or the user can enable/save MPE mode manually. Once enabled, Live's documented MPE input is still channelized MIDI 1.0. It is not evidence that Live sends VST3 `NoteExpressionValueEvent` with `noteId`.
+- Bitwig documents VST3 per-note expressions and plug-in MPE mode/range controls, but the exact event representation in each mode remains a prototype observation.
+- Logic documents MIDI Mono Mode as channel-per-note behavior with a configurable pitch range; arbitrary third-party AU discovery and exact event delivery remain unverified.
+- REAPER's documented multichannel MIDI routing is not an MPE or Note Expression compatibility guarantee.
+
+Therefore:
+1. Keep `MpeChannelKey` and `Vst3HostNoteKey` separate.
+2. Allow a VST3 adapter to normalize either channelized MIDI 1.0 MPE or explicit VST3 Note Expression, depending on the host/mode evidence.
+3. Do not treat `INoteExpressionController` as MPE zone negotiation; it advertises VST3 expression types.
+4. Preserve DEC-038's ±48-semitone product range, but record each host's configured pitch-bend range and verify endpoint conversion.
+
+No host support, component strategy, event-type mapping, matching policy or product decision is approved by this supplement. AR-03…AR-05 and Q-P06/Q-P09 remain open.
