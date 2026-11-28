@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — R1 UI Traceability & Coverage Audit
 
-**Version:** 0.1  
+**Version:** 0.2 — reconciliation with Phase 4 controller catalogue, consolidated layouts and accessibility audit, 2026-11-28  
 **Status:** Phase 4 discovery audit — proposed UI mapping, owner review required  
 **Inputs:** `GRANULAR_SYNTH_REQUIREMENTS.md`, `R1_PRODUCT_SPECIFICATION.md`, `LIVE_PERFORMANCE_SPECIFICATION.md`, `UI_UX_SPECIFICATION.md`, `MIDI_MAPPING_UX_SPECIFICATION.md`, `SCREEN_STATE_AND_NAVIGATION_SPECIFICATION.md`, and `PHASE3_API_SYMBOL_TRACEABILITY.md`.
 
@@ -175,17 +175,19 @@ The source Phase 3 traceability inventory contains **124 unique R1 requirement I
 
 ## 5. Gaps and decisions carried forward
 
-These are design gaps, not newly approved product requirements:
+The original Phase 4 discovery gaps have been reconciled against the current v0.2 controller catalogue, encoder proposal, consolidated layouts and accessibility audit. The following are now **documented at proposal level**, but remain subject to owner review and/or technical validation:
 
-1. **Encoder matrix:** define the exact four encoder targets and press-cycle order for each workspace.
-2. **16-step viewport:** choose paging, scrolling or follow-playhead behavior for Patterns longer than 16 steps.
-3. **Performance strip:** specify persistent placement and hierarchy for Freeze, Fill, Mute, Panic, transport and Pattern actions.
-4. **Full parameter reachability:** map the complete Granular/Sampler/Voice/FX/Modulation parameter inventory to screen and encoder contexts.
-5. **MIDI action mapping:** define how non-continuous actions (transport, Panic, step edit, Pattern navigation) are mapped without treating them as continuous parameters.
-6. **MPE UI:** define per-note expression visualization and layer/channel scope; host-specific input semantics remain Phase 3 technical work.
-7. **Sample and recording lifecycle:** define UI for import progress, relink, collect, unsaved buffers, export and capacity failures.
-8. **Host/plugin layout:** resizability and host-specific constraints depend on unresolved Phase 3 format decisions.
+1. **Encoder matrix and A–H bank:** proposed Granular and Sampler assignments are documented in `PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md` §2.5. The controller catalogue deliberately retains an approval boundary: assignments must be checked against the authoritative R1 parameter inventories and approved by the owner. Stable parameter IDs, scaling and taper remain Phase 3/Q-T12 gates.
+2. **16-step viewport:** paging/window behavior and playhead-follow proposal are documented in `PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md` and `PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md`; owner review remains open.
+3. **Persistent performance strip:** hierarchy and placement are proposed in the consolidated layouts; owner review remains open.
+4. **Full parameter reachability:** six workspace layouts and the controller target catalogue provide the current proposal. Final parameter exposure must be reconciled with the authoritative domain specifications; no deferred/L2 control may be promoted into R1.
+5. **MIDI action mapping:** named action classes, explicit scopes and controller-only workflows are documented in `PHASE4_CONTROLLER_ACTION_AND_TARGET_CATALOG.md`; protocol, stable IDs, capacity, normalization, hot-plug and recovery implementation remain technical gates.
+6. **MPE UI:** detailed per-note expression visualization remains a design/validation gap. Host-specific ingress and identity behavior remain Phase 3/5 technical work.
+7. **Sample and recording lifecycle:** Library, waveform, recording and Freeze surfaces plus explicit Arm/Start/Stop proposal are documented. Concurrency, resource policy and final lifecycle acceptance remain open.
+8. **Host/plugin layout:** resizability, display constraints and host-specific behavior remain dependent on unresolved Phase 3 format and hardware decisions.
 
+These items must not be interpreted as owner-approved, implemented or tested. The action-by-action status and owner review list in `PHASE4_PERFORMANCE_ACCESSIBILITY_AUDIT.md` is the current operational summary.
+ 
 ## 6. Acceptance traceability boundary
 
 The Phase 3 API traceability file records 124 R1 IDs, of which 49 have a direct acceptance-criteria reference and four more have a cross-domain release-gate link; 71 have neither. This UI audit does not close that Phase 5 gap. Each UI-facing requirement must eventually receive a testable interaction/acceptance path, while non-UI requirements need explicit internal test coverage or a documented rationale.
