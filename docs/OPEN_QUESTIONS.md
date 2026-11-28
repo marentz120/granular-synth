@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 1.6 (Q-M18 envelope minimum resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 1.7 (Q-I07 R1 filter mode scope resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.6 → v1.7):** Q-I07 is answered by DEC-052: R1 exposes LPF and HPF only, with LPF-only / LPF+HPF / HPF-only routing, chain bypass, independent 6/12/18/24 dB/oct slopes and resonance. No notch/band-pass/peak response modes are included. Filter topology and resonance range/curve remain technical gates.
 
 **Change summary (v1.5 → v1.6):** Q-M18 is answered by DEC-051: all time-valued R1 ADSR stages range from 0.1 ms to 45 s; no zero-duration stage exists, and values below the floor resolve to 0.1 ms. Sustain remains a level. Host/MIDI mapping and timing tolerance remain technical gates.
 
