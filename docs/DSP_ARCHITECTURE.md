@@ -241,7 +241,7 @@ Per render block, per voice:
    - ScanRate: rate = A·|scan|, size = B / |scan| (with ε-floor and defined behavior at scan = 0 — ⚑ Q-M03)
    - ScanOverlap: rate = A·|scan|, size = B
    - TimeStretch: 2 grains, interval = size/2, constant output overlap
-2. If **sync** is on, the interval comes from the transport (host playhead / internal clock) at the chosen division; spawn times aligned to the musical grid. With **voice sync** on, all voices of the layer share one phase.
+2. If **sync** is on, the interval comes from the transport (host playhead / internal clock) at the chosen division; spawn times aligned to the musical grid. With **Voice Sync ON** (DEC-050), all voices in a layer share one grain-clock phase and newly started voices join the current phase without resetting existing voices; with OFF, each voice has an independent phase initialized when its scheduler starts. The host/transport clock authority and active-mode toggle transition remain unresolved technical gates.
 3. Emit spawns at **fractional sample offsets** inside the block (sub-sample accurate: the first output sample of a grain is computed with the fractional phase applied to both read position and window phase).
 4. For each spawn:
    - position = basePos(scan-integrated) + spray·rand(polarity) (Gran-filter weighting if enabled, L2)
