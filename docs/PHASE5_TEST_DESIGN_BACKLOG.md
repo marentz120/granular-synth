@@ -1,6 +1,6 @@
 # Phase 5 Test-Design Backlog — R1 Acceptance Traceability
 
-**Version:** 0.4 — R1 semantic gates reconciled, 2026-11-28
+**Version:** 0.5 — R1 domain-spec gates expanded, 2026-11-28
 **Status:** Planning backlog only. No new product decisions, acceptance IDs, numeric thresholds, implementation, host prototype or benchmark is authorized by this document.
 **Authority:** `GRANULAR_SYNTH_REQUIREMENTS.md`, `R1_PRODUCT_SPECIFICATION.md`, approved DEC records, `R1_ACCEPTANCE_CRITERIA.md`, and Phase 3 interface/architecture contracts.
 
