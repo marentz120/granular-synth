@@ -265,7 +265,16 @@ A test with a missing expected result, unpinned fixture or unresolved behavior i
 | Q-T17 | GS-PLT-003, GS-GRN-002, sample-rate-sensitive suites | Approve supported sample-rate and block-size matrix. |
 | Q-P09 | GS-ARC-006, GS-SMG-002, GS-UI-006, MPE/host suites | Approve host/format validation matrix and any host prototype scope. |
 | AR-03…AR-05 / AR-06 | MPE identity and state restore suites | Resolve owner/host-specific identity, expression and restore policy gates before final pass conditions. |
-| Domain-spec gaps | GS-GRN-011/015, GS-GRN-006/008/012/013, GS-CHD-003/004, GS-VOI-004/006/009, GS-SMG-004, GS-NFR-004/005/009 | Make the referenced algorithm, curve, timing, overlap or measurement semantics explicit in the authoritative specification. |
+| Q-M03 / Q-M04 | GS-GRN-009/011 | Specify scan-mode behavior and the exact ratio-mode behavior at scan = 0; current proposals are not approved pass oracles. |
+| Q-M09 | GS-GRN-018; GS-ARC-008 | Define the grain-count normalization law and default four-layer headroom oracle; numeric matching requires an authorized reference measurement. |
+| Q-M14 / Q-M16 | GS-GRN-014 | Confirm the R1 Off/On/Legato trigger semantics and define Voice Sync behavior without assuming that benchmark labels are equivalent. |
+| Q-M17 | GS-GRN-015 | Define the four spawn-mode state transitions, reset points and recycle behavior before writing expected-result assertions. |
+| Q-M18 | GS-VOI-006 | Reconcile the stated 0.1 ms minimum envelope stage with the still-proposed benchmark ambiguity; keep the R1 requirement and source question consistent. |
+| Q-I07 | GS-VOI-008 | Confirm the R1 filter-mode inventory and exact relationship between LPF/HPF modes, routing, slopes and bypass; do not infer an undocumented SVF mode list. |
+| Q-I08 | GS-GRN-006 | Define the centre-weighted pan-spray distribution mathematically and specify seeded statistical tolerance alongside the uniform mode. |
+| Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement so the test oracle is unambiguous. |
+| R1 domain-spec gaps | GS-GRN-006/008/012/013, GS-CHD-003/004, GS-VOI-004/006/009, GS-SMG-004, GS-NFR-004/005/009 | Make the referenced algorithm, curve, timing, overlap or measurement semantics explicit in the authoritative specification. |
+| R1 scope guard | Q-M15, Q-I16, Q-I17, Q-I18 | Confirm these benchmark-only questions do not silently expand R1: the current R1 model does not require per-layer time-signature emulation, keyboard-position voice-steal heuristics or Elektron-style preset switching; DEC-032 defines the R1 XY pad. Update OPEN_QUESTIONS to mark non-R1 items deferred/resolved. |
 
 ### Measurement policy
 
