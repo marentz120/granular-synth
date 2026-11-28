@@ -1,10 +1,11 @@
 # Open Questions
 
-**Version:** 0.8 (cross-host state callback and snapshot freshness addendum, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 0.9 (AUv3/AUv2 state failure-surface refinement, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
 
 **Change summary (v0.5 → v0.6):** Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16, Q-M01, Q-M05, Q-M06, Q-M11 and Q-M12 were resolved or tiered under the owner's explicit product-management delegation and recorded in DEC-022…DEC-037. Q-P18 is answered by DEC-018; MIDI and audio product behaviors were further settled by DEC-038…DEC-040; DEC-041 approves all 168 release-tier assignments. Six domain specifications, R1 Release Scope Matrix and R1 Acceptance Criteria are included. Architecture, numeric feasibility, remaining evidence and legal questions stay open for their proper gates.
 **Change summary (v0.6 → v0.7):** Added Q-T15 state I/O scheduling, capture-watermark, retention-lease, callback-context, cancellation and aggregate peak-admission evidence gates. No product decision or requirement tier changed.
 **Change summary (v0.7 → v0.8):** Added cross-host state-callback thread, AU failure-signalling, VST3 offline-context and coherent multi-source snapshot-freshness evidence gates. No product decision or requirement tier changed.
+**Change summary (v0.8 → v0.9):** Split AUv3 nullable dictionary semantics from AUv2 OSStatus semantics; documented the ClassInfoFromDocument restore fallback separately from save failure. No product decision or requirement tier changed.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -216,8 +217,8 @@ See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. These are Q
 
 The new `PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md` records additional Q-T15/Q-P09 engineering gates:
 
-- Determine the actual AU state-property callback thread and render overlap in Logic Pro, Ableton Live and REAPER. Apple's reviewed property documentation does not specify a universal thread or explicit getter error result.
-- Verify how each AU host treats a nil/failed `fullStateForDocument` result. Do not assume that nil aborts project save; DEC-025 still requires every unsaved recording payload.
+- Determine the actual AU state-property callback thread and render overlap in Logic Pro, Ableton Live and REAPER. Apple does not specify a universal callback thread; AUv3 getters are nullable dictionaries, while the bridged AUv2 AudioUnitGetProperty surface returns OSStatus.
+- Verify AUv3 nil-to-AUv2 bridge mapping and AUv2 non-success OSStatus handling during save in each AU host. Separately verify the documented ClassInfoFromDocument-to-ClassInfo fallback during document restore; a preset-only fallback must not be counted as a complete DEC-025 restore.
 - Verify VST3 component state callbacks while Processing and host-visible handling of non-success `tresult`, short stream transfers and invalid state.
 - Include the Steinberg offline same-thread get/set-state clarification as supplemental evidence; do not generalize it into a guarantee for every host.
 - Publish/read one coherent capture-boundary vector across all required recording/Freeze sources. Independent per-source watermark reads can produce a torn snapshot.
@@ -225,3 +226,17 @@ The new `PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX
 - Record Bitwig hosting mode and per-process/aggregate memory in any future authorized prototype.
 
 These are technical evidence gates, not owner product decisions. Q-T15 and Q-P09 remain open; DEC-025/DEC-042 and AR-06 are unchanged. No host prototype or benchmark is authorized by this update.
+
+
+## J. AU state failure-surface evidence — 2026-11-28
+
+The dedicated **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md** refines the earlier AU failure shorthand:
+
+- AUv3 **fullState** and **fullStateForDocument** are nullable dictionary properties without a separate error result in the getter signature. The public documentation does not define the nil-to-AUv2 bridge mapping or host save behavior.
+- AUv2 **AudioUnitGetProperty** returns OSStatus; this is an explicit API-level result, not proof of host project-save rollback.
+- Apple's documented ClassInfoFromDocument fallback to ClassInfo applies to document **restore** when the document property errors or is unimplemented. It is not a save-time fallback rule.
+- A preset-only ClassInfo fallback cannot satisfy DEC-025 if required unsaved-recording or Freeze chunks are absent.
+- AUv2 Core Foundation state objects are owned references that must be released. Deep-copy behavior for nested Data is not inferred; account only for actual materialization/copies.
+- Logic, Live and REAPER save/restore outcomes remain unobserved. Q-T15/Q-P09 stay open; no error code, payload-scope change or host certification is selected.
+
+No product decision or requirement tier changes. See the dedicated audit for Phase 5 fixtures and source register.
