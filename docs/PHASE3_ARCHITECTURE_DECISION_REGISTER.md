@@ -76,3 +76,14 @@ These questions were exposed by the Phase 3 event-time and overload audit. They 
 | AR-02 | What is the exact deterministic reclamation policy when voice or global grain capacity is exhausted? | Keep voice stealing and grain-budget reclamation separate. Candidate ordering: released/non-sustained/oldest voices for GS-VOI-001; release-voice grains then oldest spawn sequence with stable layer/voice/grain tie-break for GS-ARC-004. | Resolve eligibility/fallback when all voices are held; define spawn rejection accounting, fade envelope and thresholds; seeded overload tests and listening validation. Numeric budget requires separately authorized benchmark (Q-T07). | OPEN — candidate only |
 
 The current DSP proposal's former `threshold·k` expression is not a usable formula (`k` is undefined); “oldest” and “longest-remaining” are distinct policies. The updated DSP specification marks this ambiguity and records the candidate comparator without approving it. Neither AR-01 nor AR-02 authorizes implementation or benchmark work.
+
+
+## 6. MPE identity and lifecycle questions (open)
+
+| ID | Question | Candidate direction | Evidence required | Status |
+|---|---|---|---|---|
+| AR-03 | AU MPE same-pitch Note Off matching, shared member-channel behavior, sustain/release tails and zone reconfiguration | Separate source-note identity from member-channel expression scope; report ambiguous matches; snapshot/detach released voices before channel reuse | MPE 1.1 protocol review; same-pitch retrigger, shared-channel, sustain and channel-reuse fixtures; owner review of user-visible ambiguity behavior | OPEN — no FIFO/LIFO policy selected |
+| AR-04 | VST3 Note Expression mapping for product Pressure and Timbre, including host delivery/recording behavior | Tuning is the standard pitch candidate; Pressure/Timbre use explicitly declared standard or custom types; do not silently alias semantics | SDK type review; Note Expression discovery and event tests in each Q-P09 host | OPEN — type mapping not selected |
+| AR-05 | Public AU/VST3 metadata and exact conversion for DEC-038's 48-semitone per-note range | Preserve the existing project interpretation; convert through explicit signed semitone units and host-specific normalized domains | Confirm DEC-038 wording against MPE 1.1 default and test minimum, center and maximum in target hosts | OPEN — metadata/conversion not frozen |
+
+These questions refine GS-MID-002 and DEC-038 without changing product scope. See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md. No implementation or benchmark is authorized by these proposals.
