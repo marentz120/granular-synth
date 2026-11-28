@@ -303,3 +303,17 @@ See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for the evidence-backe
 
 
 MPE identity and lifecycle details, including bounded source-note identity, layer fan-out and format-specific retirement, are specified in PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md. The 124-row inventory and 53/124 acceptance-link baseline are unchanged.
+
+## 9. MPE event fixture crosswalk
+
+The detailed scenario and evidence catalogue is PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. It refines, but does not replace, the candidate API mapping:
+
+| Requirement / decision | Candidate symbols and fixture obligation |
+|---|---|
+| GS-MID-002; GS-MOD-004 | SourceNoteIdentity, MpeChannelKey, Vst3HostNoteKey, NoteIdentityQuality and AU/VST3 adapters; valid/missing/duplicate/stale identity and distinct pitch/pressure/timbre semantics |
+| DEC-034 | IPerNoteExpressionRouter; one source identity fans out once to every matching layer-local NoteInstanceId |
+| DEC-038 | Signed semitone values at -48 / 0 / +48; host-specific raw encoding and public metadata remain AR-05 |
+| GS-NFR-001 | Bounded/preallocated identity maps, generation validation, no render-time allocation or blocking |
+| AR-03…AR-05 / Q-P09 | Decision-gated AU matching/channel reuse, VST3 Pressure/Timbre type discovery, pitch metadata/conversion and host-specific event traces |
+
+For channelized MPE, the MpeChannelKey namespace includes the ingress domain: AU virtual cable, VST3 event bus or Standalone input port/device. Explicit VST3 Note Expression continues to use event-bus index plus valid noteId. This fixture catalogue creates no AC IDs or formal test IDs and does not change the 124-row inventory or 53/124 acceptance-link count.
