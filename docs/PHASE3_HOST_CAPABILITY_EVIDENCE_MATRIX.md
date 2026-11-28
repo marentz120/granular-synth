@@ -154,3 +154,12 @@ The detailed format/host audit is recorded in [PHASE3_MPE_HOST_COMPATIBILITY_EVI
 Architectural consequence: preserve both `MpeChannelKey` and `Vst3HostNoteKey` as distinct ingress identities that normalize to `SourceNoteIdentity`. Do not fabricate a VST3 note ID from a MIDI member channel. DEC-038 remains the product authority for ±48 semitones; each host must be configured and tested at minimum/center/maximum rather than assumed to use the product range by default.
 
 This is evidence refinement only. It does not change DEC-026, DEC-034 or DEC-038; does not resolve Q-P06/Q-P09 or AR-03…AR-05; and does not certify any host or authorize a prototype.
+
+
+## 11. State persistence and reset evidence — 2026-11-28
+
+The separate [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md) now records official host evidence for project plug-in state, preset reset, process reload and DEC-025/DEC-042 payload persistence.
+
+Important distinction: Logic documents plug-in settings recalled on project reopen; Ableton documents Live Set device/control settings; Bitwig documents project-associated `plugin-states`; REAPER documents FX-chain parameter settings and an optional VST/VST3 hard-reset-on-playback-start compatibility setting. These are not interchangeable guarantees.
+
+**The existing “save/reopen bus activation and routing” status remains U for every host.** General project-state documentation does not prove that this product's optional output buses, routing, custom embedded recording chunks or Freeze payload restore correctly. No host prototype was run and no cell is certified.
