@@ -107,19 +107,28 @@ This is a Phase 4 UX contract only. Mapping wire format, IDs, capacity and real-
 - **Color:** critical states must not be communicated by color alone.
 - **Error recovery:** Panic remains one deliberate gesture and available during error/recovery states. Failed/pending actions must be visible and must not be presented as successful.
 
-## 8. Required closure items before Phase 4 UI sign-off
+## 8. Closure progress and remaining items before Phase 4 UI sign-off
 
-- [ ] Publish the authoritative R1 parameter inventory for the eight-knob engine section, per engine and layer.
-- [ ] Remove L2 Sampler Loop Crossfade from R1 encoder defaults.
-- [ ] Resolve each FX encoder assignment against each approved effect's actual parameter list.
-- [ ] Add explicit UI and MIDI targets for Play/Drone per layer, Panic, chord hold/record, macros 1–10, preset/PC recall and mapping-set recall.
-- [ ] Define controller-only layer targeting for per-layer Freeze, recording, mix and performance controls.
-- [ ] Define the non-parameter MIDI action/event target model and controller-only navigation sequence.
-- [ ] Complete step/event editing paths, including eight events per step and layer assignment.
-- [ ] Define per-layer recording and master recording action/status workflows.
-- [ ] Define macro bank/page navigation and active macro scope.
-- [ ] Verify every operation in `LIVE_PERFORMANCE_SPECIFICATION.md` §1 against the final wireframe and MIDI target list.
-- [ ] Add Phase 5 acceptance tests for every operation; do not claim coverage based solely on this document.
+The following Phase 4 documents now provide the missing design-level detail:
+- `PHASE4_CONTROLLER_ACTION_AND_TARGET_CATALOG.md`: named action targets, action classes, explicit global/layer/pattern/event scopes, controller-only event editing, chord-record proposal, recording workflow, Performance Bank/Set distinction and Program Change behavior per DEC-033.
+- `PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md` §2.5: proposed R1-backed A–H control assignments for Granular and Sampler. Sampler Loop Crossfade (L2) is excluded; Granular Density is shown as derived Rate × Size.
+
+These are documentation closures, not owner approval or implementation evidence.
+
+### Remaining owner UX review
+- [ ] Approve or revise the Granular and Sampler A–H assignments.
+- [ ] Review Chord Record Arm/Capture/Commit/Cancel against GS-CHD-004.
+- [ ] Review recording target selection and Arm/Start/Stop status workflow; confirm the intended capture concurrency policy before implementation.
+- [ ] Review Performance Bank editor and active-bank selection/persistence UX; retain DEC-033's explicit mapping and unmapped-value-ignore behavior.
+- [ ] Review the visible workflow for recalling existing global and preset-specific MIDI mapping state.
+- [ ] Produce/review consolidated wireframes and verify every essential live operation against them.
+
+### Remaining technical and Phase 5 gates
+- [ ] Define stable parameter IDs, parameter exposure, scaling/taper and mapping wire format/capacity under Phase 3/Q-T12.
+- [ ] Define non-parameter action-event transport and controller input normalization.
+- [ ] Define and test soft takeover, mapping conflicts, device hot-plug and recovery.
+- [ ] Add Phase 5 acceptance tests for every essential operation; this audit does not claim implementation or test coverage.
+- [ ] Validate all controls against the final R1 parameter inventory and per-effect parameter sets.
 
 ## 9. Owner decisions vs. technical gates
 
