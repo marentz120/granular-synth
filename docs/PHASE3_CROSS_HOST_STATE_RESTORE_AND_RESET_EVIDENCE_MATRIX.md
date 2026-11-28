@@ -188,3 +188,27 @@ Checked 2026-11-28. Vendor pages are version-sensitive; pin exact host versions 
 - Steinberg VST3 Persistence: https://steinbergmedia.github.io/vst3_dev_portal/pages/FAQ/Persistence.html
 - Steinberg IComponent: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IComponent.html
 - Steinberg VST3 API documentation: https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/API%2BDocumentation/Index.html
+
+
+## 12. AU/VST3 host persistence feasibility supplement — 2026-11-28
+
+See [PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md](PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md) for the detailed API/host separation and test plan.
+
+New evidence refinement:
+
+- Ableton explicitly documents that VST/AU plug-in state is stored in a reserved binary data block in a Live Set and is read/written by the plug-in itself. This upgrades the existence of an opaque per-instance state path to **D**; it does not establish maximum size, large DEC-025/DEC-042 payload acceptance, callback deadline or interrupted-write recovery.
+- Ableton's “Save as Default Configuration” saves the Live parameter-panel configuration, not the current plug-in parameter values. Do not count it as a state round-trip. A Rack/preset workflow is separately documented.
+- AU `fullState` and `fullStateForDocument` are dictionary properties. Apple documents that subclasses which do not implement `fullStateForDocument` interface with `fullState`; this is a fallback, not proof of two independent host persistence transactions.
+- VST3 `IBStream` uses int32 per-call transfer lengths and int64 seek/tell positions. This is not a total 2 GiB state limit, and it does not prove the host uses incremental storage.
+- Steinberg annotates component state methods as UI-thread calls that are permitted while the component is in Processing. This is a lifecycle permission, not an audio-thread guarantee. Render-owned state must still be updated by the existing immutable-candidate/safe-point path.
+
+The host evidence remains:
+
+| Host / format | Opaque or project-state evidence | Required custom audio payload |
+|---|---|---|
+| Logic Pro / AU | Project plug-in settings recalled on reopen; AU dictionary API | U — size and round-trip unverified |
+| Ableton Live / AU + VST3 | Reserved binary plug-in-state block in Live Set | U — size and round-trip unverified |
+| Bitwig / VST3 | Project-associated `plugin-states` directory and process reload controls | U — opaque payload details unverified |
+| REAPER / AU + VST3 | Project/FX-chain persistence and optional VST bank/reset compatibility settings | U — opaque payload details unverified |
+
+No host certification, maximum size, callback deadline or test result is added. DEC-025/042 and AR-06 remain unchanged.
