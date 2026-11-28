@@ -33,3 +33,6 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 
 - [PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md](PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md) — deterministic AU/VST3/Standalone MPE ingress, identity, expression, fan-out, release, channel-reuse and overload fixtures; Phase 5 test design only, with AR-03…AR-05 and host evidence gates open.
 - [PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md](PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md) — distinguishes MIDI controller/note/sound reset, host render reset and persistent state restore; documents DEC-025/DEC-042 persistence, MPE generations and AR-06 owner gate.
+
+
+- [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md) — official Logic/Live/Bitwig/REAPER state-save, preset/reset and process-reload evidence; separates host documentation from AU/VST3 API contracts, DEC-025/DEC-042 payload tests, AR-06 alternatives and unverified bus/callback behavior. Evidence map only; no host certified.
