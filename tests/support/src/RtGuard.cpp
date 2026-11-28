@@ -16,9 +16,7 @@ thread_local std::size_t g_violations = 0;
 
 } // namespace
 
-RealtimeSectionGuard::RealtimeSectionGuard() noexcept {
-    ++g_guardDepth;
-}
+RealtimeSectionGuard::RealtimeSectionGuard() noexcept { ++g_guardDepth; }
 
 RealtimeSectionGuard::~RealtimeSectionGuard() noexcept {
     if (g_guardDepth > 0) {
@@ -26,21 +24,13 @@ RealtimeSectionGuard::~RealtimeSectionGuard() noexcept {
     }
 }
 
-bool realtimeSectionActive() noexcept {
-    return g_guardDepth > 0;
-}
+bool realtimeSectionActive() noexcept { return g_guardDepth > 0; }
 
-std::size_t realtimeViolationCount() noexcept {
-    return g_violations;
-}
+std::size_t realtimeViolationCount() noexcept { return g_violations; }
 
-void resetRealtimeViolations() noexcept {
-    g_violations = 0;
-}
+void resetRealtimeViolations() noexcept { g_violations = 0; }
 
-void recordRealtimeViolation() noexcept {
-    ++g_violations;
-}
+void recordRealtimeViolation() noexcept { ++g_violations; }
 
 } // namespace gs::test
 
@@ -86,21 +76,13 @@ void release(void* memory) noexcept {
 
 } // namespace
 
-void* operator new(std::size_t size) {
-    return allocate(size);
-}
+void* operator new(std::size_t size) { return allocate(size); }
 
-void* operator new[](std::size_t size) {
-    return allocate(size);
-}
+void* operator new[](std::size_t size) { return allocate(size); }
 
-void* operator new(std::size_t size, const std::nothrow_t&) noexcept {
-    return allocateNoThrow(size);
-}
+void* operator new(std::size_t size, const std::nothrow_t&) noexcept { return allocateNoThrow(size); }
 
-void* operator new[](std::size_t size, const std::nothrow_t&) noexcept {
-    return allocateNoThrow(size);
-}
+void* operator new[](std::size_t size, const std::nothrow_t&) noexcept { return allocateNoThrow(size); }
 
 void* operator new(std::size_t size, std::align_val_t alignment) {
     void* memory = allocateAligned(size, static_cast<std::size_t>(alignment));
@@ -126,50 +108,26 @@ void* operator new[](std::size_t size, std::align_val_t alignment, const std::no
     return allocateAligned(size, static_cast<std::size_t>(alignment));
 }
 
-void operator delete(void* memory) noexcept {
-    release(memory);
-}
+void operator delete(void* memory) noexcept { release(memory); }
 
-void operator delete[](void* memory) noexcept {
-    release(memory);
-}
+void operator delete[](void* memory) noexcept { release(memory); }
 
-void operator delete(void* memory, std::size_t) noexcept {
-    release(memory);
-}
+void operator delete(void* memory, std::size_t) noexcept { release(memory); }
 
-void operator delete[](void* memory, std::size_t) noexcept {
-    release(memory);
-}
+void operator delete[](void* memory, std::size_t) noexcept { release(memory); }
 
-void operator delete(void* memory, const std::nothrow_t&) noexcept {
-    release(memory);
-}
+void operator delete(void* memory, const std::nothrow_t&) noexcept { release(memory); }
 
-void operator delete[](void* memory, const std::nothrow_t&) noexcept {
-    release(memory);
-}
+void operator delete[](void* memory, const std::nothrow_t&) noexcept { release(memory); }
 
-void operator delete(void* memory, std::align_val_t) noexcept {
-    release(memory);
-}
+void operator delete(void* memory, std::align_val_t) noexcept { release(memory); }
 
-void operator delete[](void* memory, std::align_val_t) noexcept {
-    release(memory);
-}
+void operator delete[](void* memory, std::align_val_t) noexcept { release(memory); }
 
-void operator delete(void* memory, std::size_t, std::align_val_t) noexcept {
-    release(memory);
-}
+void operator delete(void* memory, std::size_t, std::align_val_t) noexcept { release(memory); }
 
-void operator delete[](void* memory, std::size_t, std::align_val_t) noexcept {
-    release(memory);
-}
+void operator delete[](void* memory, std::size_t, std::align_val_t) noexcept { release(memory); }
 
-void operator delete(void* memory, std::align_val_t, const std::nothrow_t&) noexcept {
-    release(memory);
-}
+void operator delete(void* memory, std::align_val_t, const std::nothrow_t&) noexcept { release(memory); }
 
-void operator delete[](void* memory, std::align_val_t, const std::nothrow_t&) noexcept {
-    release(memory);
-}
+void operator delete[](void* memory, std::align_val_t, const std::nothrow_t&) noexcept { release(memory); }

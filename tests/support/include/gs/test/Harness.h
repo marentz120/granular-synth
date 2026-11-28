@@ -36,8 +36,7 @@ std::size_t testCount() noexcept;
 const TestCase& testAt(std::size_t index) noexcept;
 
 /// Records a failed assertion against the currently running test.
-void recordAssertionFailure(const char* file, int line, const char* expression,
-                            const char* detail) noexcept;
+void recordAssertionFailure(const char* file, int line, const char* expression, const char* detail) noexcept;
 
 bool currentTestFailed() noexcept;
 
@@ -47,36 +46,36 @@ int runAll(int argc, char** argv);
 
 } // namespace gs::test
 
-#define GS_TEST(suiteIdentifier, testIdentifier)                                                   \
-    static void gs_test_fn_##suiteIdentifier##_##testIdentifier();                                 \
-    static const ::gs::test::TestRegistrar gs_test_reg_##suiteIdentifier##_##testIdentifier(       \
-        #suiteIdentifier, #testIdentifier, &gs_test_fn_##suiteIdentifier##_##testIdentifier);      \
+#define GS_TEST(suiteIdentifier, testIdentifier)                                                             \
+    static void gs_test_fn_##suiteIdentifier##_##testIdentifier();                                           \
+    static const ::gs::test::TestRegistrar gs_test_reg_##suiteIdentifier##_##testIdentifier(                 \
+        #suiteIdentifier, #testIdentifier, &gs_test_fn_##suiteIdentifier##_##testIdentifier);                \
     static void gs_test_fn_##suiteIdentifier##_##testIdentifier()
 
 /// Non-fatal check: records a failure and continues the test body.
-#define GS_CHECK(expression)                                                                       \
-    do {                                                                                           \
-        if (!(expression)) {                                                                       \
-            ::gs::test::recordAssertionFailure(__FILE__, __LINE__, #expression, nullptr);          \
-        }                                                                                          \
+#define GS_CHECK(expression)                                                                                 \
+    do {                                                                                                     \
+        if (!(expression)) {                                                                                 \
+            ::gs::test::recordAssertionFailure(__FILE__, __LINE__, #expression, nullptr);                    \
+        }                                                                                                    \
     } while (false)
 
 /// Non-fatal check with an explanatory message.
-#define GS_CHECK_MSG(expression, detail)                                                           \
-    do {                                                                                           \
-        if (!(expression)) {                                                                       \
-            ::gs::test::recordAssertionFailure(__FILE__, __LINE__, #expression, (detail));         \
-        }                                                                                          \
+#define GS_CHECK_MSG(expression, detail)                                                                     \
+    do {                                                                                                     \
+        if (!(expression)) {                                                                                 \
+            ::gs::test::recordAssertionFailure(__FILE__, __LINE__, #expression, (detail));                   \
+        }                                                                                                    \
     } while (false)
 
 /// Fatal check: records a failure and abandons the rest of the test body.
-#define GS_REQUIRE(expression)                                                                     \
-    do {                                                                                           \
-        if (!(expression)) {                                                                       \
-            ::gs::test::recordAssertionFailure(__FILE__, __LINE__, #expression,                    \
-                                               "required condition failed");                       \
-            return;                                                                                \
-        }                                                                                          \
+#define GS_REQUIRE(expression)                                                                               \
+    do {                                                                                                     \
+        if (!(expression)) {                                                                                 \
+            ::gs::test::recordAssertionFailure(__FILE__, __LINE__, #expression,                              \
+                                               "required condition failed");                                 \
+            return;                                                                                          \
+        }                                                                                                    \
     } while (false)
 
 #endif // GS_TEST_HARNESS_H

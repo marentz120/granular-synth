@@ -49,25 +49,18 @@ TestRegistrar::TestRegistrar(const char* suite, const char* name, TestFunction f
     ++reg.count;
 }
 
-std::size_t testCount() noexcept {
-    return registry().count;
-}
+std::size_t testCount() noexcept { return registry().count; }
 
-const TestCase& testAt(std::size_t index) noexcept {
-    return registry().cases[index];
-}
+const TestCase& testAt(std::size_t index) noexcept { return registry().cases[index]; }
 
-void recordAssertionFailure(const char* file, int line, const char* expression,
-                            const char* detail) noexcept {
+void recordAssertionFailure(const char* file, int line, const char* expression, const char* detail) noexcept {
     failureFlag() = true;
     ++failureCount();
-    std::fprintf(stderr, "    FAIL %s:%d: %s%s%s\n", file, line, expression,
-                 detail != nullptr ? " — " : "", detail != nullptr ? detail : "");
+    std::fprintf(stderr, "    FAIL %s:%d: %s%s%s\n", file, line, expression, detail != nullptr ? " — " : "",
+                 detail != nullptr ? detail : "");
 }
 
-bool currentTestFailed() noexcept {
-    return failureFlag();
-}
+bool currentTestFailed() noexcept { return failureFlag(); }
 
 int runAll(int argc, char** argv) {
     const char* filter = nullptr;

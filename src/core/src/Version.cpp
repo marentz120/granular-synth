@@ -6,12 +6,8 @@
 
 namespace gs::core {
 
-const char* versionString() noexcept {
-    return GS_CORE_VERSION_STRING;
-}
+const char* versionString() noexcept { return GS_CORE_VERSION_STRING; }
 
-bool isFrameworkIndependentBuild() noexcept {
-    return true;
-}
+bool isFrameworkIndependentBuild() noexcept { return true; }
 
 } // namespace gs::core

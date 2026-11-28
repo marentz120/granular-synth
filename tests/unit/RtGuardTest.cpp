@@ -4,8 +4,8 @@
 // Milestone A0. They must not be read as evidence of realtime safety (see RtGuard.h for the
 // documented limitations).
 
-#include "gs/test/Harness.h"
 #include "gs/test/RtGuard.h"
+#include "gs/test/Harness.h"
 
 #include <cstddef>
 
@@ -16,9 +16,7 @@ volatile void* g_sink = nullptr;
 
 } // namespace
 
-GS_TEST(rtGuard, inactiveByDefault) {
-    GS_CHECK(!gs::test::realtimeSectionActive());
-}
+GS_TEST(rtGuard, inactiveByDefault) { GS_CHECK(!gs::test::realtimeSectionActive()); }
 
 GS_TEST(rtGuard, activeInsideScopeAndClearedAfter) {
     {
