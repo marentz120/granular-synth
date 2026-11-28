@@ -63,6 +63,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-044 | Granular One-Shot completes its current scan cycle, then stops spawning new grains; grains already spawned continue playing through their existing envelopes and are not forcibly terminated by the One-Shot boundary. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. Resolves the One-Shot subdecision within Q-M04. Scan mode count and exact Bounce/Wrap/Kill/Stop transitions remain open. |
 
+| DEC-045 | R1 Granular Scan exposes exactly three scan modes: Bounce, Wrap and Kill. One-Shot is a separate playback/scan-cycle behavior, not a fourth Scan mode; its completion behavior is defined by DEC-044. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. Resolves the mode-count ambiguity in Q-M04. Exact Kill behavior and its relationship to explicit Stop/Panic remain to be specified; this decision does not define those transitions. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
