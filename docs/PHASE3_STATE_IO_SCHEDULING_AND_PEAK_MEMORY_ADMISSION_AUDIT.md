@@ -252,3 +252,14 @@ Key refinements:
 - AU's missing explicit getter error channel is a compatibility blocker until each target host's handling of nil/failed document state is observed. VST3 `tresult` is an explicit plug-in result, but host-visible save rollback/failure still requires prototype evidence.
 
 No host callback was observed and no host was certified. DEC-025/DEC-042, AR-06, Q-T15 and Q-P09 remain unchanged. See the evidence matrix for host rows and planned fixtures.
+
+
+## 13. AU save failure versus restore fallback — 2026-11-28
+
+- Replace the broad statement “AU has no explicit getter error channel” with a format-surface distinction: AUv3 dictionary getters are nullable and expose no separate error result; AUv2 **AudioUnitGetProperty** returns OSStatus.
+- Apple documents **ClassInfoFromDocument** error fallback to **ClassInfo** for document **restore**. Do not infer that this is a save-time fallback, nor that a save-time error necessarily aborts the host's project write.
+- The exact AUv3 nil-to-AUv2 bridge mapping and host save result remain unverified. A host that writes an incomplete document after nil/error would violate DEC-025; record a compatibility blocker rather than returning stale or partial state.
+- The AUv2 getter returns an owned CF object reference. Track the reference lifetime and actual dictionary/Data backing allocations separately; no deep-copy multiplier is assumed.
+- A ClassInfo preset fallback is not a valid document restore unless the resulting state contains every required recording and Freeze chunk. The user-preset payload scope remains open and must not be silently broadened to make the fallback appear safe.
+
+See **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md**. No API status constant, fallback policy, host behavior or payload-size limit is selected.
