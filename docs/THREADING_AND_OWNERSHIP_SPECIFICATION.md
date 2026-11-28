@@ -1,6 +1,6 @@
 # Threading and Ownership Specification
 
-**Version:** 0.4 — render-capacity generation and scratch ownership added  
+**Version:** 0.5 — cross-format event and transport ingress clarified  
 **Status:** Proposed; requires architecture approval. No implementation is authorized.  
 **Authority:** REQ-AUD-001…003, GS-NFR-001/005/006, DEC-020/025, Q-T08/Q-T09.
 
@@ -254,3 +254,38 @@ Reconfiguration is a lifecycle transaction:
 
 A lower actual frame count does not shrink capacity during render. A changed maximum, sample rate or bus arrangement is not a per-block event; it requires the documented host/device lifecycle. See `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md` for byte formulas and planned boundary/reconfiguration tests.
 
+
+
+## 11. Cross-format event, automation and transport ingress
+
+The adapter boundary must account for the different producer and callback shapes of AU and VST3. The normalized contract is detailed in `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md`.
+
+### 11.1 Borrowed host data
+
+- AU render-event lists and VST3 `IEventList`, `IParameterChanges`, parameter queues and `ProcessContext` are callback-scoped host data. Read and translate them during the permitted callback; do not retain their pointers, interface objects or references after return.
+- Copy only bounded values required by the shared core into preallocated storage. Preserve source identity, source-local order, sample timing, bus/channel identity and note identity where present.
+- VST3 event lists and parameter queues are distinct input collections. Merge them with sequencer/device events by sample time without assuming that collection iteration order defines cross-source precedence.
+
+### 11.2 Producer topology
+
+- AU `scheduleParameterBlock` is documented as callable from any thread, including a realtime render thread. It is not inherently a single-producer ingress. An SPSC queue is valid only if the adapter proves a single producer; otherwise use a bounded design with a documented producer topology.
+- Device MIDI is timestamped/copied into bounded owned records. Thread arrival order is never musical order.
+- Host callback data already delivered for the current block should be consumed directly through the bounded adapter path rather than copied through an unnecessary asynchronous queue.
+
+### 11.3 Event batches and automation curves
+
+- Discrete events use validated block-relative sample offsets. Preserve order within one source.
+- Different sources at the same sample offset are grouped into a timestamp batch. Do not use producer arrival, pointer identity or container order as a tie-break.
+- AU parameter ramps and VST3 per-parameter automation queues are curve inputs, not ordinary step events. Preserve ramp duration, linear segments, implicit prior values and the VST3 previous-block anchor at relative position -1.
+- The -1 automation anchor is signed continuity metadata, not a current-block event and not a queue index. It must not enter the unsigned discrete-event offset path.
+- Same-parameter collisions across host automation, MIDI mapping, sequencer locks and UI remain blocked by AR-01. No winner is selected here.
+
+### 11.4 Transport snapshot and process kind
+
+- Cache AU host musical-context and transport-state callbacks before rendering. Their success and field availability are independent; the render path must not invent missing values.
+- For VST3, request required ProcessContext fields through `IProcessContextRequirements` during setup and validate each per-call state flag. A null context or unset field flag is unavailable data.
+- Publish one immutable field-valid transport snapshot per audio block. All four layers and the central sequencer consume that snapshot.
+- A VST3 parameter-flush call with no audio buses is a control-only ingress. It must not touch render scratch, advance sequencer/transport time or increment rendered-frame counters.
+- Cycle/loop discontinuity within a block is host-dependent. Do not assume all hosts split at the loop boundary; report insufficient intra-block timing unless host evidence proves otherwise.
+
+No new queue capacity, event-drop policy, transport fallback policy, note-retrigger policy or cross-source precedence is approved by this section.
