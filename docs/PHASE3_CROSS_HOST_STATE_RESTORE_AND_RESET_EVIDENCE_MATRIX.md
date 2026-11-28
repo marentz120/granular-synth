@@ -222,10 +222,10 @@ See [PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md]
 |---|---|---|---|
 | Logic / AU | No reviewed host/API thread guarantee | AU optional dictionary; nil/stale save handling unverified | U |
 | Live / AU | No reviewed callback-thread guarantee | Reserved binary state block is documented; AU nil/failure handling unverified | U |
-| Live / VST3 | VST3 API annotation applies; Live-specific callback context unverified | \`tresult\` exists; Live rollback/failure behavior unverified | U |
-| Bitwig / VST3 | No official Bitwig callback-thread guarantee; hosting mode changes process isolation | \`tresult\` exists; stale/failure behavior unverified | U |
+| Live / VST3 | VST3 API annotation applies; Live-specific callback context unverified | `tresult` exists; Live rollback/failure behavior unverified | U |
+| Bitwig / VST3 | No official Bitwig callback-thread guarantee; hosting mode changes process isolation | `tresult` exists; stale/failure behavior unverified | U |
 | REAPER / AU | No reviewed callback-thread guarantee | AU nil/failure behavior unverified | U |
-| REAPER / VST3 | VST3 API annotation applies; REAPER-specific callback context unverified | \`tresult\` exists; host rollback/failure behavior unverified | U |
+| REAPER / VST3 | VST3 API annotation applies; REAPER-specific callback context unverified | `tresult` exists; host rollback/failure behavior unverified | U |
 
 The VST3 API permits component state calls while Processing; this does not imply process suspension. A Steinberg developer-forum note identifies an offline same-thread possibility. The AU property API does not document a getter error result. Neither format-level evidence nor the hosts' project/preset controls establishes the complete DEC-025 freshness and failure contract.
 
