@@ -199,3 +199,16 @@ Checked 2026-11-28:
     https://steinbergmedia.github.io/vst3_doc/vstinterfaces/structSteinberg_1_1Vst_1_1NoteExpressionValueEvent.html
 
 **Conclusion:** VST3's API model is capable of expressing the candidate instrument + live audio input + five-output topology. Host routing, bus activation, MPE delivery and the exact insertion workflow remain unproven. This audit recommends one instrument-classified component as the first validation candidate; it does not approve a category string, bus type, simple-mode flag, host compatibility claim or implementation.
+
+
+## 11. Host-specific VST3 evidence
+
+The per-host evidence is maintained separately in [PHASE3_VST3_HOST_CAPABILITY_MATRIX.md](PHASE3_VST3_HOST_CAPABILITY_MATRIX.md). It distinguishes:
+- documented instrument discovery and multi-output facilities;
+- related side-chain/modulator routing from raw full-band source access;
+- host-level MPE/per-note-expression support from the plug-in's exact Note ID and ±48-semitone mapping;
+- general project/plugin-state persistence from persistence of exact VST3 bus activation and routing.
+
+The matrix records Logic Pro as N/A for VST3 (AU/AUv3 only in its documented third-party plug-in path), not as a failed VST3 test. Ableton Live has documented 16-stereo-output support; Bitwig documents multi-out VST chains and VST3 per-note expressions; REAPER's current v7.86 guide documents a four-stereo-output VSTi example and notes that VST3 side-chain channel count may need to be requested because it has no dedicated side-chain buses. Full-band input, exact five-pair routing, dynamic bus activation, exact MPE mapping and bus save/reopen remain prototype gates.
+
+No host compatibility claim or product decision is changed.
