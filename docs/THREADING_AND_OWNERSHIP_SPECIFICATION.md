@@ -297,7 +297,7 @@ The MPE identity audit adds stateful note routing to the existing bounded event 
 
 ### 11.1 Ownership
 
-- The render domain owns the active SourceNoteIdentity table, AU member-channel groups, VST3 host-note lookup and layer-local NoteInstanceId associations.
+- The render domain owns the active SourceNoteIdentity table, AU member-channel groups, VST3 channelized-MPE member-channel groups, VST3 Note Expression host-note lookup and layer-local NoteInstanceId associations. The channelized and noteId paths remain distinct ingress identities.
 - Host adapters copy callback-borrowed event fields into bounded records. They do not retain AU/VST3 event pointers or mutate the render-owned note map from an arbitrary host callback thread.
 - AU MIDI scheduling may enter from multiple producer contexts. Its ingress must follow the documented producer topology; identity assignment occurs only when the ordered event is consumed by the render domain.
 - UI/controller metadata for VST3 Note Expression types is queried outside render. The render path consumes only pre-resolved type IDs and normalized values.
