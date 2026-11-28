@@ -59,6 +59,7 @@ The detailed candidate test intent, evidence and dependency for each row remain 
 | GS-GRN-015 | Spawn modes | Gradual, Direct, Direct-reset and Recycle produce the specified state transitions and reset/recycle boundaries. | Specification gate |
 | GS-GRN-016 | Local pitch | ON retains the grain's birth pitch after later note changes; OFF follows the specified live-pitch behavior. | Designable |
 | GS-GRN-017 | Grain stealing | OFF preserves the configured pool behavior; active mode selects/retire grains according to the approved policy without an audible discontinuity. | AR-02 gate |
+| GS-GRN-014 | Grain Key Trigger | Off produces no key-triggered spawn; On triggers on each accepted Note On; Legato triggers only on zero-to-nonzero held-note transition. Note Off/voice-release and grain clock behavior remain independent. | Event-order and held-note lifecycle gate |
 | GS-GRN-018 | Grain-count normalization | With normalization ON, per-grain gain follows DEC-046 (1/√N relative to the single-grain reference) as active grain count changes; OFF bypasses this gain law. | Counting domain, smoothing, ON/OFF reference and numeric tolerance gate |
 | GS-GRN-019 | Event timing precision | Event offsets remain invariant across block partitions and meet the defined sub-sample placement contract; same-offset precedence is not asserted before AR-01. | AR-01 gate |
 | GS-GRN-020 | Interpolation | Linear and cubic-Hermite outputs match numerical references and remain bounds-safe; full-load performance is a separate gated qualification. | Reference machine gate |
@@ -266,6 +267,7 @@ A test with a missing expected result, unpinned fixture or unresolved behavior i
 | Q-P09 | GS-ARC-006, GS-SMG-002, GS-UI-006, MPE/host suites | Approve host/format validation matrix and any host prototype scope. |
 | AR-03…AR-05 / AR-06 | MPE identity and state restore suites | Resolve owner/host-specific identity, expression and restore policy gates before final pass conditions. |
 | Q-M03 / Q-M04 | GS-GRN-009/011 | Q-M03 near-zero behavior is approved by DEC-043. Q-M04 mode count is approved by DEC-045: exactly Bounce, Wrap and Kill; One-Shot is a separate behavior per DEC-044. DEC-047 defines Kill at the terminal sample-region boundary: no new grains, immediate termination of active grains in that layer, no global Panic or transport-state change. Explicit Stop/Panic command semantics remain separate. |
+| Q-M14 | GS-GRN-014 | Trigger semantics approved by DEC-048; verify zero/nonzero held-note transitions, overlapping Note Ons, Note Off independence and grain-clock independence. |
 | Q-M09 | GS-GRN-018; GS-ARC-008 | Normalization law approved by DEC-046 (1/√N); define counting domain/smoothing and the default four-layer headroom oracle. Density-17 benchmark matching requires authorized reference measurement. |
 | Q-M14 / Q-M16 | GS-GRN-014 | Confirm the R1 Off/On/Legato trigger semantics and define Voice Sync behavior without assuming that benchmark labels are equivalent. |
 | Q-M17 | GS-GRN-015 | Define the four spawn-mode state transitions, reset points and recycle behavior before writing expected-result assertions. |
