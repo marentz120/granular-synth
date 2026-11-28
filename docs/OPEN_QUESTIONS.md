@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 1.2 (Q-M04 Kill behavior resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 1.3 (Q-M14 Grain Key Trigger semantics resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.2 → v1.3):** Q-M14 is answered by DEC-048: Off ignores key-triggered grain spawning; On triggers on every accepted Note On; Legato triggers only on transition from no held notes to one or more held notes. Note Off/voice-release and grain clock remain independent.
 
 **Change summary (v1.1 → v1.2):** Q-M04 exact Kill behavior is answered by DEC-047: at the terminal sample-region boundary, stop spawning and immediately terminate active grains in that layer; no bounce/wrap, global Panic or transport-state change. Explicit Stop/Panic command semantics remain separate.\n\n**Change summary (v1.0 → v1.1):** Q-M09 normalization law is answered by DEC-046: per-grain gain follows 1/√N relative to the single-grain reference. The active-grain counting domain, smoothing, ON/OFF reference details and headroom oracle remain technical/acceptance gates; benchmark matching still requires measurement.
 
@@ -129,7 +131,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-M11 | LFO scope: per voice or per layer | p.79 "each layer has its own LFOs"; key sync Legato | Per-LFO Poly/Mono mode; default Mono (shared per-layer phase), Poly uses per-voice phase | **ANSWERED — DEC-024** |
 | Q-M12 | Patch spray / patch bias semantics | p.19 "grain counts boosted based on which part of the screen you focus on" | Deferred to L2; benchmark semantics remain unverified and are not an R1 dependency | **ANSWERED — DEC-029** (tier decision only; behavior research may continue for L2) |
 | Q-M13 | Spectral C+Shift: Amp smear vs FFT reducer | p.37 vs p.49, p.148 | Firmware 1.8.0 release notes: FFT reducer merged into amp threshold → C+Shift = Amp smear; no separate reducer needed | RESOLVED-EVIDENCE |
-| Q-M14 | Grain key trigger values (On/Off vs Off/On/Legato) | p.54 vs p.135 | Implement Off/On/Legato | PROPOSED |
+| Q-M14 | Grain key trigger values (On/Off vs Off/On/Legato) | p.54 vs p.135 | **Answered — DEC-048:** Off ignores key-triggered spawning; On triggers on every accepted Note On; Legato triggers only when held-note count changes from zero to nonzero. Note Off/voice-release and grain clock are unaffected. | ANSWERED — DEC-048 |
 | Q-M15 | Sequencer "Rate sets time signature" | p.22 vs p.134 | Benchmark behavior only. R1 defines pattern length/edit resolution and shared timing grids; it does not require per-layer time-signature emulation. Keep outside R1 unless scope is explicitly added. | DEFERRED — not an R1 requirement |
 | Q-M16 | "Voice sync" vs "Clock retrigger" | p.55 text vs p.54 screenshot | Release notes 1.8.0-a19: "voice retrigger" renamed "voice sync" (screenshot is from 1.8.0-a14). Very likely the same control; confirm on unit | PROPOSED |
 | Q-M17 | Spawn modes 3 vs 4 | p.55 vs p.162 | Implement 4 | PROPOSED |
