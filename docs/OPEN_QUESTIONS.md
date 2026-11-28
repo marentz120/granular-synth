@@ -185,4 +185,12 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-L06 | Reference implementations of published algorithms (e.g. RTPGHI in GPL toolboxes) | Implement from papers, not from GPL code, unless licence-compatible. | OPEN |
 | Q-L07 | Manual-derived documentation | Our docs paraphrase the manual with page references for internal use; do not redistribute manual text or screenshots. | PROPOSED |
 
+## G. Phase 3 MPE reset and state-restore gate
+
+| ID | Question | Dependency / evidence | Status |
+|---|---|---|---|
+| AR-06 | When state restore commits while notes/voices are active, should old voices terminate or finish as non-addressable tails under the old immutable runtime generation? | Owner decision; then host tests for held notes, release tails, VST3 noteId/member-channel reuse and controller synchronization | OPEN — owner decision required |
+
+See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md. CC 121/123/120 remain distinct; no new product requirement or default controller value is approved.
+
 *End of OPEN_QUESTIONS.md*
