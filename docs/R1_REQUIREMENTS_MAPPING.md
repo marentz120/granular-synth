@@ -132,7 +132,7 @@ The "Gap?" column is the **historical** audit observation. "Status now" is the c
 
 ## 5. Missing requirements found at audit time — one resolved, one Phase 4 action
 
-**Resolution summary:** §5.1 → `GS-SMG-021` added (per-layer + global Freeze, DEC-020; semantics deferred to Phase 3) and added to `LIVE_PERFORMANCE_SPECIFICATION.md` §1. §5.2 → the Freeze half is resolved; the remaining half is **the only item in this appendix still carrying forward**, and it is a Phase 4 review action, not a correction outstanding against this PR: confirming in Phase 4 that every R1_PRODUCT_SPECIFICATION.md §4 sequencer sub-behaviour has a matching line in the live-performance operations table.
+**Resolution summary:** §5.1 → `GS-SMG-021` added (per-layer + global Freeze, DEC-020) and added to `LIVE_PERFORMANCE_SPECIFICATION.md` §1. At the time of this historical audit, semantics were deferred; they were subsequently approved as Source Snapshot behavior by DEC-042. §5.2 → the Freeze half is resolved; the remaining half is **the only item in this appendix still carrying forward**, and it is a Phase 4 review action, not a correction outstanding against this PR: confirming in Phase 4 that every R1_PRODUCT_SPECIFICATION.md §4 sequencer sub-behaviour has a matching line in the live-performance operations table.
 
 ### 5.1 [Resolved — GS-SMG-021 added] Freeze has no requirement ID
 
@@ -198,7 +198,7 @@ Original text of the nine items, unaltered:
 5. **Recommendation:** update GS-ARC-001 to cite DEC-017 and note the per-layer engine-selection relationship to GS-ARC-005.
    → **Applied.** Q-P04 now shown as ANSWERED via DEC-017, cross-referenced to GS-ARC-005.
 6. **Recommendation:** add a `GS-*` requirement for Freeze (functional definition + proposed tier R1, citing DEC-020), and add it to LIVE_PERFORMANCE_SPECIFICATION.md §1 — itself still a proposal pending review, not a tier approval.
-   → **Applied as `GS-SMG-021`,** and added to the live-performance operations table. Note the deliberate departure from the original wording: following PR #4 review, the requirement does **not** give a functional definition of what Freeze holds — it states per-layer and global availability only and defers the semantics to Phase 3 architecture.
+   → **Applied as `GS-SMG-021`,** and added to the live-performance operations table. Following PR #4 review, the requirement originally stated per-layer and global availability only. That was the status at the time of this historical audit; DEC-042 subsequently approved the Source Snapshot behavior, now specified in `FREEZE_BEHAVIOR_SPECIFICATION.md`.
 7. **Recommendation:** recount GRANULAR_SYNTH_REQUIREMENTS.md §6 fully against the current §3 body.
    → **Applied.** Recounted mechanically from the §3/§4 rows; §6 now documents the counting method and reconciles (168 = 124 + 26 + 9 + 8 + 1).
 8. **Recommendation:** consider consolidating GS-MID-007 into/with GS-SEQ-005.
