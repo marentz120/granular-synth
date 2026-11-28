@@ -1,6 +1,6 @@
 # Phase 3 R1 Cross-Module Interface Contracts
 
-**Version:** 0.4 — render-capacity and input fan-out contract added  
+**Version:** 0.5 — cross-format event and transport parity added  
 **Status:** Proposed contracts for owner review. No public API, framework choice, numeric capacity, or production implementation is approved by this document.  
 **Baseline:** `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0; DEC-017…DEC-042; companion Phase 3 specifications.
 
@@ -141,3 +141,19 @@ These details refine the normalized bus/process representation and validation ob
 
 Detailed equations, assumptions, conditional examples and planned tests are in `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md`. No numeric memory budget, maximum block size or input-channel maximum is approved.
 
+
+
+### 3.7 Cross-format event, automation and transport parity — IF-08 / IF-09 / IF-02
+
+The format adapters preserve host semantics and normalize only the representation:
+
+- AU absolute sample-time events and VST3 block-relative event offsets become validated discrete events in the shared block domain.
+- AU parameter ramps and VST3 per-parameter automation queues become parameter curves, not flattened step events. The VST3 previous-block anchor at relative position -1 remains signed continuity metadata.
+- VST3 Note Expression preserves `noteId`; AU MPE maps cable/member-channel and note lifecycle to an internal note instance. Missing/ambiguous identity is explicit and never downgraded silently to channel-wide pitch bend.
+- AU musical-context and transport-state callbacks have independent success/field validity. VST3 ProcessContext is optional and per-field state flags are authoritative. The normalized transport snapshot carries validity rather than guessed zero/default values.
+- One transport snapshot is shared by the four layers and central sequencer. Valid host transport is the plugin authority; Standalone selects one authority. MIDI Clock is not a second plugin master.
+- A VST3 no-audio-bus parameter flush is a control-only call and does not advance audio, transport or sequencer time.
+- Cross-source events at one sample offset form a timestamp batch. Source-local order is retained, but writer precedence remains AR-01 and is not selected by this contract.
+- Cycle/loop jumps inside a host block remain host-dependent; no intra-block musical continuity is claimed unless host evidence proves it.
+
+See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for API evidence, candidate normalized types and the Phase 5 validation families. This refinement does not change the 124-row product requirement inventory, the 53/124 acceptance-link baseline, or any approved product decision.
