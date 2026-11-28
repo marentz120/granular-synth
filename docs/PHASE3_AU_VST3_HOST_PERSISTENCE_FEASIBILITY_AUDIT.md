@@ -1,6 +1,6 @@
 # Phase 3 AU/VST3 Host Persistence Feasibility Audit
 
-**Version:** 0.1 — host payload and persistence feasibility evidence  
+**Version:** 0.2 — callback context and failure-signalling evidence  
 **Status:** Evidence map and test design only. No host is certified; no payload limit, callback deadline, container ABI or host compatibility promise is approved.  
 **Checked:** 2026-11-28  
 **Baseline:** DEC-025, DEC-042, Q-T15, Q-P06, Q-P09, GS-NFR-001, PHASE3_STATE_CONTAINER_AND_MIGRATION_AUDIT.md and PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md.  
@@ -210,3 +210,16 @@ Checked 2026-11-28.
 - [IBStream](https://steinbergmedia.github.io/vst3_doc/base/classSteinberg_1_1IBStream.html)
 - [IComponent](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IComponent.html)
 - [IEditController](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IEditController.html)
+
+
+## 9. Callback context and failure-signalling refinement — 2026-11-28
+
+The [Cross-Host State Callback & Snapshot Freshness Evidence Matrix](PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md) adds the following distinctions:
+
+- AU's dictionary properties have no reviewed public callback-thread, deadline or explicit getter-failure contract. Optional \`nil\` is not proven to abort a host project save. This is especially important because DEC-025 forbids silently omitting required unsaved recording payloads.
+- VST3 component state calls are annotated UI-thread and permitted while Processing. Processing may continue concurrently; the component must serialize an immutable generation rather than mutable render-owned state.
+- Steinberg's developer-forum clarification warns that offline get/set-state may execute on the process thread. This is supplemental evidence, not a guarantee for Logic, Live, Bitwig or REAPER.
+- The reviewed host guides do not publish exact AU/VST3 state-callback threads or failure propagation. Project persistence and an opaque binary state block do not prove callback freshness or save rollback.
+- A cross-source capture token must be coherent across every required recording/Freeze source. The serializer rejects stale descriptors and never substitutes an older snapshot.
+
+The AU nil-result path and VST3 host reaction to non-success \`tresult\` remain Q-T15/Q-P09 prototype gates. No callback timing, maximum payload, copy count or host certification is approved.
