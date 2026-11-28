@@ -33,7 +33,7 @@ This audit does not resolve AR-01, Q-T12, Q-P06, Q-P09, Q-T13 or MIDI Clock/host
 - The render-event representation includes MIDI and parameter event forms. The adapter walks only the callback-borrowed event data and copies the required values into preallocated bounded storage.
 
 **Parameter automation**
-- `AUParameterEvent` provides an event sample time, parameter address, target value and `rampDurationSampleFrames`.
+- `AUParameterEvent` provides an event sample time, parameter address, target value and `rampDurationSampleFrames`. AU values use the AU parameter's declared value domain; `AUParameter` exposes min/max and unit metadata, so an `AUValue` is not guaranteed to be normalized to [0,1].
 - A nonzero ramp duration is meaningful only for a parameter whose flags permit ramping. Apple's scheduling documentation says a non-rampable parameter with a nonzero ramp duration remains unchanged; the adapter must not silently convert that request to an immediate step.
 - Normalize a supported AU ramp as a time-bounded automation segment with its exact start offset, duration and target. A zero-duration event is a step.
 - `scheduleParameterBlock` is documented as safe from any thread context, including realtime render threads. The AU ingress must not assume one producer and must not feed an SPSC queue unless a single-producer guarantee is independently established.
@@ -51,7 +51,7 @@ This audit does not resolve AR-01, Q-T12, Q-P06, Q-P09, Q-T13 or MIDI Clock/host
 - Preserve the event bus and note ID. A missing note ID (for example `-1` in a Note On payload) is not a valid per-note identity and must not be replaced by channel-wide pitch bend while claiming MPE support.
 
 **Parameter automation**
-- `IParameterChanges` supplies queues only for parameters that changed in the current block.
+- `IParameterChanges` supplies queues only for parameters that changed in the current block. VST3 `ParamValue` is normalized to [0,1], unlike AU's declared parameter value domain.
 - `IParamValueQueue` is an automation-curve representation: points define linear sections; hosts may omit an implicit point at block position zero; a sustained slope may be represented using the previous-block boundary value; and a discontinuous jump is represented by an old-value point followed by the new value at the next sample.
 - Steinberg's documented interpolation example uses relative position `-1` as the previous-block last-sample anchor. This is not a discrete event inside the current block. Keep it in a signed automation-point representation; never cast it to an unsigned `SampleOffset`, clamp it to zero or discard it.
 - Convert the queue into piecewise-linear curve segments using the prior parameter value and the ordered points. Do not flatten the queue to one target value and do not add a second host-style ramp on top of the reconstructed curve.
@@ -86,7 +86,7 @@ Normalize all discrete MIDI, note-expression, sequencer and step-parameter event
 
 Use a separate curve type rather than representing every automation point as a discrete `TimedEvent`:
 
-- A curve identifies one canonical parameter and contains a bounded ordered set of signed block-relative points.
+- A curve identifies one canonical parameter and contains a bounded ordered set of signed block-relative points. Both AU and VST3 values are converted through the canonical parameter descriptor so that the shared core does not confuse AU's declared value range/unit with VST3's normalized [0,1] domain.
 - The previous-block anchor at relative position `-1` is allowed only as a continuity anchor, not as a current-block event.
 - In-block points use `[0, frames)`.
 - The curve representation preserves step changes and piecewise-linear sections, the previous value needed to continue a ramp, and the exact endpoint/duration semantics from the source format.
@@ -203,6 +203,7 @@ This audit preserves the approved product baseline:
 5. [AUEventSampleTime](https://developer.apple.com/documentation/audiotoolbox/1387633-aueventsampletime) — signed sample-count domain and immediate scheduling semantics.
 6. [AUHostMusicalContextBlock](https://developer.apple.com/documentation/audiotoolbox/auhostmusicalcontextblock) — tempo, beat, time signature and sample offset to next beat.
 7. [AUHostTransportStateBlock](https://developer.apple.com/documentation/audiotoolbox/auhosttransportstateblock) — transport flags, sample position and cycle range.
+8. [AUParameter](https://developer.apple.com/documentation/audiotoolbox/auparameter) — declared min/max, unit and parameter metadata used to normalize AU values.
 
 ### Steinberg
 1. [IParameterChanges](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IParameterChanges.html) — per-block queues for parameters that changed.
