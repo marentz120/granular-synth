@@ -108,3 +108,16 @@ No tests are claimed executed by this report.
 - [ ] Implementation and host validation.
 
 **Conclusion:** Phase 4 documentation has reached an owner-reviewable state. It has not reached owner approval, implementation readiness or test-proven completion. PR #9 remains Draft and must not be merged as part of this work.
+
+
+## 9. Complete requirements audit follow-up — 2026-11-28
+
+The broader all-requirements pass is recorded in `PHASE5_ALL_REQUIREMENTS_AUDIT.md`. It confirms:
+- 168 unique requirement rows and approved primary-tier totals of 124 R1 / 27 L2 / 9 L3 / 8 OPT.
+- All 124 R1 IDs appear in the architecture, API-symbol and UI traceability maps.
+- Acceptance coverage remains 49 direct links + 4 cross-domain release-gate links; the remaining 71 R1 IDs are represented exactly once in the Phase 5 test-design matrix.
+- R1 semantic gates now explicitly include scan/ratio behavior, grain normalization, trigger/voice-sync and spawn behavior, envelope minimum, filter modes, pan-spray distribution and sub-oscillator waveform.
+- Benchmark-only questions that are not R1 requirements are explicitly deferred; the R1 XY pad behavior is grounded in DEC-032.
+- Root README, project instructions and documentation index now reflect the current Phase 4/5 documentation state.
+
+This follow-up does not grant Phase 4 sign-off, close Phase 3 technical decisions, approve Phase 5 acceptance criteria, or authorize code, benchmarks, host prototypes, tests or merge.
