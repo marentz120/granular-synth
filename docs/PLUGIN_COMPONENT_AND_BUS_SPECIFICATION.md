@@ -275,3 +275,11 @@ All byte-size calculations use checked wide arithmetic and validate conversion t
 
 The detailed equations, illustrative 1,024/4,096-frame calculations, admission ledger and validation obligations are in `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md`. These examples do not approve a block-size range, host topology, memory budget or implementation.
 
+
+## Host evidence references
+
+- Combined AU/VST3 host capability inventory: `PHASE3_HOST_CAPABILITY_EVIDENCE_MATRIX.md`.
+- VST3 instrument-specific host capability matrix: `PHASE3_VST3_HOST_CAPABILITY_MATRIX.md`.
+- VST3 instrument category, processor/controller split and candidate bus topology: `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md`.
+
+These documents are evidence inventories, not host certification. In particular, a documented side-chain/modulator path is not proof of raw full-band audio reaching the granular source reader, and generic project-state persistence is not proof that optional bus activation and routing survive save/reopen.
