@@ -117,7 +117,7 @@ These affect R1 implementation and test oracles. Candidate directions and fixtur
 
 ### 4.5 Freeze transaction detail
 
-A cross-document audit found stale statements in the Sampler, Audio I/O, MIDI, canonical requirement and R1 release-scope documents that still described Freeze semantics as undecided in Phase 3. These have been corrected to point to DEC-042 and `FREEZE_BEHAVIOR_SPECIFICATION.md`. The product behavior is approved; only implementation, memory admission, crossfade/retirement and host validation remain open.
+A cross-document audit found stale statements in the Sampler, Audio I/O, MIDI, live-performance, canonical requirement, historical requirements-mapping and R1 release-scope documents that still described Freeze semantics as undecided in Phase 3. These have been corrected or explicitly marked as historical and now point to DEC-042 and `FREEZE_BEHAVIOR_SPECIFICATION.md`. The product behavior is approved; only implementation, memory admission, crossfade/retirement and host validation remain open.
 
 DEC-042 approves Source Snapshot Freeze behavior. One detail remains for owner confirmation: if a global Freeze request prepares successfully for some layers but fails for others, should the successful layers switch together while failed layers remain unchanged, or should the entire four-layer transaction abort? `AC-AUD-028` is explicitly proposed pending this decision. This does not reopen the approved Freeze semantics.
 
