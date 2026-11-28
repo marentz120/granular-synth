@@ -1,6 +1,6 @@
 # Phase 3 Cross-Host State Restore & Reset Evidence Matrix
 
-**Date:** 2026-11-28 · **Version:** 0.1  
+**Date:** 2026-11-28 · **Version:** 0.2  
 **Status:** Official-documentation evidence map and Phase 5 test design only. No host is certified; no host prototype, implementation, benchmark, state-size limit or audible restore policy is approved.  
 **Authority:** DEC-025 (unsaved recordings embedded; library samples referenced externally with relink/collect), DEC-042 (Source Snapshot Freeze persistence and reset isolation), DEC-034/038, GS-NFR-001, Q-P06/Q-P09/Q-T15 and AR-06.  
 **Research boundary:** Vendor documentation checked 2026-11-28. Exact supported host versions/builds remain open. API capability, host documentation and observed product behavior are separate evidence classes.
@@ -212,3 +212,21 @@ The host evidence remains:
 | REAPER / AU + VST3 | Project/FX-chain persistence and optional VST bank/reset compatibility settings | U — opaque payload details unverified |
 
 No host certification, maximum size, callback deadline or test result is added. DEC-025/042 and AR-06 remain unchanged.
+
+
+## 13. State callback context and snapshot freshness supplement — 2026-11-28
+
+See [PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md) for the full API/host evidence and failure-signalling analysis.
+
+| Host / format | Callback-thread evidence | Freshness/failure evidence | Status |
+|---|---|---|---|
+| Logic / AU | No reviewed host/API thread guarantee | AU optional dictionary; nil/stale save handling unverified | U |
+| Live / AU | No reviewed callback-thread guarantee | Reserved binary state block is documented; AU nil/failure handling unverified | U |
+| Live / VST3 | VST3 API annotation applies; Live-specific callback context unverified | \`tresult\` exists; Live rollback/failure behavior unverified | U |
+| Bitwig / VST3 | No official Bitwig callback-thread guarantee; hosting mode changes process isolation | \`tresult\` exists; stale/failure behavior unverified | U |
+| REAPER / AU | No reviewed callback-thread guarantee | AU nil/failure behavior unverified | U |
+| REAPER / VST3 | VST3 API annotation applies; REAPER-specific callback context unverified | \`tresult\` exists; host rollback/failure behavior unverified | U |
+
+The VST3 API permits component state calls while Processing; this does not imply process suspension. A Steinberg developer-forum note identifies an offline same-thread possibility. The AU property API does not document a getter error result. Neither format-level evidence nor the hosts' project/preset controls establishes the complete DEC-025 freshness and failure contract.
+
+No host callback was observed. No host is certified, and no decision or product requirement is changed.
