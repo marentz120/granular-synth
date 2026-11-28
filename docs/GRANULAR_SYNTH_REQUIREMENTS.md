@@ -371,7 +371,7 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 
 1. **Unit of count:** one table row whose first cell is exactly a `GS-<AREA>-<NNN>` id. Prose mentions, dependency-table references (§7) and exclusion-table rows (§5) are not counted.
 2. **One row → exactly one bucket.** A row's tier cell is normalised by its leading token: `R1…` → **R1**, `L2…` → **L2**, `L3…` → **L3**, `OPT…` → **OPT**, anything else → **Other**. Trailing qualifiers do not change the bucket (`R1 — Approved`, `R1 — product scope approved`, `R1 (for R1 features)` all count as one R1 row).
-3. **Split-tier rows are counted once**, under their primary (R1) tier, and are listed explicitly in §6.3 instead of being written as an inline "+1" annotation. No row is counted in two buckets, so **every area's buckets sum to that area's row count, and the area rows sum to the grand total.**
+3. **Deferred subfeatures do not change the row's primary tier.** Where an R1 requirement mentions a later capability, the requirement text labels that subfeature as deferred; the tier cell remains the single approved primary tier. No row is counted in two buckets, so **every area's buckets sum to that area's row count, and the area rows sum to the grand total.**
 4. **Zero is written `0`**, not `—`, so each row and column can be added up directly.
 
 **Reconciliation:** 124 + 27 + 9 + 8 + 0 = **168**, and the 17 area row-counts (6+10+23+7+6+7+2+6+10+21+12+12+8+8+10+7+13) also total **168**. The two agree, and both match the number of `GS-*` rows actually present in §3/§4.
@@ -401,10 +401,10 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 
 ### 6.3 Footnotes to the counts
 
-- **Split-tier rows (3), each counted once under R1:** `GS-ARC-005` (R1/L — Granular + Sampler in R1, Slice/Tape/Spectral later), `GS-SMG-005` (R1 waveform / L2 spectrogram), `GS-MOD-004` (R1 sources; CV and Draw X/Y later).
+- **R1 rows with explicitly deferred subfeatures (3):** `GS-ARC-005` (Granular + Sampler in R1; Slice/Tape/Spectral later), `GS-SMG-005` (waveform in R1; spectrogram L2), `GS-MOD-004` (listed R1 sources; CV and Draw X/Y are not R1). Each row has one primary tier of R1.
 - **"Other" (0):** every requirement row now has an approved tier; `GS-SEQ-010` is L2 by DEC-029/DEC-041.
 - **Rows whose tier cell is explicitly marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). DEC-041 approves the tier classification for all 168 rows; numeric technical values tied to Q-Txx remain proposals until their architecture/validation gates.
-- **Phase 2 reconciliation (v1.0):** all 168 requirement rows have exactly one approved tier; `GS-SEQ-010` is L2 (DEC-029). Totals reconcile to 124 R1 + 27 L2 + 9 L3 + 8 OPT + 0 Other = 168. Split-tier rows are counted once under their primary R1 tier per §6.1.
+- **Phase 2 reconciliation (v1.0):** all 168 requirement rows have exactly one approved primary tier; `GS-SEQ-010` is L2 (DEC-029). Totals reconcile to 124 R1 + 27 L2 + 9 L3 + 8 OPT + 0 Other = 168. Later subfeatures described in an R1 row are explicitly excluded from R1 and do not create a second tier.
 
 ## 7. Dependencies between requirement areas
 
