@@ -62,7 +62,7 @@ Sampler uses the common sample management model:
 - Use common waveform, crop flags and recording buffer controls.
 - Play the active recording buffer while recording (GS-SMG-009).
 - Per-layer recording and stereo master-mix recording are R1 (GS-SMG-020).
-- Per-layer and global Freeze are R1 product requirements (GS-SMG-021), but Freeze semantics are intentionally deferred to Phase 3. This document does not claim Freeze is a sampler loop, hold, buffer latch or playback stop.
+- Per-layer and global Freeze are R1 product requirements (GS-SMG-021). Freeze uses the approved Source Snapshot behavior in DEC-042 and FREEZE_BEHAVIOR_SPECIFICATION.md; it is a separate source operation, not a Sampler loop, hold, buffer latch or playback stop. Sampler-specific interaction and host/resource validation remain engineering work.
 
 ## 7. Persistence
 
