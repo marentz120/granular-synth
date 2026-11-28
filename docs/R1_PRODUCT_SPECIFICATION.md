@@ -38,6 +38,14 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 - Sustain is a level, not a time stage. Stage curves, bipolar amount and inversion remain part of the R1 envelope contract.
 - The 0.1 ms floor does not guarantee click-free output for every signal or modulation condition. Host/MIDI parameter mapping and timing tolerances remain technical/acceptance details.
 
+### 2.4 Per-voice filters
+
+- Each voice has an LPF followed by an HPF in the R1 signal chain.
+- R1 filter functions are limited to **LPF** and **HPF**; no notch, band-pass or peak response modes are included (DEC-052).
+- Routing options are LPF only, LPF+HPF, or HPF only. A filter-chain bypass is available and preserves the configured filter settings.
+- Each filter independently exposes 6, 12, 18 or 24 dB/oct slopes and a resonance control.
+- Filter topology, resonance range/curve and DSP realization are technical decisions and are not fixed by this product behavior decision.
+
 ## 3. Live audio, Freeze and recording
 
 - Every layer can receive live external audio as a source for granular processing.
