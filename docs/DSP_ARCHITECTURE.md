@@ -1,10 +1,21 @@
 # DSP and Application Architecture
 
-**Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions (DEC-005 remains *Proposed*).
-**Version:** 0.4 (consistency fix, 2026-11-27: §7 Granular Slice row corrected from "(R1)" to "(L2 — deferred, DEC-018)", matching GRANULAR_SYNTH_REQUIREMENTS.md §3.5 and the approved R1 engine scope)
+**Status:** Investigation only; no framework or implementation approved. This revision (Issue #1) adds candidate module boundaries, concurrency/memory strategy, a framework comparison and recommendations. Recommendations are **not** decisions; approved product decisions DEC-015…DEC-042 take precedence over this candidate architecture.
+**Version:** 0.6 (proposed voice/layer signal-flow contract, 2026-11-27)
+
+**Change summary (v0.4 → v0.5):**
+- Reconciled sample/plugin state policy with DEC-025: unsaved recording buffers are embedded; library samples remain external references with relink/collect.
+- Reconciled R1 macro count with DEC-036 (ten macros; no R1 expansion to twenty).
+- Reconciled R1 MIDI scope: MIDI Clock input in Standalone; no R1 MIDI feedback, clock output or sequencer MIDI output commitment.
+- Labeled Granular/Sampler as R1 engines and Slice/Tape/Spectral as later-tier extension points.
+- Added cross-references to the Phase 3 threading, parameter, sample/state, plugin bus, Freeze and traceability proposals.
+
+**Status remains:** Investigation and proposal only; no framework, component topology, numeric resource budget or implementation is approved.
 **Inputs:** GR_MEGA_FEATURE_MAP.md, GRANULAR_SYNTH_REQUIREMENTS.md, CLAUDE.md engineering principles.
 
 Every item marked **⚑ DECISION** needs ChatGPT review and owner approval before Phase 3 is closed. They are collected in OPEN_QUESTIONS.md §B with options and trade-offs. Nothing here instructs implementation.
+
+**Phase 3 companion proposals:** `PARAMETER_ID_SPECIFICATION.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`, and `PHASE3_ARCHITECTURE_TRACEABILITY.md`. Consolidated review proposals are in `PHASE3_ARCHITECTURE_DECISION_REGISTER.md`.
 
 **Evidence convention (owner review of PR #2, 2026-11-27, item 3):** Where this document describes GR-MEGA behavior (e.g. "benchmark does X"), that claim is traceable to a GR_MEGA_FEATURE_MAP.md row and carries that row's evidence class (Manual-confirmed / Interpretation / Proposal / Unverified — see feature map §0). Where this document must specify an *algorithm* the manual does not document — the grain-stealing law (§6.3), the density-normalization law (§6.6), auto-slice detection, the tape slew law, the phase-vocoder overlap/window, or any other internal mechanism GR-MEGA does not publish — that algorithm is **GRANULAR SYNTH's own original design**, not a reconstruction of GR-MEGA's confirmed internal implementation, and is tagged [UNV]/[PROP] in the feature map (see feature map §15, risk R-08). Numeric engineering figures (CPU/memory/timing estimates) are separately marked as calculated estimates in §5.3 and §6.10 and must not be read as measured results.
 
@@ -89,7 +100,7 @@ granular-synth/
 ├── sample/          # SampleBuffer, decoding, SRC, analysis (peaks, onsets, centroid map), recorder
 ├── engine/
 │   ├── grain/       # Grain, GrainPool, GrainScheduler, WindowBank
-│   ├── engines/     # GranularEngine, SliceEngine, SamplerEngine, TapeEngine, SpectralEngine
+│   ├── engines/     # GranularEngine, SamplerEngine (R1); SliceEngine (L2), TapeEngine (L2), SpectralEngine (L3)
 │   ├── voice/       # Voice, VoiceAllocator, chord/arp, quantizer, sub-osc
 │   ├── mod/         # ModSource registry, ModMatrix, Macros, per-voice ModState
 │   ├── fx/          # FX slot host + effect implementations
@@ -194,7 +205,7 @@ The previous sample keeps playing until the swap (GS-SMG-003). Analysis that is 
 ### 5.6 Plugin input for live granulation (product scope approved; implementation Q-P06)
 
 - **VST3:** instrument with an optional stereo audio input bus (main or sidechain) — widely supported.
-- **AU:** an instrument (`aumu`) has no main audio input in typical hosts, and side-chain support for instruments is host-dependent. The established route for a MIDI-played audio processor is the **music-effect** (`aumf`) type, which Logic Pro places in an audio-effect / MIDI-controlled-effect slot rather than the instrument slot. Option: ship both `aumu` and `aumf` variants of the same binary. Live input in plug-in contexts is an approved product requirement (DEC-020). The exact component/bus strategy remains an architecture decision: verify host behavior in Logic, Live and other target hosts before selecting the AU/VST3 implementation.
+- **AU:** retain `aumu` as the first validation candidate because R1 is a MIDI-playable instrument, but do not assume an instrument component receives a usable full-band input bus in a target host. Logic's documented side-chain source controls a plug-in and is not itself processed as the plug-in's audio input; a sidechain detector/modulation path therefore does not prove live-audio source support. The **music-effect** (`aufm`) role is semantically aligned with audio modification plus MIDI response, but note-event/MPE routing, host insertion workflow and multi-output behavior must be tested. A dual `aumu` + `aufm` package is a last-resort option only if distinct required workflows cannot be met by either single component. Live input in plug-in contexts remains required by DEC-020. Follow the evidence gate in `PHASE3_AU_COMPONENT_STRATEGY_AUDIT.md`; no AU subtype is selected.
 
 ---
 
@@ -241,11 +252,23 @@ Per render block, per voice:
 5. **Spawn modes** on note-on: Gradual (start scheduler at phase 0), Direct (pre-populate `round(density)` grains with randomized window phases so the cloud is already "full"), Direct reset (same, but all positions within the spray range), Recycle (revive the last voice's grain set).
 6. **Idle shutdown:** a voice with no active grains and no gate stops scheduling (no CPU), mirroring SCH-06.
 
-### 6.3 Grain stealing (benchmark: click-free, shortens grains)
+### 6.3 Grain and voice stealing (R1 architecture proposal; algorithm not approved)
 
-When `active ≥ capacity × (1 − threshold·k)`: select the *oldest* (or longest-remaining) grains and switch them to a **short release ramp** (e.g. 2–10 ms, raised-cosine) instead of truncating. Threshold 0 = no stealing (scheduler skips spawns when full, reproducing the benchmark's "bunching"). Exact law is undocumented (U-02) and will be tuned by listening tests.
+**Requirement boundary:**
+- Voice allocation must prefer released, non-sustained, oldest voices and use a fast fade rather than abrupt truncation (GS-VOI-001).
+- The global grain budget must degrade gracefully, click-free and deterministically when exceeded (GS-ARC-004).
+- These are separate resource domains: choosing a voice to steal is not the same operation as choosing individual grains to retire.
 
-A second, **global** budget (GS-ARC-004) applies the same mechanism across voices/layers, preferring to steal from voices in release.
+**Candidate deterministic selection policy (proposal only):**
+1. For voice stealing, rank eligible voices by: released before gated; non-sustained before sustain-held; then oldest note-on sequence. Use a monotonically assigned voice/note sequence, never pointer or container order. If all voices are held, apply a separately documented fallback rather than silently changing the ranking.
+2. For global grain-budget reclamation, prefer grains belonging to voices already in release; within the same eligibility class, choose the oldest grain spawn sequence. Break ties by stable layer index, voice allocation sequence, then grain sequence.
+3. Retire a selected grain through a precomputed bounded fade envelope; never hard-stop its sample contribution. The fade duration/window shape are unapproved engineering values and must be validated for audible continuity.
+4. When no safe retirement capacity is available, reject/defer new grain spawns deterministically and count the event; never exceed the admitted budget.
+5. Seeded random spawn behavior remains deterministic, but random selection is not proposed as the default overload tie-break.
+
+**Unresolved specification items:** the prior expression `active ≥ capacity × (1 − threshold·k)` is not executable as written because `k` is undefined and no units/range are specified for `threshold`. The alternatives “oldest” versus “longest-remaining” also produce different results and are not interchangeable. Threshold 0 / spawn-skipping behavior must be defined independently from the mandatory deterministic overload behavior. No threshold, fade duration or budget value is fixed here.
+
+The global budget applies across all four layers (GS-ARC-004); the voice policy remains per the voice allocator (GS-VOI-001). This proposal does not claim click-free performance: it requires deterministic selection and a fade, with audibility verified in Phase 5/7. No benchmark or implementation was run.
 
 ### 6.4 Windows
 
@@ -358,16 +381,16 @@ Every parameter is declared once with: stable string ID (`L1.grain.size`), numer
 
 ### 9.3 Modulation evaluation
 
-- Control rate: every **16–32 samples** sub-block, per voice (and per layer for mono sources).
+- Control rate: proposed 16-sample sub-block (Q-T13), subject to measurement and approval; per voice for polyphonic sources and per layer for shared sources.
 - `effective = curve(base + Σ (srcᵢ · amountᵢ · polarityᵢ · curveᵢ) + macro contributions)`, clamped to range.
 - Audio-class destinations interpolate linearly across the sub-block.
 - Spawn-class destinations are read at grain birth from the latest sub-block value.
-- Matrix: 50 rows; sources registry as benchmark (25) + our additions (XY pad); destinations = all modulatable parameters (≥149).
-- Macros (10, scalable to 20): each macro = level (automatable) + list of (destination, start, end, curve); macros are mod sources *and* destinations (benchmark "polyphonic macro modulation").
+- Matrix: 50 rows; sources registry as benchmark (25) + our additions (XY pad); destinations = R1 modulatable parameters.
+- Macros: exactly ten per patch in R1 (DEC-036); each macro = shared per-layer base value plus destination mappings. Per-note sources may produce per-voice destination values under DEC-031. Macros are host-automatable and may be modulation sources/destinations where specified.
 
 ### 9.4 Host exposure (⚑ Q-T12)
 
-Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Proposal: expose **all** automatable parameters with stable IDs, grouped by layer (VST3 Units / AU parameter groups), plus 20 global macro/performance parameters at the top of the list for quick DAW mapping. Structural parameters (sample, FX type) are not host-automatable.
+Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Proposal: expose **all** automatable parameters with stable IDs, grouped by layer (VST3 Units / AU parameter groups), with the ten R1 macros per patch (DEC-036) and approved performance controls prioritized in discoverable groups for quick DAW mapping. Structural parameters (sample, FX type) are not host-automatable.
 
 ---
 
@@ -396,18 +419,18 @@ Expected parameter count ≈ 250–350 per layer → ~1,000–1,400 total. Propo
 |---|---|
 | Shared core | Identical `Engine` object in all formats; format code only adapts buses, MIDI, parameters, state |
 | Buses | Main stereo out + 4 optional stereo layer outs; required live-input capability (VST3 input bus; AU component/bus strategy to be validated — Q-P06) |
-| MIDI | Notes, CC, MPE, pitch bend, program change (where host delivers it); MIDI out only where format/host support it |
-| State | Versioned, self-describing state blob; sample references + optional embedded audio (Q-P08) |
-| Latency | 0 for granular/sampler/tape; spectral latency reported when it processes live input (Q-T10) |
+| MIDI | Notes, CC, MPE, pitch bend and Program Change where host delivers it; R1 MIDI Clock input in Standalone; MIDI feedback, clock output and sequencer MIDI output are not R1 commitments |
+| State | Versioned, self-describing state; unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect (DEC-025) |
+| Latency | R1 Granular/Sampler: zero added algorithmic latency target; Spectral latency policy deferred to L3 (Q-T10) |
 | Sample rate / block size | Fully variable; all time constants in seconds; `prepare()` rebuilds rate-dependent tables off the RT path |
 | Offline render | Deterministic; uses same code paths; respects host "realtime vs offline" flag only for quality-tier boosts (optional) |
-| Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI clock in/out, Ableton Link integration, file-based projects |
+| Standalone extras | Audio device & MIDI device selection, input monitoring, internal clock, MIDI Clock input, Ableton Link integration, file-based projects |
 
 ---
 
 ## 12a. Live-performance / controller-only operability (owner decisions DEC-015, DEC-016, 2026-11-27)
 
-Architectural implications of DEC-015 (both studio and live performance are primary) and DEC-016 (standalone must be fully operable for essential live operations via MIDI controller alone). Full behavioral specification is in docs/LIVE_PERFORMANCE_SPECIFICATION.md; this section only notes what falls out of it for §4 (threading) and §9 (parameter system). None of this changes the framework decision (Q-T01) or any engine/scope decision (DEC-008/009/010).
+Architectural implications of DEC-015 (both studio and live performance are primary) and DEC-016 (standalone must be fully operable for essential live operations via MIDI controller alone). Full behavioral specification is in docs/LIVE_PERFORMANCE_SPECIFICATION.md; this section only notes what falls out of it for §4 (threading) and §9 (parameter system). None of this changes the framework decision (Q-T01) or any engine/scope decision (DEC-017/018/019/020).
 
 - **Parameter registry (§9):** the registry should be able to flag a parameter as "performance-critical" / grouped for fast controller mapping, independent of its automatable/modulatable flags. This is a registry *capability*, not a decision about which parameters get flagged — that is Phase 4/5 work.
 - **MIDI Learn (GS-MID-003) → structural state:** global and per-preset controller mappings are structural data (like a patch), not audio-thread state — they follow the existing Command-object / Structural-smoothing-class path (§4.2, §9.2), not a new communication mechanism.
@@ -448,7 +471,7 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 |---|---|---|---|
 | R-01 | Worst-case grain load exceeds one core | Dropouts | Global budget, quality tiers, optional workgroup threading |
 | R-02 | Parameter-ID scheme changed after release | Breaks user automation/presets | Freeze ID scheme in Phase 3 (Q-T12) |
-| R-03 | Plugin state size with embedded recordings (100+ MB) | Slow DAW saves, host limits | Reference + "collect" by default; embed opt-in (Q-P08) |
+| R-03 | Plugin state size with embedded unsaved recordings (potentially large) | Slow DAW saves, host limits, host state-size constraints | Implement DEC-025: unsaved recording buffers are embedded; define bounded serialization, chunking/failure behavior and save/restore tests; library assets remain references |
 | R-04 | AU live-input requirement | Two AU variants, Logic UX differences | Decide early (Q-P06) |
 | R-05 | Spectral engine CPU/latency | Dropouts with multiple layers | Defer to L3; per-instance limit; latency reporting |
 | R-06 | Window/parameter modulation clicks | Quality complaints | Spawn-sampled params, window snapshots, smoothing classes |
@@ -474,12 +497,35 @@ Architectural implications of DEC-015 (both studio and live performance are prim
 | Q-T10 | Spectral latency policy | Report latency only when processing live input |
 | Q-T11 | PV overlap/window | Hann, 4× overlap baseline |
 | Q-T12 | Parameter ID scheme & host exposure | Stable string IDs, expose all, grouped by layer |
-| Q-P06 | Plugin audio input / AU type | VST3 input bus + AU `aumu` and `aumf` variants |
-| Q-P08 | Sample storage in plugin state | Reference + collect; embed opt-in |
+| Q-P06 | Plugin audio input / AU type | VST3 input bus + AU `aumu` and `aufm` candidates |
+| Q-P08 / DEC-025 | Unsaved recording buffers embedded in plugin state; library samples remain external references with relink/collect |
 | Q-P02 | Plugin formats | AU + VST3 (R1); CLAP optional |
 | Q-P03 | Distribution, signing, notarization | Decide before Phase 6 |
-| Q-P20 | First-release engines | Granular + Slice + Sampler; Tape L2; Spectral L3 |
+| Q-P20 | First-release engines | Granular + Sampler in R1; Granular Slice deferred; Tape L2; Spectral L3 (DEC-018) |
 
-All items from the v0.1 "Decisions required" list (framework/language; threading model; target macOS and CPU architectures; initial release engines; sample formats and streaming; measured CPU/memory budgets; plugin formats and distribution/signing) are covered by the rows above.
+All items from the v0.1 "Decisions required" list (framework/language; threading model; target macOS and CPU architectures; initial release engines; sample formats and streaming; measured CPU/memory budgets; plugin formats and distribution/signing) are covered by the rows above. R1 includes Granular and Sampler only; Slice is L2, Tape L2 and Spectral L3 (DEC-018).
 
 *End of DSP_ARCHITECTURE.md*
+
+
+---
+
+## 12. Recommended R1 voice/layer signal-flow contract (Phase 3 proposal)
+
+The following recommended ordering preserves the approved GS-ARC-007 chain (engine + sub-oscillator → LPF → HPF; four-slot layer FX and M-S/patch-volume/layer-mix/wet; parallel dry live input summed before master) while making recording and bus taps explicit. It is a design proposal, not a claim about GR-MEGA internals or an approved implementation API.
+
+1. Granular or Sampler voice source.
+2. Voice source summation.
+3. Sub-oscillator mix.
+4. LPF stage.
+5. HPF stage.
+6. Amp envelope.
+6. Voice pan into the stereo layer sum.
+7. Per-layer live input is gain-staged and mixed into that layer before its four-slot FX chain; mono input is centered across the stereo path per DEC-040.
+8. A parallel dry live-input path is summed before the master, as required by GS-ARC-007.
+9. Per-layer four-slot FX chain, followed by M-S, patch volume, layer mix and wet path as specified by GS-ARC-007.
+10. Post-FX/pre-layer-fader layer stem output and layer recording tap.
+11. Layer fader, mute and solo into the master mixer; parallel dry live input is also summed before the master.
+12. Stereo master output and master recording tap immediately before host/device output.
+
+Recommended recording semantics: layer stems capture the post-FX wet layer path and ignore layer fader/mute/solo so they remain independently mixable; master mix reflects those controls and includes the parallel dry live-input path required by GS-ARC-007. Validate with separate wet/dry impulse fixtures and Standalone monitoring tests before implementation.

@@ -1,7 +1,15 @@
 # Development Roadmap
 
 **Status:** Proposal; gated by research and owner approval. No phase is automatically authorized by this roadmap. Do not build all features in parallel or skip real-time validation.
-**Version:** 0.2 (Issue #1)
+**Version:** 0.7 (Freeze retention and global transaction contract, 2026-11-27)
+
+## Change summary (v0.2 → v0.3)
+
+- Expanded Phase 3 deliverables to include parameter identity, RT threading/ownership, sample/state lifecycle, plugin component/bus, Freeze behavior and 100% R1 architecture traceability specifications.
+- Added the Phase 3 architecture completion audit and platform/plugin evidence note as supporting review documents.
+- Clarified that proposed architecture documents and host research do not approve a framework, component topology, numeric resource budgets or implementation.
+- Added the R1 cross-module interface contract specification (IF-01…IF-12), the candidate API/service boundaries, and the signal-flow/recording-tap proposal.
+- Specified rolling-source retention leases for off-thread Freeze snapshots and a single bounded global Freeze transaction; added ring-wrap, lease-exhaustion and mixed-layer failure acceptance coverage.
 
 ## Change summary (v0.1 → v0.2)
 
@@ -86,13 +94,32 @@ flowchart LR
 
 **Depends on:** Phase 2 exit.
 
-**Deliverables:** DSP_ARCHITECTURE.md v1.0; parameter-ID scheme specification; threading/ownership model; memory budget; decision records for Q-T01…Q-T17.
+**Deliverables:**
+- `PHASE3_ARCHITECTURE_COMPLETION_AUDIT.md` — baseline review, stale-decision reconciliation, gaps and work sequence.
+- `PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md` — current framework, licence, AU and VST3 evidence.
+- `DSP_ARCHITECTURE.md` v1.0 — approved module boundaries, signal flow, real-time model, host integration and resource policy.
+- `PARAMETER_ID_SPECIFICATION.md` v1.0 — stable IDs, host mapping, parameter metadata, automation and migration.
+- `THREADING_AND_OWNERSHIP_SPECIFICATION.md` v1.0 — threads, queues, capacities, ownership, retirement and overload behavior.
+- `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md` v1.0 — loading, recording, sample assets, embedded buffers and state recovery.
+- `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md` v1.0 — Standalone/AU/VST3 components, buses, MIDI and host capability matrix.
+- `FREEZE_BEHAVIOR_SPECIFICATION.md` — approved Freeze behavior and state machine.
+- `PHASE3_ARCHITECTURE_TRACEABILITY.md` — every R1 requirement mapped to architecture modules/interfaces and validation obligations.
+- `PHASE3_INTERFACE_CONTRACTS.md` — cross-module contracts for host process, parameters, structural commands, snapshots, samples, recording, Freeze, transport, MIDI, audio routing, plugin state and deterministic rendering.
+- `PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md` — proposed framework-independent service boundaries, illustrative API/data contracts, render-block ordering, signal-flow graph, recording tap options, Freeze source-retention contract and global transaction semantics.
+- Updated `OPEN_QUESTIONS.md` and `DECISIONS_LOG.md` with final status of Q-T01…Q-T17 and related architecture decisions.
 
 **Measurable exit criteria**
 1. DEC-005 (framework) *Approved* or replaced; Q-T01–Q-T17 each *Approved*, *Rejected* or explicitly deferred with a phase.
 2. Parameter-ID scheme approved (Q-T12) — recorded as irreversible after first public release.
 3. CPU feasibility confirmed: grain-rendering cost per grain-sample measured on the reference machine and the default global grain budget fixed (Q-T07). *This needs a throwaway benchmark spike; it requires explicit owner authorization because it is code.*
-4. Every R1 requirement maps to at least one architecture module (traceability table, 100 % coverage).
+4. Every R1 requirement maps to at least one architecture module and interface (traceability table, 100% coverage of the 124 approved R1 rows); the cross-domain interfaces have documented ownership, timing, boundedness, failure and validation obligations (IF-01…IF-12).
+5. Every R1 row has class/API-level traceability, or the missing detail is explicitly deferred with a target phase and rationale. Domain-level grouping alone is not sufficient for an implementation-readiness claim.
+6. The API and signal-flow proposal is reconciled into one normative graph: voice/layer processing order, live-input/dry routing, per-layer/master recording taps, mute/solo behavior and output bus taps are either approved or explicitly deferred with an owner and rationale.
+6. Sample/state lifecycle implements the DEC-025 policy without changing it; Freeze semantics are explicitly approved and testable.
+7. Host component/bus decisions are supported by documented host/format evidence or explicitly deferred with an approved limitation.
+8. No stale Phase 2 product policy remains in the architecture documents; all proposed values are distinguished from measured results and approved decisions.
+9. Rolling-source Freeze/state readers have a bounded lifetime/retention contract, global Freeze cannot be split across render boundaries, and ring-wrap/lease-exhaustion/partial-failure tests are specified before implementation.
+10. Owner resolves whether mixed-preparation global Freeze applies the ready subset at one boundary or aborts all four layers (AC-AUD-028); no implementation assumes either behavior before that decision.
 
 ---
 
@@ -193,3 +220,10 @@ flowchart TD
 2. Third-party licence notices complete (0 unlicensed dependencies).
 3. User documentation covers every R1 feature.
 4. Owner release approval recorded in DECISIONS_LOG.md.
+
+
+### 2026-11-27 routing-default refinement
+- Added a consistent recommended R1 signal-flow contract across API, DSP, sample/state and plugin bus documents.
+- Recommended layer stems and layer outputs are post-FX/pre-fader; per-layer recording ignores fader/mute/solo; master capture is post-mix/pre-host-output; live input enters each layer before FX and also follows the required parallel dry-to-master path (GS-ARC-007).
+- Voice chain: engine + sub-oscillator → LPF → HPF (GS-ARC-007); amp-envelope/pan placement remains a validation detail.
+- These defaults remain architecture proposals pending host/UX validation; no product decision or implementation authorization is implied.

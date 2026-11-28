@@ -57,6 +57,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-041 | Approve the Phase 2 R1 release-tier classification for all 168 GS requirements as recorded in GRANULAR_SYNTH_REQUIREMENTS.md v1.0 and R1_RELEASE_SCOPE_MATRIX.md | **Approved** | Product-management decision under the owner's explicit delegation (2026-11-27). This approves tier placement only; it does not approve unresolved technical values, architecture, measured resource budgets, or implementation. GS-SEQ-010 is L2; all other tier assignments follow the reconciled matrix. |
 
+| DEC-042 | R1 Freeze uses Source Snapshot semantics: capture the layer's current valid source region into an immutable snapshot; continue grains/voices, new notes, sequencer, MIDI, modulation, transport and FX; independent recording continues; thaw crossfades to the prior live/rolling source; global Freeze applies across all four layers at one logical boundary; static library samples report already static/disable redundant capture; Freeze state and snapshot persist under DEC-025; failure is safe and visible; panic does not thaw | **Approved** | Owner approved Option A as written on 2026-11-27. Product behavior only; numeric memory limits, capture duration, crossfade and implementation remain Phase 3/5 engineering work. See FREEZE_BEHAVIOR_SPECIFICATION.md v1.0. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:

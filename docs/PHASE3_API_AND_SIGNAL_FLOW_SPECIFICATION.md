@@ -1,0 +1,845 @@
+# Phase 3 API and Signal-Flow Specification
+
+**Version:** 0.5 — cross-format event, automation-curve and transport normalization clarified  
+**Status:** Proposed for owner/architecture review. This document does not approve a framework, public C++ ABI, plugin topology, numeric queue capacity, DSP implementation or benchmark work.  
+**Baseline:** Phase 2 merged baseline; DEC-015…DEC-042; IF-01…IF-12.  
+**Companion documents:** `PHASE3_INTERFACE_CONTRACTS.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`.
+
+## 1. Purpose and decision boundary
+
+This document converts the 12 cross-domain interface contracts into candidate C++-agnostic service boundaries and illustrative C++20-shaped signatures. The signatures are design notation, not approved source-level APIs. They intentionally avoid JUCE types so that the core architecture remains reviewable before Q-T01 is decided.
+
+Three labels are used:
+
+- **Required invariant** — necessary to preserve an approved product decision or real-time safety.
+- **Proposed contract** — recommended interface and behavior; requires review.
+- **Open decision** — must remain unresolved until owner choice, host evidence or measurement.
+
+No class in this document is implemented. No capacity or performance figure is implied by an illustrative type.
+
+## 2. Proposed module map
+
+| Module | Responsibility | Owns | Must not own |
+|---|---|---|---|
+| `host/` | AU/VST3/Standalone adapters; translates host buffers, transport, events and state calls | Adapter-local host metadata and borrowed callback views | DSP runtime policy or persistent sample memory |
+| `core/engine/` | Instance orchestration and render entry point | Active runtime graph on audio thread | UI widgets, file handles, decoder state |
+| `core/parameter/` | Immutable parameter descriptors and normalized/plain conversion | Registry descriptors; audio-owned current values | Host-specific parameter objects |
+| `core/events/` | Ordered MIDI, automation, sequencer and panic event stream | Bounded event records after copy/translation | Host-owned event pointers |
+| `core/transport/` | Single transport authority and block time mapping | Current transport snapshot | Independent clocks in each layer |
+| `engine/layer/` | Four layer runtimes, routing, gain, mute/solo, engine selection | Layer runtime state | Mutable UI state |
+| `engine/voice/` | Voice allocation, envelopes, filters, sub-oscillator, per-note modulation | Preallocated voice state | Dynamic allocation during render |
+| `engine/granular/`, `engine/sampler/` | R1 voice engines | Preallocated grain/playhead state | File decoding or sample mutation |
+| `engine/modulation/` | LFOs, randoms, follower, matrix, macros and XY source | Runtime modulation state | Parameter registry mutation |
+| `engine/fx/` | Per-layer R1 effect chain and tails | Audio-owned effect runtime | UI/plugin host objects |
+| `sample/` | Decode, immutable sample assets, recording buffers and Freeze snapshots | Asset handles and non-RT preparation state | Active DSP graph mutation |
+| `state/` | Versioned state snapshot, migration, serialization and relink | Immutable save/load snapshots and persistence work | Audio callback execution |
+| `ui/` | Presentation, editing, controller mapping UX | UI model and observation snapshots | Mutable access to live DSP objects |
+| `test/` | Deterministic offline render and validation harness | Test fixtures, input events and output files | Production runtime policy |
+
+The four layers are a fixed product-level count (DEC-017). The internal module decomposition and names above are proposals.
+
+## 3. Core data contracts
+
+The following types are illustrative value/handle types. They are deliberately framework-free.
+
+```cpp
+using FrameCount = std::uint32_t;
+using SampleOffset = std::uint32_t;
+using SampleRateHz = double;
+using ParameterId = std::string_view; // descriptor-owned stable storage
+using LayerIndex = std::uint8_t;      // valid product values: 0..3
+
+struct AudioBusView {
+    float* channel[2];       // borrowed for current process call only
+    std::uint8_t channels;   // negotiated channel count, validated by adapter
+};
+
+struct ConstAudioBusView {
+    const float* channel[2];
+    std::uint8_t channels;
+};
+
+struct ProcessBlock {
+    AudioBusView mainOutput;
+    AudioBusView layerOutput[4];       // inactive/unconnected buses are explicit
+    std::span<const ConstAudioBusView> inputBuses; // normalized mono/stereo views of negotiated physical host inputs
+    ConstAudioBusView layerInput[4];   // logical per-layer routes; views may alias inputBuses
+    FrameCount frames;
+    SampleRateHz sampleRate;
+    const struct BlockContext* context; // borrowed; valid only during process()
+};
+
+struct RenderCapacity {
+    FrameCount maxFramesPerBlock;       // prepared off RT from the host/device maximum
+    std::uint64_t lifecycleGeneration;  // invalidates stale prepared render resources
+};
+
+struct TimedEvent {
+    SampleOffset offset;
+    std::uint32_t stableOrder;
+    enum class Kind : std::uint8_t {
+        NoteOn, NoteOff, Controller, PitchBend, ProgramChange,
+        ParameterChange, Transport, Sequencer, AllSoundOff
+    } kind;
+    // Payload is a bounded tagged value in the concrete implementation.
+};
+
+struct BlockContext {
+    // One immutable snapshot per process block.
+    double tempoBpm;
+    double ppqStart;
+    bool playing;
+    std::span<const TimedEvent> events; // valid only during current process call
+};
+```
+
+**Lifetime rule:** all host buffers, spans and pointers in `ProcessBlock` and `BlockContext` are borrowed for the duration of `process()` only. An implementation must copy any event or data needed after the callback into bounded owned storage. No callback pointer may be retained.
+
+The exact representation of optional buses, channel counts, sample formats and host-specific event payloads is delegated to the adapter specification and host validation.
+
+### 3.1 Render capacity and physical-to-logical input routing
+
+The active engine configuration owns an immutable prepared render capacity `B` for its lifecycle generation. The host/device supplies the actual frame count `N` on each render call; the engine validates `N <= B` before accessing any workspace. `B` comes from AU `maximumFramesToRender`, VST3 `ProcessSetup::maxSamplesPerBlock`, or the Standalone device maximum. A new maximum/sample rate/bus arrangement requires off-thread preparation and the appropriate host/device lifecycle; the process callback never resizes or allocates.
+
+`inputBuses` represents the negotiated physical host/device input bus views for this call. `layerInput[4]` represents logical per-layer source routes after adapter routing. A logical route may reference/alias a physical input bus and may be shared read-only by several layers; four layer routes do not imply four physical host input buses or four copied buffers. This preserves DEC-020's per-layer live-source capability without introducing a product-level input-channel cap. The host may expose fewer physical inputs than the product can route; availability remains explicit and host/device-specific.
+
+The output views are also borrowed for the current call. The five product output buses (stereo master plus four optional stereo layer outputs) contain ten output channels when all are exposed, but those host buffers are not engine-owned scratch. Only actual internal working planes and staging copies are charged to the render scratch ledger.
+
+For float32 staging, the conditional full-copy equation is `B × 4 × (C_in_staged + C_out_staged)` bytes. Copying all five stereo output buses would be `40 × B` bytes; one stereo input staging copy adds `8 × B`. Direct host-buffer use and read-only fan-out do not incur these copies. Use checked wide byte arithmetic and verify conversion to `size_t` before allocation. The 32-bit width of `float` or `FrameCount` is not a statement about process pointer width; Q-T03 remains open and no 32-bit macOS target is approved or implied.
+
+A VST3 parameter-flush process call with no audio buses is not passed to the engine as a fabricated audio block. It may update bounded parameter state but must not touch render scratch or advance audio/transport.
+
+See `PHASE3_MEMORY_ADMISSION_AND_RENDER_CAPACITY_AUDIT.md` for the full accounting model and validation obligations.
+
+## 4. Candidate service interfaces
+
+### 4.1 Engine render boundary — IF-01
+
+```cpp
+class IAudioEngine {
+public:
+    virtual ~IAudioEngine() = default; // destruction is non-RT
+    virtual void prepare(const EngineConfig&) = 0; // non-RT
+    virtual void process(const ProcessBlock&) noexcept = 0; // RT
+    virtual void reset(ResetReason) noexcept = 0; // RT-safe bounded reset only
+    virtual void publishUiSnapshot(UiSnapshot&) const noexcept = 0;
+};
+```
+
+Contract:
+- `prepare` constructs/replaces rate-dependent runtime resources off the audio thread.
+- `process` performs bounded work and never allocates, blocks, logs, performs I/O or destroys objects.
+- `reset` is not a general graph rebuild. Structural preparation belongs off-thread and is published through IF-03.
+- The host adapter clears/initializes output regions as required, validates bus availability and passes explicit active-bus information.
+- The engine must safely render silence or a defined fallback for invalid/unconnected optional inputs; it must not dereference null or inactive bus memory.
+
+### 4.2 Parameter registry and runtime — IF-02
+
+```cpp
+enum class ParameterScope : std::uint8_t { Global, Layer, Voice, Performance, Sequencer };
+enum class UpdateClass : std::uint8_t { AudioRate, ControlRate, SpawnSampled, Stepped, Structural };
+
+struct ParameterDescriptor {
+    ParameterId id;
+    ParameterScope scope;
+    UpdateClass updateClass;
+    double minimum;
+    double maximum;
+    double defaultValue;
+    bool automatable;
+    bool modulatable;
+};
+
+class IParameterRegistry {
+public:
+    virtual const ParameterDescriptor* find(ParameterId) const noexcept = 0;
+    virtual double toPlain(ParameterId, double normalized) const noexcept = 0;
+    virtual double toNormalized(ParameterId, double plain) const noexcept = 0;
+};
+```
+
+Contract:
+- Registry descriptors are immutable after initialization. The candidate scope set is Global, Layer, Voice, Performance and Sequencer, aligned with the proposed canonical-ID scope vocabulary in `PARAMETER_ID_SPECIFICATION.md`; adding a new scope requires an explicit schema/API revision.
+- Stable string IDs are canonical. Numeric host IDs are adapter mappings and may never be recycled after release; the final scheme remains Q-T12.
+- Unknown IDs are ignored safely and surfaced through non-RT diagnostics.
+- Parameter changes carry a stable ID or pre-resolved registry index plus scope and value. The concrete representation must avoid string lookup in the innermost DSP loop.
+- DEC-036 remains exactly ten macros per patch. DEC-031 shared macro base values and per-note modulation are preserved.
+- Parameter smoothing and modulation evaluation order must be fully specified before implementation; this interface does not decide Q-T13 or the final host ID mapping.
+
+### 4.3 Structural command publication — IF-03
+
+```cpp
+enum class CommandKind : std::uint8_t {
+    ReplaceSample, ReplaceLayerRuntime, ReplaceFxChain, ReplacePatch,
+    SetFreezeSource, ThawLayer, SetRecordingState, Panic
+};
+
+struct StructuralCommand {
+    CommandKind kind;
+    LayerIndex layer;
+    std::uint64_t generation;
+    const void* immutablePayload; // concrete typed handle in implementation
+};
+
+class IAudioCommandSink {
+public:
+    virtual bool tryPublish(const StructuralCommand&) noexcept = 0;
+};
+```
+
+Contract:
+- The command producer fully constructs and validates payloads off-thread.
+- Successful publication transfers a documented retained handle/reference to the audio domain; failed publication leaves ownership with the producer.
+- The audio thread applies commands only at documented safe points and never constructs payloads.
+- The concrete implementation must use typed payloads, not untyped `void*`; the pointer above only illustrates the boundary.
+- Separate producer domains require separate SPSC queues or a proven bounded MPSC implementation. The current threading proposal favors per-producer SPSC queues.
+- Queue capacities, priority order and coalescing rules remain measurement/implementation details. Panic/All Sound Off requires a reserved, bounded delivery path.
+
+### 4.4 UI observation — IF-04
+
+```cpp
+struct LayerUiState {
+    float peakLeft, peakRight;
+    float recordProgress;
+    float playheadNormalized;
+    bool recording;
+    bool frozen;
+    bool sourceAvailable;
+};
+
+struct UiSnapshot {
+    std::uint64_t sequence;
+    LayerUiState layer[4];
+    float masterPeakLeft, masterPeakRight;
+};
+
+class IUiSnapshotSource {
+public:
+    virtual bool tryReadLatest(UiSnapshot& destination) const noexcept = 0;
+};
+```
+
+Contract:
+- Audio publishes fixed-size observational state; UI reads at its own cadence.
+- Stale frames may be skipped. UI must never wait for a new snapshot.
+- Snapshot fields are values only; no pointers to live runtime objects cross into UI.
+- The concrete publication mechanism (triple buffer or sequence counter) must be proven race-free under the chosen memory model.
+
+### 4.5 Immutable sample store — IF-05
+
+```cpp
+struct SampleMetadata {
+    SampleRateHz sampleRate;
+    std::uint64_t frameCount;
+    std::uint8_t channelCount;
+    std::uint64_t contentHash;
+};
+
+class ISampleAsset {
+public:
+    virtual const SampleMetadata& metadata() const noexcept = 0;
+    virtual const float* channelData(std::uint8_t channel) const noexcept = 0;
+};
+
+class ISampleStore {
+public:
+    // Non-RT: decode/prepare and return an immutable owned handle.
+    virtual PreparedSampleResult prepareAsset(const SampleRequest&) = 0;
+};
+```
+
+Contract:
+- Decoding, resampling/preparation, peak analysis and allocation occur off-thread.
+- Published sample assets are immutable for their entire lifetime.
+- Active sample replacement is atomic at an audio safe point; previous valid source remains active until replacement is ready. Each slot uses a monotonically increasing request generation so stale asynchronous completions cannot overwrite a newer request.
+- Publication transfers payload ownership only on successful bounded-queue acceptance; rejection leaves cleanup with the producer. Active voices, grains and sampler heads retain independent lifetime handles until they stop reading the old asset.
+- Retirement queue saturation must apply bounded backpressure before another swap can create an unretirable object; the audio thread never overwrites retirement entries, blocks or performs final destruction.
+- Memory admission reserves peak coexistence (active + pending + readers + retirement + required staging), not merely the final sample payload; actual budgets and capacities remain measured engineering gates.
+- The R1 granular duration target remains at least six minutes stereo at 48 kHz subject to measured feasibility and safe memory (DEC-028); this document does not claim feasibility.
+- Long-file streaming for Sampler remains a proposed L2 strategy (Q-T05), not an R1 implementation decision.
+
+### 4.6 Recorder and recording snapshots — IF-06
+
+```cpp
+enum class RecordTap : std::uint8_t {
+    LayerInputPreEngine,
+    LayerEnginePreFx,
+    LayerPostFxPreLayerGain,
+    LayerPostLayerGain,
+    MasterPreOutput
+};
+
+struct RecordingDescriptor {
+    RecordTap tap;
+    SampleRateHz sampleRate;
+    std::uint8_t channels;
+    std::uint64_t committedFrames;
+    std::uint64_t sourceGeneration;
+};
+
+class IRecorder {
+public:
+    virtual void processCapture(const ConstAudioBusView&, FrameCount) noexcept = 0;
+    virtual RecordingStatus status() const noexcept = 0;
+    virtual bool requestSnapshot(RecordingSnapshotRequest) noexcept = 0;
+};
+```
+
+Contract:
+- Capture buffers are preallocated; callback performs bounded writes only.
+- Disk I/O, encoding, export and state serialization occur off-thread.
+- A snapshot exposes only committed frames. Uncommitted/writer-owned frames are excluded from Freeze and serialization.
+- Buffer exhaustion stops capture safely, preserves committed audio and reports an overrun; it must not silently wrap and corrupt an existing take.
+- Independent recording continues during Freeze (DEC-042).
+- **Recommended engineering defaults (pending owner review and host/UX validation):** per-layer recording uses `LayerPostFxPreLayerGain`; stereo master recording uses `MasterPreOutput`. These defaults are defined in §§7–8 and are not new product-level decisions. The enum retains other candidate positions for future use, but R1 does not expose additional recorder modes by implication.
+
+### 4.7 Freeze source publication — IF-07
+
+```cpp
+struct FreezeSnapshot {
+    SampleHandle source;
+    std::uint64_t sourceGeneration;
+    std::uint64_t firstFrame;
+    std::uint64_t frameCount;
+    std::uint64_t committedFrameCount;
+};
+
+class IFreezeController {
+public:
+    bool requestLayerFreeze(LayerIndex) noexcept;
+    bool requestGlobalFreeze() noexcept;
+    bool requestThaw(LayerIndex) noexcept;
+    FreezeStatus status(LayerIndex) const noexcept;
+};
+```
+
+Contract:
+- Snapshot preparation copies or references the exact valid source region off-thread and publishes an immutable handle.
+- A committed-frame count is a validity boundary, not a lifetime guarantee for a rolling ring. Before an off-thread copy, the coordinator must acquire a bounded retention lease that prevents the selected pages from being overwritten. Recording continues into a separate writable region; the audio thread never waits or copies the source. If a lease/spare capacity is unavailable, preparation fails before source publication and the previous source/recorder state remain unchanged.
+- The snapshot carries and validates source generation, first frame and committed range; stale or overwritten generations are rejected rather than read concurrently.
+- The audio thread switches source at a safe logical boundary. Existing grains/voices continue; new MIDI/sequencer events use the frozen snapshot.
+- Modulation, envelopes, LFOs, MIDI, sequencer, shared transport, layer FX and effect tails continue.
+- Recording continues independently at its defined tap.
+- Thaw crossfades to the prior live/rolling source.
+- Global Freeze is represented by one bounded transaction payload containing four per-layer preparation outcomes; it must not be split into four independently queued layer commands. At one safe point, all ready layers switch together; failed layers retain their prior source and expose per-layer failure. A transaction-publication failure changes no layer. The UI reports partial failure and never reports full global success unless all four switched. **Owner review required:** the proposed behavior applies the successful subset when one or more layer preparations fail; DEC-042 requires visible partial failure but does not explicitly choose successful-subset versus all-or-nothing switching.
+- Static library samples do not incur redundant copies.
+- Snapshot persistence follows DEC-025. Memory exhaustion or missing source preserves the previous valid source.
+- This interface implements DEC-042; it does not reopen Freeze product semantics. Exact crossfade duration, memory budget and copy algorithm remain engineering values to validate.
+
+### 4.8 Transport authority — IF-08
+
+```cpp
+struct TransportSnapshot {
+    double tempoBpm;
+    double ppqPosition;
+    bool playing;
+    enum class Source : std::uint8_t { Host, Internal, MidiClock, AbletonLink } source;
+};
+
+class ITransport {
+public:
+    TransportSnapshot snapshotForBlock(const HostTransportInput&) noexcept;
+    void acceptMidiClock(const TimedEvent&) noexcept;
+};
+```
+
+Contract:
+- Exactly one active transport authority feeds the shared sequencer for a given runtime.
+- Layer engines do not independently advance musical time.
+- DEC-039 semantics are preserved: Start resets shared sequencer; Continue resumes; Stop halts at current position; after two expected beat intervals without pulses, clock-dependent progression stops at current position; SPP is ignored in R1.
+- Host/device/Link arbitration and discontinuity handling require final specification and host tests; this interface does not settle Q-P/host precedence.
+
+### 4.9 MIDI and event router — IF-09
+
+```cpp
+struct RoutedEvent {
+    TimedEvent event;
+    std::uint8_t targetLayerMask; // bits 0..3
+};
+
+class IMidiEventRouter {
+public:
+    void routeHostEvents(std::span<const TimedEvent>,
+                         BoundedEventWriter&) const noexcept;
+    void routeDeviceEvent(const DeviceMidiEvent&,
+                          BoundedEventWriter&) const noexcept;
+};
+```
+
+Contract:
+- Host event memory is borrowed only during the process callback; device events are copied into bounded owned records before later use.
+- Events use validated block-relative offsets in `[0, frames)`; the adapter preserves host timestamps and source-local order. Out-of-block events are rejected or retained by the adapter contract, never silently retimed.
+- The merged event view is ordered by sample offset and a deterministic explicit tie-break. The tie-break must not depend on pointer identity, producer race or container iteration order.
+- Where an event/parameter class promises sample-accurate behavior, the renderer splits the block at event offsets and applies the event at the exact sample boundary. Block/control-rate classes declare that limitation explicitly.
+- Host automation, MIDI mapping, sequencer parameter locks and UI writes are separate writers; precedence is parameter-class-specific and remains open until a writer-precedence matrix is approved. Queue arrival order is not a precedence policy.
+- Modulation is evaluated as a contribution to the parameter base value; DEC-031 shared per-layer macro bases and per-voice modulation remain distinct.
+- If multiple layers share a MIDI channel, all matching layers receive the event (DEC-034).
+- MPE per-note pitch bend range is 48 semitones (DEC-038); zone negotiation remains a host/device integration detail.
+- Program Change selects only an explicitly assigned item in the active performance bank; unmapped values are ignored (DEC-033).
+- MIDI Clock behavior is owned by transport, not duplicated inside the router.
+- Panic/All Sound Off must be deliverable under overload.
+
+### 4.10 Layer graph, FX and mixer — IF-10
+
+```cpp
+class ILayerProcessor {
+public:
+    virtual void processVoices(const LayerProcessContext&, StereoBlock&) noexcept = 0;
+    virtual void processInput(const LayerProcessContext&, StereoBlock&) noexcept = 0;
+    virtual void processEffects(const LayerProcessContext&, StereoBlock&) noexcept = 0;
+    virtual void processOutput(const LayerProcessContext&, StereoBlock&) noexcept = 0;
+};
+
+class IMasterMixer {
+public:
+    virtual void mixLayers(const LayerBlockView[4], StereoBlock& master,
+                           LayerBlockView[4] layerOutputs) noexcept = 0;
+};
+```
+
+Contract:
+- Four layer processors are independent; the central sequencer and shared transport remain instance-level.
+- R1 provides four independent serial FX slots per layer (AC-FX-001), with user reordering (AC-FX-002), and seven available effect types approved by DEC-023: Delay, Ping-pong Delay, Reverb, Chorus, EQ3, Saturator and Compressor. Four slots are the chain capacity; seven is the effect-type inventory. Per-effect algorithms, parameter ranges and tail behavior remain subject to the Effects Specification and validation.
+- Layer output and master output must be deterministic and must not alias unsafely.
+- FX tails continue through Freeze; All Sound Off silences voices/effect tails without thawing source.
+- Live-input routing and dry monitoring path must be explicit. Mono live input is centered and available to both sides of stereo layer processing (DEC-040); explicit LL/RR duplication is not the default.
+- Recommended recording tap and mute/solo semantics are consolidated in §7, §8 and §13; they remain proposed pending host and UX validation.
+
+### 4.11 State snapshot and serializer — IF-11
+
+```cpp
+struct StateSnapshot {
+    std::uint32_t schemaVersion;
+    ImmutablePatchState patch;
+    ImmutableSequencerState sequencer;
+    std::array<RecordingSnapshotHandle, 4> unsavedRecordings;
+    std::array<ExternalAssetReference, 4> libraryAssets;
+};
+
+class IStateService {
+public:
+    StateSnapshot captureSnapshot(const StateCaptureRequest&); // non-RT
+    SerializedState serialize(const StateSnapshot&);           // non-RT
+    RestorePlan inspectAndMigrate(const SerializedState&);     // non-RT
+    RestoreResult prepareRestore(const RestorePlan&);           // non-RT
+};
+```
+
+Contract:
+- Unsaved recording buffers are embedded in plugin state; library samples remain external references with relink/collect support (DEC-025).
+- State capture must obtain immutable/committed snapshots without asking the audio thread to block. The capture descriptor records a state generation and each recording's source generation/committed-frame range; mutable rolling-ring data requires a bounded retention lease or pre-reserved immutable staging copy.
+- DEC-025 recording payloads form one save transaction: the manifest cannot claim completion unless every required unsaved recording and Freeze chunk is present and verified. Chunk metadata includes lengths, format, rate, channels, frame range, generation and checksum.
+- Host callbacks follow their format-specific synchronous/asynchronous contract; no save path waits for disk I/O, audio-thread acknowledgement or global audio quiescence. If a consistent bounded snapshot cannot be supplied within the host contract, return explicit failure rather than omit audio.
+- Restore validates manifest/chunk bounds and checksums before large allocations, performs memory admission and prepares the candidate runtime off-thread; it is published as one validated safe-point transaction. Failed preparation/publication leaves the previous active runtime intact.
+- Missing external samples do not invalidate unrelated patch/sequencer state; preserve unresolved asset identity and expose relink status.
+- Corrupt or unsupported embedded chunks produce explicit recovery status; never silently replace missing recording data with silence.
+- Save finalization is atomic or recoverable after interruption. No silent omission of unsaved audio is permitted. State size/chunking and host limits require explicit failure or a validated bounded policy; exact encoding remains open.
+
+### 4.12 Deterministic render harness — IF-12
+
+```cpp
+struct RenderFixture {
+    StateSnapshot initialState;
+    std::span<const TimedEvent> events;
+    std::span<const ConstAudioBusView> inputBlocks;
+    std::uint64_t randomSeed;
+    SampleRateHz sampleRate;
+};
+
+class IOfflineRenderer {
+public:
+    RenderResult render(const RenderFixture&, MutableAudioOutput&) const;
+};
+```
+
+Contract:
+- Test harness owns all input/output buffers and fixture state for the render duration.
+- Identical state, inputs, ordered events, seed, sample rate and render mode must produce deterministic output within the declared numerical tolerance.
+- Device I/O and explicitly host-specific differences are outside standalone/plugin bit-equivalence claims.
+- No benchmark implementation or performance measurement is authorized by this document. Q-T07 still requires separate owner authorization for a benchmark spike.
+
+## 5. Proposed render-block ordering
+
+This ordering is a candidate deterministic contract. Sample-accurate events split the block into segments; it is not permission to defer all events to block boundaries.
+
+1. Validate block/bus views and acquire one transport snapshot.
+2. Merge host automation/MIDI with bounded device events and sequencer events using sample offsets and deterministic tie-break.
+3. Drain bounded structural commands at the declared safe point; publish/retire immutable handles without destruction on RT.
+4. For each event segment: apply due parameter/event changes; update modulation according to each parameter's declared update class; render voices/engines.
+5. Render layer live-input path and synth voices according to the finalized layer signal graph.
+6. Apply per-layer FX and layer output controls.
+7. Capture per-layer recording at the selected tap(s); capture master recording at its selected tap.
+8. Mix four layers and any approved dry-input path to master; write connected host outputs only.
+9. Publish fixed-size UI/meter/record/freeze observations.
+10. Advance bounded counters and complete the callback.
+
+**Ordering caveat:** steps 5–8 cannot be finalized until the tap/routing decisions in §8 are approved. The recorder tap is a point in the graph, not a post-hoc copy of an arbitrary buffer.
+
+## 6. Recommended voice and layer signal flow (proposal)
+
+The approved GS-ARC-007 signal chain requires a per-voice engine + sub-oscillator path through LPF then HPF, a per-layer four-slot FX/M-S/patch-volume/layer-mix/wet path, and a parallel dry live-input path summed before the master. The following is the recommended R1 topology for review; it preserves those requirements while making recording and output taps explicit.
+
+```text
+MIDI / Sequencer / Note Events
+             |
+       Voice Allocator
+             |
+     +-------+----------------------+
+     |                              |
+Granular Voice                 Sampler Voice
+(grain scheduler/pool)         (playhead/loop)
+     |                              |
+     +---------------+--------------+
+                     |
+              Voice Source Sum
+                     |
+             Sub-Oscillator Mix
+                     |
+                  LPF Stage
+                     |
+                  HPF Stage
+                     |
+              Amp Envelope
+                     |
+                  Voice Pan
+                     |
+              Layer Voice Sum
+                     |
+       +-------------+-------------------+
+       |                                 |
+Layer Live Input                    Synth Voices
+       |                                 |
+Input Gain / Mono Centering              |
+       +---------------+-----------------+
+                       |
+                 Layer Input Sum
+                       |
+                Four-Slot FX Chain
+                       |
+                  M-S / Patch Gain
+                       |
+                Layer Mix / Wet Path
+                       |
+                Post-FX Layer Signal
+                       |
+          +------------+-------------------+
+          |                                |
+Layer Stem Output + Recording       Layer Fader / Mute / Solo
+(post-FX, pre-fader)                        |
+                                           +----> Master Mixer <---- Dry Live Input
+                                                      |
+                                               Stereo Master
+                                                      |
+                                        Master Output + Recording
+                                               (pre-output)
+```
+
+Notes:
+- This is the recommended topology for architecture review; it remains a proposal pending owner review and host/UX validation. Numeric DSP behavior and framework-specific routing remain unapproved.
+- The approved GS-ARC-007 voice chain is engine + sub-oscillator → LPF → HPF. The proposed placement of amp envelope and pan after the filters and before layer summation remains an engineering detail to validate against voice-level acceptance fixtures.
+- Live input has a wet path into its layer before the four-slot FX chain and a separate dry path summed before the master, as explicitly required by GS-ARC-007. Mono input is centered under DEC-040. The dry path is intentional product behavior, not an optional bypass; its gain staging and monitoring behavior require validation.
+- Layer output buses and master output mapping must follow the negotiated plugin bus topology. The AU input/component strategy remains open (Q-P06).
+- Freeze captures the approved source snapshot for that layer. It does not freeze the FX chain, transport, modulation or recording process.
+
+## 7. Recording tap semantics — recommended R1 defaults (proposal)
+
+The recorder interface supports these candidate positions:
+
+| Candidate | Signal captured | Main consequence |
+|---|---|---|
+| Layer Input Pre-Engine | Raw layer source/input before voice engine | Useful for source capture; excludes synthesis and layer FX |
+| Layer Engine Pre-FX | Sum of engine/live input before layer FX | Captures performed layer without effect tails |
+| Layer Post-FX Pre-Layer-Gain | Wet layer output before layer output gain/mute | Captures effect processing; independent of layer fader |
+| Layer Post-Layer-Gain | Final layer signal after gain/mute/solo logic | Matches what layer contributes to mix |
+| Master Pre-Output | Final master mix before host output | Captures wet layer mix plus the required parallel dry live-input path |
+
+**Recommended R1 architecture default (not a new product decision):** define two fixed recording sources:
+- Per-layer recording: Layer Post-FX Pre-Layer-Gain, so a layer take includes its effect character but can be mixed later.
+- Stereo master recording: Master Pre-Output, so the recorded mix matches the master signal sent to the host.
+- Keep raw/input capture as a separately selectable source only if product requirements and UI scope justify it; do not silently add a third recorder mode.
+
+Validation questions (not unresolved product semantics):
+1. Confirm in Standalone and each target host that the per-layer tap is post-FX and pre-layer-fader, excluding fader/mute/solo.
+2. Confirm the master tap is the final stereo master before host/device output and includes both wet live input routed through layer FX and the parallel dry live-input path required by GS-ARC-007.
+3. R1 has no approved master FX chain; do not introduce one in this specification.
+4. Verify that an armed layer continues recording its stem while muted or solo-isolated.
+
+Freeze and recording relationship is not open at product level: recording continues independently during Freeze (DEC-042). The recommended recording taps are defined here; implementation equivalence remains a validation gate.
+
+## 8. Output bus and dry-input routing
+
+Proposed output model:
+- Main output: stereo master.
+- Four optional stereo layer outputs, one per layer.
+- A layer output represents the defined final layer signal at its selected bus tap. It must not be double-counted into the master if the host separately routes layer outputs.
+- Main output continues to provide the master mix even when optional layer buses are inactive, unless a host-specific topology explicitly requires a different mapping.
+- Inactive/unconnected outputs are ignored safely; the engine must not write through null bus pointers.
+- Live input feeds the layer FX path and the required parallel dry-to-master path under GS-ARC-007. Validate gain staging, monitoring latency, channel mapping and feedback safety in Standalone and target hosts.
+
+**Recommended default:** each layer output is post-FX and pre-layer-fader, matching the per-layer recording tap and preserving independently mixable stems for DAW workflows. Master output applies layer fader/mute/solo. This remains a proposed architecture default pending host validation; it does not change the approved five-output product model.
+
+## 9. Real-time ownership and safe-point sequence
+
+Structural replacement follows this lifecycle:
+
+1. Non-RT producer validates request and builds a complete immutable payload.
+2. Producer acquires a bounded publication slot/queue entry.
+3. On success, ownership is transferred according to the command contract; on failure, producer retains and may retry/coalesce/reject.
+4. Audio thread consumes the command at a deterministic safe point and swaps the active handle.
+5. The old handle is placed in a bounded retirement path; audio never performs final destruction.
+6. Housekeeping thread destroys retired resources and signals completion/status through non-RT observation.
+
+No command may require the audio thread to allocate, decode, copy a large buffer, construct an effect, open a file or wait for another thread. Freeze snapshot creation is off-thread; only the source-handle transition occurs on audio.
+
+## 10. Validation matrix (planned, not executed)
+
+| Area | Required evidence before implementation-readiness |
+|---|---|
+| Process boundary | Null/inactive buses, mono/stereo layouts, variable blocks, sample-rate change, offline process, host buffer aliasing |
+| Event ordering | Same-offset host automation/MIDI/sequencer ordering; sample-accurate offsets; panic under saturation |
+| Parameters | Stable ID uniqueness, host mapping, normalized/plain round-trip, unknown-ID migration, automation continuity |
+| Ownership | No RT allocation/lock/destruction; queue saturation; retire-queue saturation; replacement failure preserves active graph |
+| Sample lifecycle | Large-file decode, immutable handle lifetime, replacement during active grains, missing/corrupt assets |
+| Recording | Each tap independently verified with impulse/routing fixtures; committed-frame boundary; overrun; save during active recording |
+| Freeze | Source snapshot region, active voices continue, new notes use snapshot, rolling-ring retention lease and ring-wrap safety, concurrent recording, one global transaction boundary with mixed per-layer outcomes, partial failure, thaw crossfade and state restore |
+| Routing | Four layer stems plus master; no double count; mute/solo/fader semantics; direct input monitor; FX tails |
+| State | Embedded unsaved audio, external relink, corrupt chunks, interrupted save, unsupported schema, host size limits |
+| Determinism | Same fixture/seed gives repeatable render; standalone/plugin equivalence within declared boundary |
+
+These are obligations, not evidence of passing tests. No benchmark code, production DSP, plugin shell or UI implementation is included or authorized.
+
+## 11. Open decisions carried forward
+
+| Decision | Current status | Required next evidence/owner action |
+|---|---|---|
+| Q-T01 framework/language | Proposal only | Compare framework-free C++ core and selected host framework; licensing and host API proof |
+| Q-T02 core independence | Proposal only | Approve boundary and dependency policy |
+| Q-T03 macOS minimum / Universal 2 | Proposal only | Verify supported host/OS and toolchain matrix |
+| Q-T07 grain budget | Open | Separate explicit authorization for isolated benchmark spike; measure on owner-approved reference machine |
+| Q-T08 parallel rendering | Proposal only | Keep disabled for initial R1 unless profiling later justifies it |
+| Q-T09 RT tooling | Proposal only | Choose allocation detector/RTSan feasibility after toolchain |
+| Q-T12 parameter IDs/host exposure | Proposal only | Owner approval required before first public release |
+| Q-P06 AU live-input/component strategy | Open | Validate AU component types and live-input behavior in target hosts |
+| Q-P09/Q-P10 host/reference machine | Open | Owner supplies or approves host/device matrix and reference machine |
+| Recording tap positions | Proposed defaults defined in §§7–8 | Owner review plus host/UX validation; verify against Audio I/O and lifecycle specs |
+| Dry input and mute/solo capture semantics | Proposed defaults defined in §§7–8 | Validate monitoring, stem independence and master correspondence |
+| Exact filter/sub-osc/amp order | Proposed order defined in §6 | Validate against voice-level acceptance fixtures before implementation |
+| Layer output tap position | Proposed post-FX/pre-fader tap | Validate host buses, stems and Standalone live workflow |
+| Queue capacities and retirement bounds | Open | Derive from burst analysis and tests; do not invent numeric limits |
+| State container/chunking and maximum size | Open | Host evidence and DEC-025-compliant serialization design |
+| FX slots and inventory | Four serial slots per layer (AC-FX-001/002); seven effect types (DEC-023) | Validate per-effect algorithms, parameter ranges, tail semantics and signal routing; no unresolved slot-count conflict |
+
+## 12. Phase 3 exit impact
+
+This document advances IF-01…IF-12 from abstract contracts to candidate service boundaries, typed data concepts, lifecycle rules and a visible signal-flow proposal. It does **not** satisfy Phase 3 exit criteria by itself.
+
+Still required:
+1. Owner review of the explicit recording/routing recommendations and open choices.
+2. Concrete class/API traceability for each of the 124 R1 rows, including exact ownership of each behavior.
+3. Owner-reviewed signal-flow proposal, then host-validated recording tap and bus semantics.
+4. Host/component evidence for AU live input and VST3 buses.
+5. Final parameter ID and framework decisions.
+6. RT queue and retirement design with capacities justified by analysis/testing.
+7. Q-T07 measurement only after separate explicit authorization.
+8. Updated architecture audit and PR description after the above evidence is complete.
+
+**Audit statement:** this is a proposed API and signal-flow design artifact. It contains no implementation and makes no claim that the product is implementation-ready.
+
+
+## 13. Recommended routing defaults — consolidated
+
+For consistency across the engine, recorder and plugin adapters, the following defaults are recommended:
+
+| Signal | Recommended position | Fader / mute / solo effect |
+|---|---|---|
+| Per-layer recording | Post-FX, pre-layer fader | Not affected; muted/solo-isolated layer can still record its isolated stem |
+| Layer output bus | Post-FX, pre-layer fader | Not affected; host receives a mixable stem |
+| Master recording | Final stereo master, pre-host output | Includes layer faders, mute/solo and any live input routed through layers |
+| Live input | Per-layer wet feed before layer FX plus parallel dry feed summed before master | Wet feed affects layer FX/stem; dry feed contributes directly to master as required by GS-ARC-007 |
+| Dry live-input path | Required by GS-ARC-007; summed before master | Parallel dry feed is intentional; validate gain staging and avoid unintended double-counting in host bus adapters |
+| Voice processing | Engine + sub-oscillator → LPF → HPF → proposed amp envelope/pan → layer sum | Preserves GS-ARC-007 filter order; validate envelope/pan placement |
+
+These are coherent engineering defaults, not changes to the approved product feature set. They require validation against Standalone monitoring latency, host bus behavior and the recording UX. If host constraints require a different AU/VST3 topology, adapters must preserve the same semantic signal taps where possible and document any limitation.
+
+## 14. Candidate domain-level API symbol catalogue — 2026-11-27
+
+**Status:** Proposed naming/ownership vocabulary for requirement traceability. These are not approved public APIs, ABI, class layouts or source-code commitments. Names are framework-independent and deliberately do not select JUCE, an AU component subtype, VST3 SDK wrappers, parameter IDs, queue capacities or DSP algorithms. A symbol may later be represented by a concrete class, value type, free function or internal component after owner/engineering review.
+
+| Domain | Candidate symbols and operation vocabulary | Boundary / constraints |
+|---|---|---|
+| Host adapters | IAUProcessAdapter::normalizeProcessContext/translateEvents/captureState; IVST3ProcessAdapter::normalizeProcessContext/translateEvents/captureState; IStandaloneDeviceAdapter::processDeviceBlock/mapInputChannels/mapOutputChannels/handleDeviceLoss; IHostLatencyAdapter::reportLatency | Host SDK objects and callback buffers remain adapter-local/borrowed. No AU component subtype, VST3 bus arrangement or framework is selected. |
+| Shared engine and layers | Existing IAudioEngine::prepare/process/reset/publishUiSnapshot; existing ILayerProcessor::processVoices/processInput/processEffects/processOutput; existing IMasterMixer::mixLayers; candidate LayerRuntime, ILayerEngineSelector::prepareEngine/publishSelection, IVoiceGainPolicy::gainForVoice | Four independent layer runtimes per DEC-017; R1 engine selector permits Granular and Sampler only per DEC-018. |
+| Voice and pitch | IVoiceAllocator::allocate/chooseVictim/steal/release/allNotesOff/allSoundOff/panic; IVoicePitchController::glideTo/applyPitchBend/transpose; IVoiceVelocityMapper::mapVelocity; IVoice::setSustain/applyPerNotePitch/applyPerNotePressure/applyPerNoteTimbre | Voice stealing is separate from global grain reclamation. Per-note MPE pitch range follows DEC-038. |
+| Envelopes, filters and sub-oscillator | IEnvelopeBank::processStage; IVoiceFilterChain::processLpfThenHpf; IFilterKeyTracker::cutoffForNote; ISubOscillator::process/quantizedPitch | Preserve the approved LPF → HPF order; no filter algorithm or coefficient implementation is implied. |
+| Granular scheduling and pool | IGrainScheduler::schedule/scheduleAtSampleOffset/onNote/onTransportTick; IGrainPool::tryAcquire/release; IGrainBudgetPolicy::admit/selectReclamationCandidates; IGrainSpawnPolicy::emit; IGrainPitchState::captureBirthPitch | AR-01 and AR-02 remain open. No numeric global budget, victim comparator, threshold or fade duration is approved. |
+| Grain parameters and signal | IGrainParameterModel::density/position; IGrainRandomizer::sampleSprayOffset; IGrainSpatializer::distributePan/applyMidSideWidth; IGrainDirectionSelector::chooseDirection; IGrainScanController::sourcePosition; IGrainPitchMapper::resolvePitch; IGrainRatioController::resolvePlaybackRatio | Parameter ranges/semantics remain those of the approved R1 requirement rows; this catalogue does not set new defaults. |
+| Grain window and interpolation | IGrainWindowBank::lookup; GrainWindow::evaluate; IGrainWindowTransition::processActiveGrains; IGrainInterpolator::sample; IGrainNormalizer::gainForCount | Active-grain transition must be click-safe; implementation and performance evidence remain later work. |
+| Chord and scale | IChordProcessor::expand/distributeAcrossGrains/stackVoices; IChordRecorder::capturePlayedNotes; IGranularArpeggiator::eventsForBlock; IScaleQuantizer::quantizeNote; ChordSlotSet::validate | Preserve approved chord, duplicate-note, lowest-note and per-engine distribution semantics. |
+| Sampler | ISamplerVoice::start/process/retrigger; IPlaybackHead::advance; ISamplerLoopController::resolveBoundary/onVoiceRelease; ISamplerInterpolator::sample | Sampler is an R1 engine. No Slice/Tape/Spectral behavior is introduced. Env pile-up default remains OFF per DEC-037. |
+| Modulation and macros | ILfo::advance/phaseMode/bindDestination; IModulationMatrix::addRow/evaluate/copyRow/pasteRow/deleteRow; IModulationSourceRegistry::read; IModulationAssignmentService::assign; IMacroBank::value/resolveDestinations; IModulationMonitor::snapshot | Ten macros per patch (DEC-036); LFO Poly/Mono per DEC-024; base macro values remain distinct from per-voice contributions (DEC-031). |
+| Sequencer and patterns | ISequencer::eventsForBlock; ISequencerModulationLane::evaluate; ISequencerTimingGrid::quantize; IPatternStore::requestSwitchAtBarBoundary; ISequencerEditService::beginDraft/commitAtBarBoundary/undo/redo; ISequencerFillController::setIntensity/trigger; ISequencerMuteController::setLayerMute/setStepMute; ILayerDroneController::setLatchedNote; ILayerPerformanceController::setMix/setPosition | Central sequencer controls four layers per DEC-019. Writer precedence remains AR-01 open. |
+| MIDI and transport | Existing IMidiEventRouter::routeHostEvents/routeDeviceEvent; existing ITransport::snapshotForBlock/acceptMidiClock; IMpeDecoder::decode; ILayerMidiChannelMap::matches; IMidiLearnService::bind; IControllerMap::apply/dispatchEssentialOperation/resolveConflict; IProgramChangeRouter::recallMappedProgram; IMidiChannelModeHandler::apply | Preserve DEC-033/034/038/039 and DEC-021; no MIDI feedback or named-controller templates in R1. |
+| Effects | IEffectChain::reorder/process; IEffectSlot::setMix/setSends/process; IEffectFactory::create; IEffectTailPolicy::onPresetSwitch | Four serial slots per layer, seven R1 effect types per DEC-023; these are distinct dimensions. |
+| Sample, edit and recording | Existing ISampleStore::prepareAsset and ISampleAsset::metadata/channelData; ISampleImportService::decode/prepare; ISampleBrowser::search/audition; ISampleDropAdapter::acceptFileDrop; ISampleNormalizer::normalizeOnImport; ISampleRegionController::setFlags; ISampleEditService::crop/softCut/normalize; ISampleExportService::exportWav; existing IRecorder::processCapture/status/requestSnapshot; IRecordingController::start/stop; IRecordingBufferPolicy::reserve/initialize; IRecordingPlayhead::position | Import/edit/export are non-RT. Recording writes are bounded and preallocated. Sample replacement retains active readers and uses IF-03. |
+| Freeze and memory | Existing IFreezeController::requestLayerFreeze/requestGlobalFreeze/requestThaw/status; IMemoryAdmission::reserve/release | DEC-042 source-snapshot behavior approved. Retention leases, separate writable recording region and one global transaction are required; partial-preparation semantics remain owner-review open. |
+| Presets, state and editing history | Existing IStateService::captureSnapshot/serialize/inspectAndMigrate/prepareRestore; IPresetGraph::validate; IPresetLibrary::search/favorite/createInitPatch; IPatchTemplateService::applyToCurrentPatch; IPresetCodec::serialize/inspectAndMigrate; ISampleCollector::collect; ISampleRelinker::resolveByHash; IUndoHistory::apply/undo/redo; IClipboardService::copy/pastePatch/pasteLayer/pasteMatrixRow/pasteFxSlot; IPresetCommentStore::set/get | Preserve DEC-025 embedded unsaved recordings and external library sample references. Exact serialization encoding/chunk limits remain open. |
+| UI and observation | Existing IUiSnapshotSource::tryReadLatest; IWaveformViewModel::snapshot; IEngineControlMap::resolveEightKnobBank; IWindowShapeViewModel::shape; IEditorLayoutModel::resize/scale/navigate; ISharedEditorViewFactory::create; IEngineMetricsSnapshot::read; IProgressiveWaveformModel::publishPartialPeaks | UI consumes value snapshots, not mutable DSP pointers. Same editor component remains a product requirement; UI framework choice is not selected here. |
+| Verification and release | IRealtimeAudit::checkCallbackPath; IRandomStream::seed/nextForNote; IDspTestRegistry::casesForComponent; IRealtimeLoadAcceptanceProfile::evaluate; ReleaseValidationMatrix::auval/pluginval/hostMatrix; ReleasePackagingManifest::architectures/minimumMacOS/signAndNotarize; HostParameterManifest::appendOnlyLookup | These are planned test/build contracts, not executed validation. Q-T03, Q-T07, Q-T12 and Q-P09 remain open. No benchmark is authorized by this catalogue. |
+
+The exact C++ signatures, object layouts, ownership types and concrete test fixtures are still to be specified. The candidate names below are used by PHASE3_API_SYMBOL_TRACEABILITY.md to make the 124-row mapping auditable without silently freezing implementation details.
+
+### 14.1 Supporting value types and policy interfaces used by the traceability matrix
+
+The following supporting symbols are also candidate design vocabulary used by the 124-row matrix. They are listed here so every qualified symbol in the matrix has a declared home; they do not add product behavior or settle open policies.
+
+| Supporting symbol | Operation / role | Status or constraint |
+|---|---|---|
+| BuildMatrix | packageUniversal2 | Build-system concept only; architecture/deployment remains Q-T03 open. |
+| RenderCapacity | maxFramesPerBlock / lifecycleGeneration | Immutable per prepared render-resource generation; actual ProcessBlock::frames must not exceed it. No numeric maximum is selected. |
+| VoicePoolConfig | polyphonyLimit | Carries the approved per-layer voice limit; no pool capacity beyond product scope is implied. |
+| GrainPoolConfig | perVoiceLimit | Carries the approved per-voice grain ceiling; global budget remains AR-02 open. |
+| GrainRate / GrainParameters / GrainPosition | grainsPerSecond / sizeMilliseconds / normalizedDouble | Value types for existing R1 parameter ranges; no host parameter IDs are assigned. |
+| LfoConfig | rate / waveform / phase / defaultPhaseMode | Must preserve DEC-024 Mono default and per-LFO Poly/Mono selection. |
+| SamplerLayerConfig | envPileUpEnabled | Default remains OFF per DEC-037. |
+| IResampler | prepare | Non-RT preparation or explicitly bounded render-time strategy; final algorithm remains open. |
+| ISampleRatePolicy | prepareForRate | Coordinates rate changes off RT; must preserve GS-PLT-003/GS-NFR-010 without claiming untested support. |
+| IScanController | positionForBlock | Applies the approved sample-region/scan semantics; does not introduce additional scan modes. |
+| ISequencerPattern | eventAtStep | Data access for the single central sequencer; event limits follow DEC-019 and the R1 requirement. |
+| IPerformanceSet / IPerformanceBank | nextPattern / lookup | Separate sequencer performance ordering from explicit Program Change bank mapping (DEC-033). |
+| IParameterWriterPolicy | resolve | Placeholder for AR-01; no writer precedence is selected by naming this interface. |
+| IParameterRuntime | resetControllers | Reset-controller semantics remain distinct from All Notes Off and All Sound Off. |
+| IParameterSmoother | process | Applies the approved parameter-class smoothing contract; update class and smoothing order remain parameter-registry responsibilities, not a new product behavior. |
+| ParameterScaleVersion | versioned scale conversion | Preserves preset sound across schema versions; Q-T15 remains open. |
+
+No implementation or benchmark was run. If a future implementation uses different names or combines these responsibilities, update the traceability matrix rather than treating this candidate vocabulary as a binding ABI.
+
+
+
+### 14.2 Cross-format event and transport symbols — 2026-11-28
+
+| Candidate symbol | Responsibility | Boundary / open rule |
+|---|---|---|
+| HostProcessKind / HostProcessEnvelope | Distinguish audio render from control-only parameter flush | A flush has no audio frame range and never advances transport |
+| IHostEventAdapter | Translate AU/VST3 host events into bounded normalized batches | AU absolute sample time uses checked signed conversion; VST3 offsets remain block-relative |
+| EventSourceOrder | Preserve source identity and order within one source | Does not assign cross-source precedence |
+| EventBatch | Group independent events that share one sample offset | Conflicting writes remain under AR-01 |
+| ParameterAutomationCurve / AutomationCurvePoint | Preserve AU ramps and VST3 piecewise-linear parameter queues | VST3 relative position -1 is previous-block continuity metadata, not a discrete event |
+| MpeChannelKey / IAUMpeNoteIdentityAdapter | Map AU MIDI 1.0 MPE cable, negotiated zone, member channel and note lifecycle to source-note identity | AU same-pitch retrigger/matching and sustain remain AR-03; no fabricated note ID |
+| MpeChannelKey / IVST3MpeChannelAdapter | Map host-delivered MIDI 1.0 MPE on a VST3 event bus using channel/member-zone lifecycle | Required for hosts/modes that deliver channelized MPE (including Ableton Live's documented VST3 MPE mode); host-specific event trace required |
+| Vst3HostNoteKey / IVST3NoteExpressionAdapter | Map VST3 event-bus + valid noteId and Note Expression type/value | Optional VST3 Note Expression path; Pressure/Timbre type mapping remains AR-04 |
+| NoteInstanceId / IPerNoteExpressionRouter | Fan out one SourceNoteIdentity expression update to its associated layer-local voices | Preserve DEC-034; bounded fan-out, no duplicate layer update |
+| TransportFieldValidity | Mark sample/PPQ, tempo, time-signature, cycle and play-state fields independently valid or unavailable | Missing host data is not replaced with guessed defaults |
+| IHostTransportAdapter | Build one immutable normalized host transport snapshot per block | VST3 ProcessContext flags and AU callback success/optional fields are authoritative |
+
+These names refine the symbol crosswalk in `PHASE3_API_SYMBOL_TRACEABILITY.md`; they are candidate design vocabulary, not implemented classes or a frozen ABI.
+
+## 15. Cross-format event, automation and transport normalization — 2026-11-28
+
+The source-format adapters have different timestamp and automation representations. The shared core must preserve their semantics rather than flattening them into a single list of parameter steps. The detailed evidence and host gates are in `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md`.
+
+### 15.1 Process kind
+
+`ProcessBlock` represents an actual audio render only. A host callback that contains parameter/control updates but no audio buffers is represented as a separate control-only process envelope:
+
+```cpp
+enum class HostProcessKind : std::uint8_t {
+    AudioRender,
+    ParameterFlush
+};
+
+struct HostProcessEnvelope {
+    HostProcessKind kind;
+    FrameCount frames; // meaningful only for AudioRender
+    const TransportSnapshot* transport; // field-validity is explicit
+};
+```
+
+A VST3 zero-audio-bus Parameter Flush must not be converted into a fabricated zero-frame or silent audio render. It may apply permitted bounded parameter state, but it does not access audio scratch, advance transport, consume sequencer time or increment rendered-frame counters.
+
+### 15.2 Discrete event time
+
+- `TimedEvent::offset` is a validated block-relative offset in `[0, frames)` for discrete events only.
+- AU absolute `AUEventSampleTime` is converted using checked signed subtraction from the valid render-block sample-time anchor. Immediate scheduling is resolved at the AU adapter boundary. Negative host sample times are legal inputs to the conversion and must not wrap through an unsigned cast.
+- VST3 `Event::sampleOffset` is already block-relative. Preserve `busIndex`, `ppqPosition`, note identity and source-local event-list order.
+- Preserve source-local order for equal-offset events. Cross-source equal-offset events are emitted as one timestamp batch; do not assign a producer-arrival priority. Same-target write conflicts remain open under AR-01.
+- Future, stale, invalid and in-block timestamps remain distinct. Never clamp an event to sample zero or the final sample.
+
+### 15.3 Parameter automation is a curve, not a discrete event
+
+```cpp
+struct AutomationCurvePoint {
+    std::int32_t relativeSample;
+    double normalizedValue;
+    // relativeSample == -1 is reserved for the previous-block last-sample anchor.
+};
+
+struct ParameterAutomationCurve {
+    ParameterId parameter;
+    double previousBlockValue;
+    std::span<const AutomationCurvePoint> points;
+};
+```
+
+- AU zero-duration parameter events normalize to a step. A ramp event retains its start offset, ramp duration and target value, and is accepted only where the AU parameter is rampable. AUValue is in the AU parameter's declared range/unit; map AUParameterAddress to the canonical ID and convert through the descriptor's range/scale.
+- VST3 `IParamValueQueue` normalizes to piecewise-linear segments using the previous parameter value and ordered points. ParamValue is normalized to [0,1]; map ParamID to the canonical ID and convert through the descriptor before shared-core evaluation. An implicit initial point may be omitted. Relative position `-1` is a previous-block continuity anchor, not a current-block event; it must remain signed and must never be cast to `SampleOffset`, clamped to zero or discarded.
+- A VST3 jump's old/new point pair remains a step discontinuity at the specified sample boundary.
+- `TimedEvent::ParameterChange` means an instantaneous step only. It does not represent an AU ramp or VST3 automation curve.
+- Parameter-class smoothing remains separate from host automation reconstruction. Do not double-ramp or silently turn a ramp into a step; Q-T13 and parameter-class policy remain open.
+
+### 15.4 Transport validity
+
+The four-field illustrative `TransportSnapshot` in IF-08 is shorthand only. The normalized snapshot must include field-level validity for:
+- host timeline sample position and PPQ at block start;
+- bar-start PPQ and cycle start/end PPQ;
+- tempo and time signature;
+- playing, recording and cycle-active state;
+- transport source/authority and a discontinuity generation or equivalent seek/loop marker.
+
+AU musical-context and transport-state callbacks are independent and have independent success/optional-field semantics. VST3 ProcessContext fields are valid only when their state flags are set; a null context means unavailable. Missing tempo is not 120 BPM, missing PPQ is not zero, and absent transport state is not an invented stop.
+
+The adapter supplies one immutable block snapshot to the shared transport. The four layers do not query host transport independently. Valid host transport remains authoritative in AU/VST3; MIDI Clock does not become a second plugin clock master. Standalone still selects exactly one authority among internal clock, MIDI Clock and Ableton Link.
+
+### 15.5 Per-note identity
+
+Use an internal `NoteInstanceId`:
+- VST3 maps a valid `(eventBusIndex, noteId)` to the internal note instance. Missing note ID is not a valid per-note identity.
+- AU maps MPE member-channel expression using cable, negotiated zone/member channel and active note lifecycle. The exact ambiguous/retriggered same-pitch matching policy remains open; do not invent FIFO/LIFO semantics here.
+- If identity is unavailable, report per-note expression unavailable. Never substitute channel-wide pitch bend while claiming DEC-038 compliance.
+
+### 15.6 Deterministic merge boundary
+
+The merge key is first the validated sample offset, then source-local order within each source. Events from different sources at the same offset form a batch; a total cross-source priority is deliberately not specified. Host automation, MIDI mapping, sequencer parameter locks and UI writes that collide on one parameter remain subject to AR-01's future writer matrix.
+
+The adapter performs bounded validation/merge using preallocated storage. No host pointer, SDK interface, dynamic sort buffer or callback-owned event list is retained after the callback. Exact event/automation capacities and overflow policy remain Phase 5 gates.
+
+
+## 16. MPE note identity and lifecycle — 2026-11-28
+
+The candidate API catalogue now distinguishes:
+- SourceNoteIdentity: one incoming logical note before layer fan-out.
+- NoteInstanceId: one layer-local voice created from that source note.
+- MpeChannelKey: cable, negotiated zone, member channel and generation-checked channel lease.
+- Vst3HostNoteKey: event bus index plus valid host noteId.
+- NoteIdentityQuality: Exact, SharedChannel, Missing, Ambiguous or Stale.
+- IAUMpeNoteIdentityAdapter: AU cable, negotiated zone/member-channel lifecycle and source-note identity.
+- IVST3MpeChannelAdapter: MIDI 1.0 MPE channel/member-zone lifecycle delivered on a VST3 event bus; required for hosts such as Ableton Live when its documented VST3 MPE mode is used.
+- IVST3NoteExpressionAdapter: explicit VST3 event-bus + noteId and Note Expression type/value translation; a separate, optional host path.
+- IPerNoteExpressionRouter: per-note expression fan-out to associated layer voices.
+
+A shared input note can create multiple NoteInstanceIds under DEC-034; the source identity links those voices so per-note expression is applied once to each matching layer voice. A shared AU member channel is not a unique note identity: expression applies to every active note in that channel group.
+
+VST3 identity is keyed by event bus and valid noteId. Missing noteId (-1), duplicate live IDs and stale expression events are explicit failure states. Retain a VST3 mapping through voice release because Note Expression may arrive after Note Off while the voice is still released.
+
+AU identity is derived from cable, zone, member channel and note lifecycle. Zone state is per cable. Ambiguous same-pitch Note Off matching must be reported, not resolved by an undocumented FIFO/LIFO guess. A released voice must not follow a later channel reuse; the candidate is to snapshot expression at Note Off and detach it from the active member-channel group.
+
+The VST3 adapter must declare only supported Note Expression types through INoteExpressionController. Tuning is the candidate standard type for pitch. Pressure and Timbre require an explicit standard/custom type mapping; do not equate Pressure with Expression or Timbre with Brightness without a reviewed semantic contract.
+
+All identity tables, member-channel groups and fan-out lists are bounded, preallocated and generation-checked. Numeric capacities and overload policy remain Phase 5 gates. See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md and open questions AR-03…AR-05.
+
+## 17. MPE event normalization and lifecycle fixtures — 2026-11-28
+
+The shared-core MPE boundary is refined by PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. It distinguishes channelized MPE identity, scoped by ingress namespace (AU virtual cable, VST3 event bus or Standalone input port), zone, member channel and lease generation, from explicit VST3 Note Expression identity keyed by event-bus index plus valid noteId.
+
+Both paths normalize to SourceNoteIdentity and then to one NoteInstanceId per matching layer under DEC-034. The normalized trace preserves sample offset, source-local order, ingress path, identity quality, expression dimension/value and generation-safe identity. It must not synthesize note IDs, merge ingress namespaces or silently turn unavailable per-note identity into channel-wide expression.
+
+The fixture catalogue covers missing/duplicate/stale IDs, shared-channel behavior, same-pitch ambiguity, channel reuse, namespace/zone isolation, layer fan-out, semantic endpoints, block boundaries, Panic and bounded exhaustion. AR-03 (AU matching/sustain/reconfiguration), AR-04 (Pressure/Timbre type mapping) and AR-05 (public pitch metadata/conversion) remain open. No host codec, capacity, pass threshold, formal test ID or ABI is selected.

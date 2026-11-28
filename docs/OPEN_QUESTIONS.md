@@ -1,8 +1,11 @@
 # Open Questions
 
-**Version:** 0.6 (Phase 2 specification completion, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 0.9 (AUv3/AUv2 state failure-surface refinement, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
 
 **Change summary (v0.5 → v0.6):** Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16, Q-M01, Q-M05, Q-M06, Q-M11 and Q-M12 were resolved or tiered under the owner's explicit product-management delegation and recorded in DEC-022…DEC-037. Q-P18 is answered by DEC-018; MIDI and audio product behaviors were further settled by DEC-038…DEC-040; DEC-041 approves all 168 release-tier assignments. Six domain specifications, R1 Release Scope Matrix and R1 Acceptance Criteria are included. Architecture, numeric feasibility, remaining evidence and legal questions stay open for their proper gates.
+**Change summary (v0.6 → v0.7):** Added Q-T15 state I/O scheduling, capture-watermark, retention-lease, callback-context, cancellation and aggregate peak-admission evidence gates. No product decision or requirement tier changed.
+**Change summary (v0.7 → v0.8):** Added cross-host state-callback thread, AU failure-signalling, VST3 offline-context and coherent multi-source snapshot-freshness evidence gates. No product decision or requirement tier changed.
+**Change summary (v0.8 → v0.9):** Split AUv3 nullable dictionary semantics from AUv2 OSStatus semantics; documented the ClassInfoFromDocument restore fallback separately from save failure. No product decision or requirement tier changed.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -50,7 +53,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 ### Remaining gates
 
 - **Phase 2:** complete the domain specifications, R1 requirement/tier matrix, traceability and product-level acceptance criteria. Q-P07, Q-P08 and Q-P11 are now answered; technical format/host decisions remain Phase 3.
-- **Phase 3:** resolve Q-P02 (AU/VST3 and any other formats), Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), and the format-specific implementation of live input.
+- **Phase 3:** resolve Q-T01…Q-T17 (framework, macOS targets, DSP/resource budgets, parameter model, sample handling and plug-in integration), Q-P09/Q-P10 host/reference-machine details, and the format-specific implementation of live input. Freeze product semantics are resolved by DEC-042; technical resource and RT implementation remain open.
 - **Evidence/research:** Q-P13 (physical GR-MEGA access), Q-I15 (firmware roadmap 1.9–1.12), remaining manual ambiguities and undocumented behaviors.
 - **Legal/release:** Q-L01…Q-L07, product naming and distribution questions before release.
 
@@ -78,6 +81,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-P18 | Engine scope after R1 | Order Tape (L2) before Spectral (L3)? | Tape L2 before Spectral L3 | Phase 2 | **ANSWERED — DEC-018** |
 | Q-P19 | Main use case: studio sound design, live performance, or both? | Drives priority of sequencer, MIDI-controller templates, standalone features, CPU headroom targets | **ANSWERED (DEC-015, 2026-11-27):** both, and the instrument must be a genuine performance tool, not merely a plugin wrapper. Raises priority of Q-P05 (sequencer reassessment, docs/LIVE_PERFORMANCE_SPECIFICATION.md) and establishes DEC-016 (controller-only operability); does not itself decide Q-P12's specific-controller question | Phase 2 | **ANSWERED** |
 | Q-P20 | First-release engines | Granular-only · Granular + Sampler · broader engine set | Granular + Sampler in R1; Granular Slice deferred; Tape L2, Spectral L3 | Phase 2 | **ANSWERED — DEC-018** |
+| Q-P21 | R1 Freeze behavior | Source snapshot · grain/voice hold · post-FX latch · full engine pause | Source Snapshot: immutable current source region; voices/notes/transport/modulation/FX continue; independent recording continues; thaw crossfades back; global applies to all four layers; static samples report already static; state persists under DEC-025 | Phase 3 | **ANSWERED — DEC-042** |
 
 ---
 
@@ -99,7 +103,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-T12 | Parameter ID scheme and host exposure | Expose all (~1,000+) · curated subset | Expose all, stable string IDs, grouped per layer, macros first | Long automation lists vs. no "missing parameter" complaints. **Irreversible after first release.** | PROPOSED |
 | Q-T13 | Control-rate size for modulation | 8 / 16 / 32 / 64 samples | 16 (≤ 0.36 ms @ 44.1 kHz) | CPU vs modulation resolution; audio-class targets are interpolated anyway | PROPOSED |
 | Q-T14 | Interpolation default for granular | Linear (benchmark) · cubic Hermite · sinc | Cubic Hermite default, selectable | ~2× cost vs benchmark | PROPOSED |
-| Q-T15 | Preset file format | JSON · binary · JSON + binary sample chunks | JSON (human-readable, diffable) + external/embedded WAV | Size vs. transparency | PROPOSED |
+| Q-T15 | Preset/state container and migration | Binary · JSON manifest + binary chunks · host-native opaque state | Versioned JSON manifest + binary audio chunks; external library references; embed unsaved recording/Freeze payloads in DAW document state per DEC-025/042. Exact payload encoding, compression, host mapping, user-preset scope and migration policy remain open. | Transparency vs. payload size, host limits and compatibility | PROPOSED |
 | Q-T16 | Audio file decoding | AudioToolbox only · libsndfile/dr_libs | AudioToolbox primary, portable fallback | Platform lock-in vs. dependency | PROPOSED |
 | Q-T17 | Supported sample rates, buffer sizes, latency (REQ-AUD-005) | 44.1–48 kHz only · 44.1–96 · 44.1–192 kHz; buffers 32–2048 · 16–4096 | 44.1–192 kHz, 16–4096 frames, variable block size; 0 added latency except spectral | Wider range = more test matrix | PROPOSED |
 
@@ -184,4 +188,55 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-L06 | Reference implementations of published algorithms (e.g. RTPGHI in GPL toolboxes) | Implement from papers, not from GPL code, unless licence-compatible. | OPEN |
 | Q-L07 | Manual-derived documentation | Our docs paraphrase the manual with page references for internal use; do not redistribute manual text or screenshots. | PROPOSED |
 
+## G. Phase 3 MPE reset and state-restore gate
+
+| ID | Question | Dependency / evidence | Status |
+|---|---|---|---|
+| AR-06 | When state restore commits while notes/voices are active, should old voices terminate or finish as non-addressable tails under the old immutable runtime generation? | Owner decision; then host tests for held notes, release tails, VST3 noteId/member-channel reuse and controller synchronization | OPEN — owner decision required |
+
+See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md. CC 121/123/120 remain distinct; no new product requirement or default controller value is approved.
+
 *End of OPEN_QUESTIONS.md*
+
+## H. Q-T15 state I/O scheduling and memory-admission evidence — 2026-11-28
+
+The State I/O Scheduling Audit adds engineering evidence gates without changing DEC-025, DEC-042 or product scope:
+
+- Define and verify the per-source committed-frame watermark used by a save snapshot; a stale prepared descriptor must not be reported as a successful DAW document save.
+- Verify retention leases/ring-wrap behavior while recording continues into reserved writable capacity; lease exhaustion must fail capture without stopping or corrupting the recording.
+- Record actual AU/VST3 callback thread/context in normal and offline modes; no render-thread acknowledgement wait, disk I/O or unbounded capture is permitted.
+- Observe AU dictionary Data materialization and VST3 IBStream short-transfer behavior only in an owner-authorized host prototype.
+- Define bounded in-flight save/restore jobs and aggregate physical-memory/retention admission; exact capacities and numeric budgets remain unapproved.
+- Verify cancellation releases leases only after all serializer/copy readers are quiescent.
+- Preserve the distinction between required DAW document payloads and unresolved user-preset payload scope.
+
+See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. These are Q-T15/Q-P09 engineering gates, not new owner-approved product behavior. AR-06 and the mixed-layer Global Freeze preparation-failure policy remain open; no decision is inferred here.
+
+
+## I. Cross-host state callback and snapshot freshness evidence — 2026-11-28
+
+The new `PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md` records additional Q-T15/Q-P09 engineering gates:
+
+- Determine the actual AU state-property callback thread and render overlap in Logic Pro, Ableton Live and REAPER. Apple does not specify a universal callback thread; AUv3 getters are nullable dictionaries, while the bridged AUv2 AudioUnitGetProperty surface returns OSStatus.
+- Verify AUv3 nil-to-AUv2 bridge mapping and AUv2 non-success OSStatus handling during save in each AU host. Separately verify the documented ClassInfoFromDocument-to-ClassInfo fallback during document restore; a preset-only fallback must not be counted as a complete DEC-025 restore.
+- Verify VST3 component state callbacks while Processing and host-visible handling of non-success `tresult`, short stream transfers and invalid state.
+- Include the Steinberg offline same-thread get/set-state clarification as supplemental evidence; do not generalize it into a guarantee for every host.
+- Publish/read one coherent capture-boundary vector across all required recording/Freeze sources. Independent per-source watermark reads can produce a torn snapshot.
+- Reject stale descriptors; never report a successful DEC-025 document save with stale or missing required audio.
+- Record Bitwig hosting mode and per-process/aggregate memory in any future authorized prototype.
+
+These are technical evidence gates, not owner product decisions. Q-T15 and Q-P09 remain open; DEC-025/DEC-042 and AR-06 are unchanged. No host prototype or benchmark is authorized by this update.
+
+
+## J. AU state failure-surface evidence — 2026-11-28
+
+The dedicated **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md** refines the earlier AU failure shorthand:
+
+- AUv3 **fullState** and **fullStateForDocument** are nullable dictionary properties without a separate error result in the getter signature. The public documentation does not define the nil-to-AUv2 bridge mapping or host save behavior.
+- AUv2 **AudioUnitGetProperty** returns OSStatus; this is an explicit API-level result, not proof of host project-save rollback.
+- Apple's documented ClassInfoFromDocument fallback to ClassInfo applies to document **restore** when the document property errors or is unimplemented. It is not a save-time fallback rule.
+- A preset-only ClassInfo fallback cannot satisfy DEC-025 if required unsaved-recording or Freeze chunks are absent.
+- AUv2 Core Foundation state objects are owned references that must be released. Deep-copy behavior for nested Data is not inferred; account only for actual materialization/copies.
+- Logic, Live and REAPER save/restore outcomes remain unobserved. Q-T15/Q-P09 stay open; no error code, payload-scope change or host certification is selected.
+
+No product decision or requirement tier changes. See the dedicated audit for Phase 5 fixtures and source register.
