@@ -55,6 +55,14 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 - Each filter independently exposes 6, 12, 18 or 24 dB/oct slopes and a resonance control.
 - Filter topology, resonance range/curve and DSP realization are technical decisions and are not fixed by this product behavior decision.
 
+### 2.6 Per-voice sub-oscillator
+
+- R1 includes a per-voice sub-oscillator with a fixed **sine** waveform (DEC-054).
+- R1 does not expose a waveform selector.
+- Frequency options are −1 or −2 octaves relative to the played note; level, poly balance and quantization remain available.
+- Sub-oscillator quantization follows the canonical scale/pitch quantization contract in GS-CHD-005.
+- Oscillator implementation and detailed level response remain technical/acceptance details.
+
 ## 3. Live audio, Freeze and recording
 
 - Every layer can receive live external audio as a source for granular processing.
