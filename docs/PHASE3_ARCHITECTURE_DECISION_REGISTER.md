@@ -1,8 +1,8 @@
 # Phase 3 Architecture Decision Register
 
-**Version:** 0.3 — AU and VST3 component validation gates refined  
+**Version:** 0.4 — state callback and snapshot freshness evidence gates refined  
 **Status:** Recommendations for owner review. None of the proposed technical decisions below is approved by this document.  
-**Authority:** `OPEN_QUESTIONS.md` v0.6, `DSP_ARCHITECTURE.md` v0.6 candidate, and the Phase 3 supporting specifications.
+**Authority:** `OPEN_QUESTIONS.md` v0.8, `DSP_ARCHITECTURE.md` v0.6 candidate, and the Phase 3 supporting specifications.
 
 ## 1. Recommended decisions
 
@@ -22,7 +22,7 @@
 | Q-T12 | Parameter IDs/host exposure | Stable canonical string IDs plus explicit append-only numeric host-ID manifest; expose all explicitly automatable R1 parameters; exclude structural actions | Review `PARAMETER_ID_SPECIFICATION.md`; generate full inventory and validate AU/VST3 mapping | Owner approval required before any public build |
 | Q-T13 | Modulation control rate | 16-sample control sub-block for control-rate sources; interpolate audio-rate destinations | Fast modulation, aliasing/zipper and CPU tests | Approve after tests |
 | Q-T14 | Granular interpolation | Cubic Hermite default; retain Linear selectable; Sampler has its required polyphase/windowed-sinc option | Frequency response, aliasing and full-polyphony CPU comparison | Approve after tests |
-| Q-T15 | Preset/state container and migration | Versioned JSON manifest plus binary audio chunks; external library references; AU/VST3 adapters transport the same canonical state through host-specific APIs. DAW document state embeds unsaved recordings and Freeze snapshots. | Validate AU dictionary/Data representation, VST3 IBStream short-transfer behavior, host payload/deadline limits, committed-frame capture watermark, stale-snapshot rejection, retention-lease lifecycle, concurrent save/restore admission, cancellation, interrupted save, size/corruption, schema migration and peak memory admission. User-preset payload scope remains open. | Approve the container only after host validation; exact framing/codec/limits remain unapproved |
+| Q-T15 | Preset/state container and migration | Versioned JSON manifest plus binary audio chunks; external library references; AU/VST3 adapters transport the same canonical state through host-specific APIs. DAW document state embeds unsaved recordings and Freeze snapshots. | Validate AU dictionary/Data representation and nil failure semantics; VST3 IBStream short-transfer and `tresult` propagation; realtime/offline callback context; coherent multi-source capture-boundary publication; stale-snapshot rejection; retention leases; concurrent save/restore admission; cancellation; interrupted save; size/corruption; schema migration and peak memory. User-preset payload scope remains open. | Approve the container only after host validation; exact framing/codec/limits remain unapproved |
 | Q-T16 | Audio decoding | AudioToolbox primary for R1 WAV/AIFF/FLAC; add a portable decoder only if required variants fail validation | Test exact required bit depths, float PCM, malformed files and Intel/Apple Silicon parity | Approve conditionally after format tests |
 | Q-T17 | Rates/buffers/latency | Retain proposed 44.1–192 kHz, 16–4096 frames and variable blocks as target matrix; zero added R1 latency | Validate on reference machine and every target host; revise only with evidence | Approve after host/engine validation |
 
@@ -95,3 +95,17 @@ These questions refine GS-MID-002 and DEC-038 without changing product scope. Se
 | AR-06 | When state restore commits while notes/voices are active, terminate old voices at commit or let them finish as non-addressable tails under the old immutable runtime generation? | Never persist or rebind old host-note identities; make audible old-voice treatment an explicit owner choice | Owner decision, then fixtures for held notes, release tails, reused VST3 noteId/member channel and controller synchronization | OPEN — owner decision required |
 
 AR-06 changes audible behavior and cannot be inferred from DEC-025. No behavior is selected by this register.
+
+
+## 8. State callback and freshness evidence gate
+
+| Gate | Candidate requirement | Evidence needed | Status |
+|---|---|---|---|
+| AU callback context | Do not assume a UI/non-RT caller or render suspension | Callback thread and render-overlap trace in each target AU host | OPEN — Q-P09 |
+| AU failure signal | Never return stale state as successful; do not assume nil aborts save | Host-visible handling of nil/failed document-state getter | OPEN — Q-T15/Q-P09 |
+| VST3 concurrency | State calls may occur while Processing; process-owned state remains immutable to callback readers | Concurrent get/set-state and process trace; offline context included | OPEN — Q-T15/Q-P09 |
+| VST3 failure propagation | A non-success result/short stream must not produce a successful truncated project | Host-visible save/restore result and rollback behavior | OPEN — Q-T15/Q-P09 |
+| Capture-boundary coherence | One state epoch and one coherent watermark vector across all required sources | Multi-source staggered-commit fixture; torn-vector rejection | OPEN — Q-T15 |
+| Freshness | A descriptor must match the capture token; stale descriptors cannot satisfy DEC-025 | Commit-before/after-boundary and stale-descriptor fixtures | OPEN — Q-T15 |
+
+This section adds evidence requirements only. It does not select an AU failure policy, callback primitive, capture ABI, callback deadline or owner-visible product behavior.
