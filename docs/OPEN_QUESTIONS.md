@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 0.8 (Q-M03 resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 0.9 (Q-M03 and Q-M04 One-Shot subdecision, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v0.8 → v0.9):** Q-M04 One-Shot subdecision is answered by DEC-044: complete the current scan cycle, stop spawning new grains, and let existing grains finish their envelopes. The Scan mode count and exact Bounce/Wrap/Kill/Stop transitions remain open.
 
 **Change summary (v0.7 → v0.8):** Q-M03 is answered by DEC-043: retain the last valid Rate/Size values inside the Scan near-zero region; epsilon and initialization/reset details remain technical acceptance work.\n\n**Change summary (v0.6 → v0.7):** Q-M15 and Q-I16/Q-I18 are explicitly deferred as non-R1 benchmark behaviors; Q-I17 is marked benchmark-only because DEC-032 and GS-MOD-004 define the R1 XY pad. R1 product semantics and approved decisions are unchanged.
 
