@@ -420,7 +420,7 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 | MOD-008 macros | MOD-003 | Macros are matrix sources and destinations |
 | SEQ | Transport abstraction (Arch §11), MOD (mod lanes, p-locks) | p-locks override registered parameters |
 | SMG-008…012 (live input) | Q-P06 (plugin input bus), ARC-006/007 | Bus layout and AU component type |
-| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Freeze is switchable per layer and globally; its semantics are a Phase 3 architecture decision and are not specified at requirement level |
+| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Per-layer/global Source Snapshot behavior is approved by DEC-042 and specified in FREEZE_BEHAVIOR_SPECIFICATION.md; implementation and resource validation remain Phase 3/5 |
 | FX | Parameter registry, ARC-007 | Slot host + registered FX params |
 | PRS | Parameter registry, SMG (sample refs), Q-P07/Q-P08 | Serialization of every registered parameter + sample references |
 | MID | Parameter registry, VOI (MPE voice mapping) | MIDI learn binds to parameter IDs; MPE binds to voices |
