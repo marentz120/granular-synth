@@ -84,6 +84,8 @@ These are explicit review gates, not silently resolved design assumptions.
 
 ## 7. Phase 5 test-design priorities
 
+A companion blueprint, `PHASE5_R1_ACCEPTANCE_TEST_DESIGN.md`, has now been added. It assigns all 71 unlinked requirements to shared test families, proposes observable oracles, fixture sequences, evidence artifacts and explicit dependency/measurement gates. The canonical backlog remains the per-requirement intent/evidence/dependency register. Neither document claims formal AC approval or executed tests.
+
 1. Convert each essential live operation into a controller-only test case: setup, target scope, input event, expected state transition, visible confirmation and failure recovery.
 2. Add acceptance coverage or cross-cutting rationale for the 71 requirements identified by Phase 3.
 3. Test per-layer target isolation, including mappings whose target layer differs from current UI focus.
