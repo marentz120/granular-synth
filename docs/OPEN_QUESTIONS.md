@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 1.8 (Q-I08 pan-spray distribution resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 1.9 (Q-I12 R1 sub-oscillator waveform resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.8 → v1.9):** Q-I12 is answered by DEC-054: R1 sub-oscillator uses a fixed sine waveform and exposes no waveform selector. Existing −1/−2 octave, level, poly-balance and quantization controls remain. Oscillator implementation and level response remain technical/acceptance details.
 
 **Change summary (v1.7 → v1.8):** Q-I08 is answered by DEC-053: Uniform samples evenly over the legal spread interval; Centre Weighted uses a normalized triangular density peaking at base pan and tapering linearly to the available spread limits. Pan-spray amount zero preserves base pan; each grain samples independently at spawn. Seeded tolerance/sample-size details remain test gates.
 
@@ -171,7 +173,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-I09 | Auto-slice detection algorithm | p.46 | Our own design (spectral-flux onset detector) — no investigation needed beyond A/B feel | PROPOSED |
 | Q-I10 | Gran filter analysis (centroid map) | p.56 | Our own design: per-window spectral centroid map computed on load | PROPOSED |
 | Q-I11 | Full scale list incl. microtonal | p.54 | Use standard scale set + Scala import | PROPOSED |
-| Q-I12 | Sub-oscillator waveform | — | Unit / videos; default sine | OPEN |
+| Q-I12 | Sub-oscillator waveform | — | **Answered — DEC-054:** fixed sine waveform in R1; no waveform selector. Preserve −1/−2 octave, level, poly-balance and quantization controls. Oscillator implementation and level response remain technical/acceptance details. | ANSWERED — DEC-054 |
 | Q-I13 | Phase-vocoder hop/overlap/window | — | Our own design (Q-T11) | PROPOSED |
 | Q-I14 | Resonator scale list ("inharmonic e.g. metal rods") | p.86 | Physical-model mode tables (bars, plates) — our design | PROPOSED |
 | Q-I15 | Firmware changes and roadmap | Release notes 1.8.0–1.8.4 reviewed → feature map §16. Roadmap 1.9–1.12 (Dec 2026–Jul 2027) not yet reviewed | Review roadmap at Phase 2 start | OPEN |
