@@ -163,3 +163,39 @@ These are planned validation obligations, not test results. Numeric memory headr
 
 No owner decision is inferred by this audit. No framework, AU component type, plugin bus maximum, numeric memory budget or implementation is selected.
 
+
+
+## 9. State serialization and migration working-set admission
+
+State save/restore has a separate peak working set from steady-state audio rendering. Admission must account for the maximum simultaneously live physical payloads, not only the final state-file size.
+
+Candidate accounting:
+
+M_state_peak = M_old_active + M_snapshot_payloads + M_candidate_payloads + M_manifest_directory + M_transport_staging + M_codec_workspace + M_digest_workspace + M_retirement
+
+Interpretation:
+
+- M_old_active includes the active graph and any sample/recording/Freeze assets retained until the restore commit and reader retirement.
+- M_snapshot_payloads includes immutable recording and Freeze regions retained while save is in progress. A shared immutable asset is counted once; a physical copy is counted separately.
+- M_candidate_payloads includes decoded/prepared embedded recordings, Freeze snapshots and any sample conversion needed by the restored candidate.
+- M_manifest_directory includes the manifest, chunk table, validation metadata and migration representation.
+- M_transport_staging includes only buffers actually owned/materialized by the adapter. Borrowed host stream memory is not charged as engine-owned.
+- M_codec_workspace and M_digest_workspace are included only if compression or digest calculation uses additional workspace. Both remain non-RT and require admission.
+- M_retirement includes old generations awaiting safe non-RT destruction.
+
+Host-specific distinction:
+
+- AU fullState/fullStateForDocument are dictionary-shaped. If a target host/API path materializes the embedded payload as one or more complete Data values, count the complete materialized bytes plus any immutable source snapshot. Do not assume an incremental streaming path.
+- VST3 IBStream permits incremental read/write calls, but the adapter still needs a bounded transfer buffer and the host may internally buffer its own stream. Do not count unknown host-owned memory as engine memory, and do not claim that the host streams to disk without evidence.
+- Standalone file serialization can stream bounded slices from immutable snapshots; the application-owned I/O worker and any OS cache are distinct from render scratch.
+
+Required invariants:
+
+1. Use checked 64-bit arithmetic for total/container/chunk lengths and verify conversion to size_t and host API argument widths before allocation or transfer.
+2. Reserve memory for old active state + candidate state + snapshots + transfer/decode staging + pending retirement before restore publication.
+3. Do not double-count a shared immutable library asset; do count Freeze copies, AU Data materialization, decode output and staging copies.
+4. Release reservations only after the corresponding non-RT owner has disposed of the payload or the old runtime is no longer readable.
+5. If admission fails, preserve the previous active state and all valid in-memory recordings; never silently omit DEC-025/DEC-042 payloads.
+6. No compression, digest, allocation, file I/O or host-stream transfer is performed by the audio callback.
+
+No maximum embedded-state size, AU materialization limit, VST3 transfer-slice size, codec workspace, compression ratio, warning threshold or process-memory budget is set. Q-T15/Q-T07 and host prototypes remain gates. This section contains accounting requirements only; no benchmark or memory measurement was performed.
