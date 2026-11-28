@@ -219,3 +219,9 @@ Cross-host assertions:
 - Verify zone/member-channel count, shared-channel identity, same-pitch retrigger, sustain, channel reuse, and DEC-034 layer fan-out.
 - Verify the host's actual pitch-bend configuration at minimum, center and maximum; DEC-038 does not imply that every host defaults to ±48.
 - No host prototype, performance benchmark or numeric pass threshold is authorized by this backlog.
+
+## 8. Detailed MPE event normalization and lifecycle fixtures
+
+The broad MPE families in §§6–7 are refined by PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. It supplies deterministic symbolic sequences for VST3 valid/missing/duplicate/reused note IDs; channelized shared-member-channel expression; same-pitch ambiguity; member-channel reuse; cable/event-bus/zone isolation; DEC-034 fan-out; semantic endpoints; event ordering; Panic and bounded identity exhaustion.
+
+The catalogue distinguishes **Invariant verified**, **Invariant failed**, **Decision-gated** and **Host-unverified** outcomes. It creates no formal test IDs or passing results. AR-03…AR-05, Q-P09, exact capacities, formal AC grouping and host execution remain open.
