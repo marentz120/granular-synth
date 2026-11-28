@@ -724,7 +724,10 @@ No implementation or benchmark was run. If a future implementation uses differen
 | EventSourceOrder | Preserve source identity and order within one source | Does not assign cross-source precedence |
 | EventBatch | Group independent events that share one sample offset | Conflicting writes remain under AR-01 |
 | ParameterAutomationCurve / AutomationCurvePoint | Preserve AU ramps and VST3 piecewise-linear parameter queues | VST3 relative position -1 is previous-block continuity metadata, not a discrete event |
-| NoteInstanceId / IMpeNoteIdentityAdapter | Map native VST3 noteId or AU MPE member-channel lifecycle to internal per-note identity | AU retrigger/matching policy remains open; missing identity cannot fall back to channel-wide pitch bend |
+| MpeChannelKey / IAUMpeNoteIdentityAdapter | Map AU MIDI 1.0 MPE cable, negotiated zone, member channel and note lifecycle to source-note identity | AU same-pitch retrigger/matching and sustain remain AR-03; no fabricated note ID |
+| MpeChannelKey / IVST3MpeChannelAdapter | Map host-delivered MIDI 1.0 MPE on a VST3 event bus using channel/member-zone lifecycle | Required for hosts/modes that deliver channelized MPE (including Ableton Live's documented VST3 MPE mode); host-specific event trace required |
+| Vst3HostNoteKey / IVST3NoteExpressionAdapter | Map VST3 event-bus + valid noteId and Note Expression type/value | Optional VST3 Note Expression path; Pressure/Timbre type mapping remains AR-04 |
+| NoteInstanceId / IPerNoteExpressionRouter | Fan out one SourceNoteIdentity expression update to its associated layer-local voices | Preserve DEC-034; bounded fan-out, no duplicate layer update |
 | TransportFieldValidity | Mark sample/PPQ, tempo, time-signature, cycle and play-state fields independently valid or unavailable | Missing host data is not replaced with guessed defaults |
 | IHostTransportAdapter | Build one immutable normalized host transport snapshot per block | VST3 ProcessContext flags and AU callback success/optional fields are authoritative |
 
@@ -818,9 +821,10 @@ The candidate API catalogue now distinguishes:
 - MpeChannelKey: cable, negotiated zone, member channel and generation-checked channel lease.
 - Vst3HostNoteKey: event bus index plus valid host noteId.
 - NoteIdentityQuality: Exact, SharedChannel, Missing, Ambiguous or Stale.
-- IMpeNoteIdentityAdapter: AU member-channel lifecycle and zone mapping.
-- IVST3NoteExpressionAdapter: VST3 noteId and Note Expression type translation.
-- IPerNoteExpressionRouter: fan-out of one source-note expression update to its associated layer voices.
+- IAUMpeNoteIdentityAdapter: AU cable, negotiated zone/member-channel lifecycle and source-note identity.
+- IVST3MpeChannelAdapter: MIDI 1.0 MPE channel/member-zone lifecycle delivered on a VST3 event bus; required for hosts such as Ableton Live when its documented VST3 MPE mode is used.
+- IVST3NoteExpressionAdapter: explicit VST3 event-bus + noteId and Note Expression type/value translation; a separate, optional host path.
+- IPerNoteExpressionRouter: per-note expression fan-out to associated layer voices.
 
 A shared input note can create multiple NoteInstanceIds under DEC-034; the source identity links those voices so per-note expression is applied once to each matching layer voice. A shared AU member channel is not a unique note identity: expression applies to every active note in that channel group.
 
