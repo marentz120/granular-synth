@@ -266,3 +266,15 @@ See [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_
 The host manuals support different levels of general project/preset persistence, but none of the reviewed material proves the complete DEC-025 custom embedded-recording payload plus DEC-042 Freeze-snapshot round-trip, atomic failure behavior, callback timing or bus activation persistence for GRANULAR SYNTH. Keep these as host-prototype gates. Do not reduce the product's required embedded payload to fit a host assumption; if a host cannot meet DEC-025 within its permitted state contract, report a compatibility blocker rather than silently omit audio.
 
 The matrix also distinguishes host UI reset, plug-in process reload, AU/VST3 processing lifecycle and project-state restore. AR-06 remains open; no old-voice audible policy is selected.
+
+## 13. State-save capture watermark and I/O scheduling — 2026-11-28
+
+- A save snapshot is defined by a state generation plus a per-recording source generation and latest fully committed frame watermark. The in-flight partial block is excluded; metadata and audio must describe the same generation/range.
+- A committed-frame watermark alone does not make rolling-ring memory immutable. Every off-thread read requires a generation-checked retention lease or a pre-reserved immutable copy.
+- Required DEC-025 recording chunks and DEC-042 Freeze chunks form one document-state transaction. If any required chunk cannot be retained or validated, the state is not marked complete and no reduced-success payload is returned.
+- The host adapter may consume a prepared immutable snapshot. It must not wait for the render thread or return a stale descriptor as a successful document save. Callback-time capture is permitted only when the host callback contract allows bounded work.
+- AU fullState/fullStateForDocument must account for any complete Data materialization; VST3 IBStream must use bounded transfers and check short progress. Host callback context and payload limits remain Q-P09/Q-T15 evidence gates.
+- A save lease remains active until all serializer/copy readers stop. Cancellation, stream failure and admission failure release resources off-render and leave the recording active and intact.
+- Standalone file saves use a non-render I/O worker. Host-owned AU/VST3 state callbacks follow the actual host contract and cannot inherit standalone asynchronous-file assumptions.
+
+See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. This addendum does not decide user-preset payload scope, a numeric capture lag/deadline, host callback strategy or maximum state size.
