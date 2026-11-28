@@ -118,7 +118,17 @@ Per-file before: `tests/support/src/RtGuard.cpp` 42, `tests/support/include/gs/t
 
 The change is formatting only, verified mechanically: with all whitespace stripped, five of the six files are byte-identical to their previous contents. The sixth, `tests/unit/RtGuardTest.cpp`, differs only by two swapped `#include` lines — `SortIncludes` treats `RtGuard.h` as that file's main header (LLVM's `IncludeIsMainRegex`) and promotes it; its non-include content is byte-identical ignoring whitespace. Local verification after formatting: `macos-debug` and `macos-release` both build with 0 warnings and pass 6/6 CTest entries (harness 12/12), and both `-Werror` CI presets are clean.
 
-**Still unconfirmed by CI.** The clang-format job has not yet been observed passing on a GitHub runner for the formatted tree; a run on the formatting commit is required before the formatting check may be described as green. The toolchain used locally is clang-format 23.1.6 built from source on macOS 12/x86_64 (no Homebrew bottle exists for that configuration), which matches the CI job's version but not its host.
+**Confirmed by CI.** GitHub Actions run [#46118795550](https://github.com/marentz120/granular-synth/actions/runs/46118795550) on commit `87970fe` reports every job green, including the formatting job that previously failed:
+
+| Job | Run on `5fe2dfb` (pre-fix) | Run on `87970fe` (post-fix) |
+|---|---|---|
+| `clang-format (advisory)` | **failure** | **success** |
+| `macos-15-intel / ci-debug` | success | success |
+| `macos-15-intel / ci-release` | success | success |
+| `macos-15 / ci-debug` | success | success |
+| `macos-15 / ci-release` | success | success |
+
+Toolchain note: the local clang-format 23.1.6 was built from source on macOS 12/x86_64, because no Homebrew bottle exists for that configuration. It matches the CI job's version but not its host; the CI run above is the authoritative confirmation.
 
 ### Explicitly NOT validated
 
