@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — All Requirements Audit
 
-**Version:** 0.2  
+**Version:** 0.3  
 **Date:** 2026-11-28  
 **Branch:** `phase4/ui-ux-specification`  
 **Status:** Documentation audit; owner and technical gates remain open.  
@@ -163,6 +163,8 @@ Numeric CPU, memory, latency, load-time and responsiveness thresholds are not ap
 - This audit does not authorize production DSP, plugin/UI implementation, host prototypes, benchmarks, test execution, merge or release.
 
 ## 6. Recommended closure order
+
+The detailed decision-by-decision owner, technical, host, UI/UX, legal and release register is maintained in `PHASE5_DECISION_CLOSURE_REGISTER.md`. It separates product decisions that may fall under the documented product-management delegation from technical, legal and owner-only gates.
 
 1. Close the nine R1 behavior details in §4.1 and reconcile their source questions with the authoritative domain specifications.
 2. Resolve AR-01/02 and the owner-only AR-03…AR-06 decisions; decide the mixed Global Freeze transaction behavior.
