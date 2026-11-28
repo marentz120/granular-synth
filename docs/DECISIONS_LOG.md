@@ -65,6 +65,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-045 | R1 Granular Scan exposes exactly three scan modes: Bounce, Wrap and Kill. One-Shot is a separate playback/scan-cycle behavior, not a fourth Scan mode; its completion behavior is defined by DEC-044. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. Resolves the mode-count ambiguity in Q-M04. Exact Kill behavior and its relationship to explicit Stop/Panic remain to be specified; this decision does not define those transitions. |
 
+| DEC-046 | R1 grain-count normalization uses an inverse-square-root law: per-grain gain scales as 1/√N relative to the single-grain reference, where N is the active grain count in the applicable normalization domain. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. Resolves the normalization-law choice in Q-M09. The exact counting domain, transition smoothing, ON/OFF unity/reference behavior, and four-layer peak/headroom oracle remain technical/acceptance details; this is not a limiter or a guarantee against all clipping. Benchmark loudness matching requires separate authorized measurement. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
