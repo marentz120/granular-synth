@@ -368,3 +368,16 @@ The following are candidate service boundaries for existing requirements/decisio
 | GS-NFR-001 | `RenderCommitPublisher.publishWatermark` | Bounded commit metadata only; no allocation, blocking, hashing, I/O or final destruction on render | RT instrumentation |
 
 The 124-row R1 inventory and 53/124 existing acceptance-or-release-gate link baseline are unchanged. Candidate symbols do not count as acceptance coverage. No AC IDs or formal test IDs are created.
+
+
+## 17. AU state failure-surface traceability extension
+
+| Requirement / decision | Candidate operation or type | Required observable contract | Gate |
+|---|---|---|---|
+| DEC-025 | **AUv3DocumentStateProvider.fullStateForDocument** | Return only a complete, fresh document dictionary containing every required audio chunk; nil mapping is host/bridge evidence, not assumed failure propagation | AUv3 bridge + host prototype |
+| DEC-025 | **AUv2ClassInfoProvider.getProperty(ClassInfoFromDocument)** | Preserve actual OSStatus; do not substitute stale or preset-only state as successful document state | Q-T15/Q-P09 |
+| DEC-025 | **DocumentRestoreValidator.validateContainerKindAndRequiredChunks** | ClassInfo fallback is not complete unless required document payloads are present | Restore-fallback fixtures |
+| GS-NFR-008 | **AUStateObjectLease** | Own/release returned CF object reference off-render; count actual Data/materialization allocations without assuming deep copy | Ownership and memory fixtures |
+| Q-P09 | **AUHostFailureEvidence.recordSaveAndRestoreSeparately** | Record save result, restore fallback, host-visible outcome, host/version and AU surface separately | Logic/Live/REAPER host prototypes |
+
+These are candidate traceability symbols, not frozen APIs or ABI. The 124-row R1 inventory and 53/124 acceptance/release-gate link baseline remain unchanged; no AC IDs are added.
