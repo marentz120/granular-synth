@@ -386,13 +386,13 @@ See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md` for the tran
 
 The [Cross-Host State Callback & Snapshot Freshness Evidence Matrix](PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md) refines the state-callback ownership boundary.
 
-- VST3 component \`getState/setState\` are UI-thread operations in the normal realtime threading model and are permitted while the component is Processing. Do not infer that \`process\` has stopped; it may continue concurrently.
+- VST3 component `getState/setState` are UI-thread operations in the normal realtime threading model and are permitted while the component is Processing. Do not infer that `process` has stopped; it may continue concurrently.
 - VST3 offline get/set-state may run on the process thread according to supplemental Steinberg developer guidance. Do not synchronously wait for a worker or perform an unbounded capture on that path.
 - AU state-property callback thread and render overlap are not specified by the reviewed public API. Treat them as unknown until host traces exist.
 - A state callback reads one immutable capture descriptor. It never walks a mutable recording ring, reads an in-flight writer page, clears render-owned state, or acquires a blocking lock.
 - The descriptor's capture boundary is a coherent vector containing RuntimeStateEpoch, a publication sequence, and the source generation/committed-frame watermark for every required recording and Freeze payload. Do not assemble it from unsynchronized independent source reads.
 - If the prepared descriptor does not match the capture-boundary token, it is stale. Do not return it as successful DEC-025 state. A bounded refresh is allowed only if the callback context permits it and required leases are already obtainable without render acknowledgement.
-- AU's optional dictionary property has no documented explicit getter error result. Returning nil is not assumed to abort a host save; this remains a compatibility test. VST3 \`tresult\` is checked, but host rollback behavior remains unverified.
+- AU's optional dictionary property has no documented explicit getter error result. Returning nil is not assumed to abort a host save; this remains a compatibility test. VST3 `tresult` is checked, but host rollback behavior remains unverified.
 - Restore parsing and candidate preparation remain separate from render-owned objects. Publish one complete candidate at the existing safe point; retire old state off-render after all readers release it.
 
 No queue capacity, lock-free primitive, capture-token ABI, retry count, callback deadline or host thread guarantee is selected. AR-06 and Q-T15 remain open.
