@@ -152,3 +152,5 @@ Checked 2026-11-28:
 ## 9. Exit condition
 
 MPE host support may be claimed only after an owner-authorized prototype on a pinned host build records the actual event representation, identity semantics, zone configuration, Pressure/Timbre delivery, ±48 pitch conversion and DEC-034 layer fan-out. Documentation of a host feature or plug-in API alone is insufficient.
+
+Detailed deterministic ingress and lifecycle scenarios for this host matrix are maintained in PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. A host cell remains **Host-unverified** until a separately authorized prototype records the actual raw event representation and normalized trace; fixture definitions do not promote documentation evidence to certification.
