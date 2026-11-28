@@ -40,18 +40,18 @@ All detailed assignments and screen behavior below are **proposals**, not owner-
 
 | Workspace | Encoder 1 | Encoder 2 | Encoder 3 | Encoder 4 |
 |---|---|---|---|---|
-| Granular | Size | Density | Position | Pitch |
-| Sampler | Start | End | Playback Rate / Pitch | Loop Crossfade / Loop Mode context |
+| Granular | Grain Size | Grain Rate | Position | Pitch |
+| Sampler | Scan | Pitch / Playback Rate | Sample Start | Sample Stop |
 | Sequencer | Event Velocity | Event Pitch | Event Layer Assignment | Selected Event Parameter / Lock |
 | Modulation | Envelope Attack | Envelope Decay | Envelope Sustain | Envelope Release |
-| FX | Selected Slot | Effect Parameter 1 | Effect Parameter 2 | Wet/Dry or next exposed slot parameter |
-| Mix | Selected Layer Level | Selected Layer Pan | Selected Layer Output | Master Record Level / status context |
+| FX | Selected Slot | Effect Parameter 1 | Effect Parameter 2 | Next exposed parameter in selected effect |
+| Mix | Selected Layer Level | Selected Layer Pan | Layer Mute / Solo state | Record target / status selection |
 
-**Important qualification:** This table proposes focus defaults, not new product parameters. Where a row names a parameter whose exact exposure or semantics are not fully established in the approved product documents, it is a UI placeholder pending parameter-inventory validation. In particular:
-- Sampler Start/End, playback-rate presentation, loop crossfade and the exact loop-mode selector must be checked against the R1 Sampler parameter inventory; loop crossfade is not an R1 requirement and must not be implied as committed functionality.
+**R1-backed assignment rule:** the first four encoder defaults above are concrete proposals grounded in the R1 parameter inventory, not a claim that all four controls exhaust each engine's eight-knob section. The complete A–H engine assignments are specified in §2.5. 
+- Sampler Loop Crossfade is L2 (GS-SMP-006) and is deliberately absent.
 - Sequencer event parameter-lock availability and the exact set of lockable parameters must be validated against R1 event requirements.
-- FX parameter 1/2 and wet/dry must resolve from the selected approved effect's actual parameter list; do not invent common parameters across all seven effects.
-- Mix output selection and master-record level must not create new routing or gain stages. If no approved adjustable parameter exists, the encoder is assigned to an existing layer control or shows “No assignment” rather than inventing one.
+- FX parameters resolve from the selected approved effect's actual parameter list; no universal Wet/Dry control is assumed.
+- Mix encoders do not create new routing or gain stages. Record target/status is a selector/status context, not a new master-record gain parameter.
 
 ### 2.3 Focus paging and parameter reachability
 
@@ -61,6 +61,29 @@ All detailed assignments and screen behavior below are **proposals**, not owner-
 - A compact “More”/context page exposes additional parameters without hiding the primary four.
 - No parameter may be reachable only through an undocumented gesture.
 - The complete R1 parameter inventory must be audited against touch controls, encoder focus pages and MIDI Learn targets before Phase 4 UI sign-off. This document does not claim that the matrix alone covers every R1 parameter.
+
+### 2.5 Eight-knob engine assignment — R1 proposal
+
+GS-UI-002 requires eight logical controls A–H and per-engine remapping. The assignments below use only R1 controls present in the approved requirements and domain specifications. They are product-UX defaults proposed for owner review; they do not define stable parameter IDs, scaling curves or MIDI CC values.
+
+| Slot | Granular engine | Requirement | Sampler engine | Requirement |
+|---|---|---|---|---|
+| A | Grain Size | GS-GRN-002 | Scan | GS-SMP-001 |
+| B | Grain Rate | GS-GRN-001 | Pitch / Playback Rate | GS-SMP-001 |
+| C | Position | GS-GRN-004 | Sample Start | GS-SMP-002; sample flag model |
+| D | Pitch | GS-GRN-010 | Sample Stop | GS-SMP-002; sample flag model |
+| E | Scan | GS-GRN-009 | Spray | GS-SMP-001 |
+| F | Spray | GS-GRN-005 | Pan Spray | GS-SMP-001 |
+| G | Pan | GS-GRN-006 | Direction | GS-SMP-001 |
+| H | Pan Spray | GS-GRN-006 | Loop Mode (One-shot / Loop / Ping-pong) | GS-SMP-002 |
+
+Rules:
+- Scan and Pitch retain their meaning across engines.
+- Granular Density is displayed as the derived value (Rate × Size) per GS-GRN-003; it is not a second independent encoder target in this default bank.
+- Sampler Loop Start and Loop End remain directly editable in the waveform/flag editor. They are not substituted for Sample Start/Stop, and no L2 Loop Crossfade control is exposed.
+- If the current sample/engine state makes a control inapplicable, show it disabled with its reason; do not silently rebind the physical encoder to another parameter.
+- The eight logical slots are distinct from the four physical encoders. The four encoders page/focus across A–H in a stable order; the current A–D or E–H bank is visible. A short press changes focus only; it does not execute a toggle or destructive action.
+- Exact parameter ranges, taper, fine/coarse modifiers and stable IDs remain Phase 3/Q-T12/Phase 5 work.
 
 ### 2.4 Granular primary-control exception
 
@@ -186,7 +209,7 @@ This is a UI reachability map, not a default CC layout. The product requires gen
 ## 7. Review and validation checklist
 
 - [ ] Owner approves or revises the proposed encoder defaults per workspace.
-- [ ] Validate every encoder assignment against the authoritative R1 parameter inventory.
+- [ ] Owner approves or revises the proposed A–H assignments in §2.5 against the authoritative R1 parameter inventory.
 - [ ] Verify that no R1 parameter is inaccessible by touch/encoder focus/MIDI Learn.
 - [ ] Owner approves viewport paging and playhead-follow default.
 - [ ] Confirm all eight-event-per-step editing paths remain practical.
