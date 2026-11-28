@@ -278,3 +278,14 @@ The matrix also distinguishes host UI reset, plug-in process reload, AU/VST3 pro
 - Standalone file saves use a non-render I/O worker. Host-owned AU/VST3 state callbacks follow the actual host contract and cannot inherit standalone asynchronous-file assumptions.
 
 See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. This addendum does not decide user-preset payload scope, a numeric capture lag/deadline, host callback strategy or maximum state size.
+
+
+## 14. AU document-state failure and restore fallback — 2026-11-28
+
+- AUv3 **fullStateForDocument** is an optional dictionary property with no separate getter error result; its nil-to-AUv2 bridge mapping and host save behavior are not documented.
+- AUv2 **AudioUnitGetProperty** returns OSStatus, but host save rollback on a non-success result remains unverified.
+- Apple's documented ClassInfoFromDocument-to-ClassInfo fallback applies when restoring a document. It does not establish save-time fallback, nor does a preset-only ClassInfo dictionary satisfy DEC-025 when required recording/Freeze chunks are absent.
+- The AU adapter must not report a complete document save/restore from a stale, partial or preset-only payload. If the host path cannot preserve required chunks, record a compatibility blocker rather than weakening DEC-025.
+- AUv2 returned CF state objects have an owned reference that must be released; nested Data backing and actual materialization are accounted separately.
+
+See **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md**. User-preset payload scope, AUv3 nil mapping, host save outcome and exact host versions remain open.
