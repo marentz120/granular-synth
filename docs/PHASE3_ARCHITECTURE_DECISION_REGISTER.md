@@ -102,10 +102,21 @@ AR-06 changes audible behavior and cannot be inferred from DEC-025. No behavior 
 | Gate | Candidate requirement | Evidence needed | Status |
 |---|---|---|---|
 | AU callback context | Do not assume a UI/non-RT caller or render suspension | Callback thread and render-overlap trace in each target AU host | OPEN — Q-P09 |
-| AU failure signal | Never return stale state as successful; do not assume nil aborts save | Host-visible handling of nil/failed document-state getter | OPEN — Q-T15/Q-P09 |
+| AU failure signal | Distinguish AUv3 nullable dictionary getters from AUv2 AudioUnitGetProperty OSStatus; never return stale/incomplete state as successful | Verify AUv3 nil bridge mapping, AUv2 save-error behavior, and document-restore ClassInfo fallback in each target host | OPEN — Q-T15/Q-P09 |
 | VST3 concurrency | State calls may occur while Processing; process-owned state remains immutable to callback readers | Concurrent get/set-state and process trace; offline context included | OPEN — Q-T15/Q-P09 |
 | VST3 failure propagation | A non-success result/short stream must not produce a successful truncated project | Host-visible save/restore result and rollback behavior | OPEN — Q-T15/Q-P09 |
 | Capture-boundary coherence | One state epoch and one coherent watermark vector across all required sources | Multi-source staggered-commit fixture; torn-vector rejection | OPEN — Q-T15 |
 | Freshness | A descriptor must match the capture token; stale descriptors cannot satisfy DEC-025 | Commit-before/after-boundary and stale-descriptor fixtures | OPEN — Q-T15 |
 
 This section adds evidence requirements only. It does not select an AU failure policy, callback primitive, capture ABI, callback deadline or owner-visible product behavior.
+
+
+## 9. AU failure-surface refinement — evidence gate
+
+The AU failure gate is explicitly split into three observations:
+
+1. AUv3 nullable **fullStateForDocument** getter and its bridge mapping when nil is returned.
+2. AUv2 **AudioUnitGetProperty(ClassInfoFromDocument)** non-success OSStatus and the host's **save** outcome.
+3. ClassInfoFromDocument error/not-implemented behavior and the documented **restore** fallback to ClassInfo.
+
+The restore fallback must not silently satisfy DEC-025 if the preset state lacks required document audio chunks. No error constant, save-failure policy, preset payload expansion or host behavior is approved here. See **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md**.
