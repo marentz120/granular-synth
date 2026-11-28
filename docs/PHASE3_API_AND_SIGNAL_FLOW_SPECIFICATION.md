@@ -777,8 +777,8 @@ struct ParameterAutomationCurve {
 };
 ```
 
-- AU zero-duration parameter events normalize to a step. A ramp event retains its start offset, ramp duration and target value, and is accepted only where the AU parameter is rampable.
-- VST3 `IParamValueQueue` normalizes to piecewise-linear segments using the previous parameter value and ordered points. An implicit initial point may be omitted. Relative position `-1` is a previous-block continuity anchor, not a current-block event; it must remain signed and must never be cast to `SampleOffset`, clamped to zero or discarded.
+- AU zero-duration parameter events normalize to a step. A ramp event retains its start offset, ramp duration and target value, and is accepted only where the AU parameter is rampable. AUValue is in the AU parameter's declared range/unit; map AUParameterAddress to the canonical ID and convert through the descriptor's range/scale.
+- VST3 `IParamValueQueue` normalizes to piecewise-linear segments using the previous parameter value and ordered points. ParamValue is normalized to [0,1]; map ParamID to the canonical ID and convert through the descriptor before shared-core evaluation. An implicit initial point may be omitted. Relative position `-1` is a previous-block continuity anchor, not a current-block event; it must remain signed and must never be cast to `SampleOffset`, clamped to zero or discarded.
 - A VST3 jump's old/new point pair remains a step discontinuity at the specified sample boundary.
 - `TimedEvent::ParameterChange` means an instantaneous step only. It does not represent an AU ramp or VST3 automation curve.
 - Parameter-class smoothing remains separate from host automation reconstruction. Do not double-ramp or silently turn a ramp into a step; Q-T13 and parameter-class policy remain open.
