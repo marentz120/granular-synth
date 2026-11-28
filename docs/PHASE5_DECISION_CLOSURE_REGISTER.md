@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Phase 5 Decision Closure Register
 
-**Version:** 0.6  
+**Version:** 0.7  
 **Date:** 2026-11-28  
 **Status:** Consolidated decision register; no unresolved decision is silently approved by this document.  
 **Authority:** `DECISIONS_LOG.md`, `OPEN_QUESTIONS.md`, `R1_PRODUCT_SPECIFICATION.md`, `PHASE5_ALL_REQUIREMENTS_AUDIT.md`.
@@ -28,7 +28,7 @@ These questions affect existing R1 requirements. They must be resolved or explic
 | Q-M09 | GS-GRN-018, GS-ARC-008 | **Approved — DEC-046:** per-grain gain follows 1/√N relative to the single-grain reference | Define N counting domain, transition smoothing and ON/OFF reference details; validate four-layer peak/headroom oracle. Benchmark level matching requires authorized measurement | Grain normalization and mix/headroom tests |
 | Q-M14 | GS-GRN-014 | **Approved — DEC-048:** Off ignores key-trigger spawning; On triggers on each accepted Note On; Legato triggers only on zero-to-nonzero held-note transition | Verify trigger event ordering and ensure Note Off/voice-release and grain clock remain independent | Grain-trigger tests |
 | Q-M16 | GS-GRN-014 | Manual label changed from Clock Retrigger to Voice Sync in a later release; equivalence remains unverified | Define GRANULAR SYNTH behavior without assuming undocumented benchmark equivalence | Voice/grain clock tests |
-| Q-M17 | GS-GRN-015 | Four modes listed: Gradual, Direct, Direct Reset, Recycle | Define each mode's spawn schedule, reset point, capacity response and recycle victim behavior | Spawn-mode tests |
+| Q-M17 | GS-GRN-015 | **Approved — DEC-049:** Gradual builds from empty; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer, otherwise falls back to Gradual | Define exact scheduler phase, initial count/rounding, randomization distribution, reusable-state mapping and resource-limit behavior; keep Recycle distinct from grain stealing | Spawn-mode tests |
 | Q-M18 | GS-VOI-006 | R1 requirement states 0.1 ms minimum | Confirm that 0.1 ms is the product minimum and align OPEN_QUESTIONS with the requirement | Envelope boundary tests |
 | Q-I07 | GS-VOI-008 | LPF/HPF, slopes, routing and bypass are in R1; full SVF mode list is unknown | Approve a finite R1 mode list or explicitly constrain R1 to the already stated LPF/HPF behavior | Filter response tests |
 | Q-I08 | GS-GRN-006 | Uniform and centre-weighted pan-spray shapes are required | Define the centre-weighted probability curve, normalization and seeded statistical tolerance | Pan-spray tests |
