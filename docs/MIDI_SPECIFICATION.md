@@ -70,7 +70,7 @@ Standalone essential live-performance operations, including all sequencer functi
 - All Sound Off immediately silences voices and effect tails, consistent with the mapped benchmark behavior and GS-MID-006.
 - Reset Controllers restores controller-driven modulation/expression state to defined neutral/default values without changing saved patch values.
 - Panic is reachable in one controller gesture at all times during standalone performance (LIVE_PERFORMANCE_SPECIFICATION.md §9).
-- Freeze state interaction with panic is not inferred; Freeze semantics are a Phase 3 decision under GS-SMG-021.
+- Panic/All Sound Off does not thaw Freeze, per DEC-042. MIDI command handling and host integration remain implementation/validation work.
 
 ## 9. Live operation
 
