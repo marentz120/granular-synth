@@ -198,3 +198,24 @@ These test families refine the earlier MPE identity bridge row. They do not add 
 | Bounded identity overload | Identity-table saturation, event overflow, stale-generation rejection, panic under overload and no render allocation | GS-MID-002; GS-NFR-001; AR-02 |
 
 Formal AC grouping, pass/fail wording, exact capacity and host-version matrix remain Phase 5 work. No benchmark is authorized.
+
+
+## 7. MPE host-delivery compatibility supplements
+
+These host-specific fixtures extend the MPE identity tests in §6. They do not add AC IDs, claim host support, change the 124-row inventory or alter the 53/124 acceptance-link baseline.
+
+| Host / format | Fixture | Required evidence |
+|---|---|---|
+| Logic Pro / AU | MPE controller into a third-party AU that declares MPE support; MIDI Mono Mode-compatible channel-per-note path; base-channel message; configurable pitch range | Component discovery, actual AU event cable/channel bytes, channel-per-note behavior, base-channel scope, pitch-range configuration and min/center/max conversion |
+| Ableton Live / AU | `supportsMPE` property true/false; MPE mode on/off; lower/upper zone RPN 6; overlapping notes | Property query, channelized Note On/Off/Pitch Bend/CC74/Channel Pressure, zone changes and member-channel reuse |
+| Ableton Live / VST3 | Plugin absent/present in recognized list; manual MPE enable/disable; saved default configuration; lower/upper RPN 6 | Automatic versus manual recognition, actual MIDI event types/channels, CC74/pressure/pitch delivery; prove whether any VST3 Note Expression event is present rather than assuming `noteId` |
+| Bitwig Studio / VST3 | Use MPE off/on; Force MPE; PB range configured to ±48; overlapping notes and per-note expression lanes | Separate trace of `NoteExpressionValueEvent`/`noteId` and channelized MIDI 1.0 messages; type IDs, event bus, range and endpoint conversion |
+| REAPER / AU and VST3 | Raw multichannel MIDI input, RPN zone configuration, overlapping notes, per-note pitch/pressure/CC74 and VST3 Note Expression probe | Actual event trace, channel preservation, RPN handling, Note Expression presence/absence and signed-semitone conversion |
+
+Cross-host assertions:
+- The same fixture must be exercised through both channelized MPE and VST3 Note Expression wherever the host exposes each path.
+- Both paths must normalize to the same signed pitch/pressure/timbre semantics without fabricating a host note ID.
+- Record whether MPE is auto-recognized, manually enabled or requires vendor allow-listing.
+- Verify zone/member-channel count, shared-channel identity, same-pitch retrigger, sustain, channel reuse, and DEC-034 layer fan-out.
+- Verify the host's actual pitch-bend configuration at minimum, center and maximum; DEC-038 does not imply that every host defaults to ±48.
+- No host prototype, performance benchmark or numeric pass threshold is authorized by this backlog.
