@@ -1,10 +1,14 @@
 # Open Questions
 
-**Version:** 1.5 (Q-M16 R1 Voice Sync semantics resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 1.6 (Q-M18 envelope minimum resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.5 → v1.6):** Q-M18 is answered by DEC-051: all time-valued R1 ADSR stages range from 0.1 ms to 45 s; no zero-duration stage exists, and values below the floor resolve to 0.1 ms. Sustain remains a level. Host/MIDI mapping and timing tolerance remain technical gates.
 
 **Change summary (v1.4 → v1.5):** Q-M16 R1 behavior is answered by DEC-050: Voice Sync ON shares one grain-clock phase across voices in a layer; newly started voices join the current phase. OFF gives each voice an independent phase initialized when its scheduler starts. Historical benchmark label equivalence remains unverified; active-mode toggle and host/transport arbitration remain technical gates.
 
-**Change summary (v1.3 → v1.4):** Q-M17 product behavior is answered by DEC-049: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer and falls back to Gradual when unavailable. Exact scheduler/randomization/reuse mapping and resource details remain technical gates.\n\n**Change summary (v1.2 → v1.3):** Q-M14 is answered by DEC-048: Off ignores key-triggered grain spawning; On triggers on every accepted Note On; Legato triggers only on transition from no held notes to one or more held notes. Note Off/voice-release and grain clock remain independent.
+**Change summary (v1.3 → v1.4):** Q-M17 product behavior is answered by DEC-049: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer and falls back to Gradual when unavailable. Exact scheduler/randomization/reuse mapping and resource details remain technical gates.
+
+**Change summary (v1.2 → v1.3):** Q-M14 is answered by DEC-048: Off ignores key-triggered grain spawning; On triggers on every accepted Note On; Legato triggers only on transition from no held notes to one or more held notes. Note Off/voice-release and grain clock remain independent.
 
 **Change summary (v1.1 → v1.2):** Q-M04 exact Kill behavior is answered by DEC-047: at the terminal sample-region boundary, stop spawning and immediately terminate active grains in that layer; no bounce/wrap, global Panic or transport-state change. Explicit Stop/Panic command semantics remain separate.
 
@@ -143,7 +147,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-M15 | Sequencer "Rate sets time signature" | p.22 vs p.134 | Benchmark behavior only. R1 defines pattern length/edit resolution and shared timing grids; it does not require per-layer time-signature emulation. Keep outside R1 unless scope is explicitly added. | DEFERRED — not an R1 requirement |
 | Q-M16 | "Voice sync" vs "Clock retrigger" | p.55 text vs p.54 screenshot | **R1 behavior answered — DEC-050:** ON shares one grain-clock phase across voices in a layer; new voices join the current phase. OFF gives each voice an independent phase initialized at scheduler start. Historical benchmark label equivalence remains unverified and is not assumed; active-mode toggle and host/transport arbitration remain technical gates. | PARTIALLY ANSWERED — DEC-050; benchmark equivalence unverified |
 | Q-M17 | Spawn modes 3 vs 4 | p.55 vs p.162 | **Product behavior answered — DEC-049:** four modes: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer, falling back to Gradual when unavailable. Exact scheduler phase, grain count/rounding, randomization, reuse mapping and resource behavior remain technical/acceptance gates. | PARTIALLY ANSWERED — DEC-049; technical gates open |
-| Q-M18 | Envelope minimum 0 vs 0.1 ms | p.143 vs p.163 | 0.1 ms minimum (click-safe) | PROPOSED |
+| Q-M18 | Envelope minimum 0 vs 0.1 ms | p.143 vs p.163 | **Answered — DEC-051:** all time-valued R1 ADSR stages range from 0.1 ms to 45 s; no zero-duration stage exists, values below the floor resolve to 0.1 ms, and Sustain remains a level. Host/MIDI mapping and timing tolerance remain technical gates. | ANSWERED — DEC-051 |
 | Q-M19 | "Sampler slice mode possible" | p.162 only | Treat as Slice engine with sampler-style (single head) playback option — L2 | OPEN |
 
 ---
