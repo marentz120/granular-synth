@@ -148,6 +148,15 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | AR-02 | GS-ARC-002, GS-ARC-003, GS-ARC-004, GS-GRN-017, GS-VOI-001 | Resolve deterministic voice/grain overload policy; keep voice stealing distinct from global grain-budget reclamation. |
 | Q-T07 | GS-ARC-004, GS-GRN-020, GS-SMG-019, GS-UI-005, GS-NFR-002, GS-NFR-009 | Establish reference hardware and obtain explicit benchmark authorization before numeric performance thresholds or claims. |
 | Q-T12 | GS-NFR-006, GS-MOD-005, GS-UI-002, GS-UI-007 | Approve stable host parameter-ID/exposure scheme before freezing parameter registry coverage. |
+| Q-M03 / Q-M04 | GS-GRN-009/011 | Define scan modes and the ratio-mode behavior at scan = 0; current proposals are not approved test oracles. |
+| Q-M09 | GS-GRN-018, GS-ARC-008 | Define the grain-count normalization law and the default four-layer headroom oracle; numeric matching requires an authorized reference measurement. |
+| Q-M14 / Q-M16 | GS-GRN-014 | Confirm Off/On/Legato grain-trigger semantics and define Voice Sync behavior without assuming benchmark label equivalence. |
+| Q-M17 | GS-GRN-015 | Define the four spawn-mode state transitions, reset points and recycle behavior. |
+| Q-M18 | GS-VOI-006 | Reconcile the 0.1 ms envelope-stage minimum in the R1 requirement with the still-proposed benchmark ambiguity. |
+| Q-I07 | GS-VOI-008 | Confirm R1 filter-mode inventory and the relationship between LPF/HPF modes, routing, slopes and bypass. |
+| Q-I08 | GS-GRN-006 | Define centre-weighted pan-spray distribution and the statistical oracle alongside uniform distribution. |
+| Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement. |
+| R1 scope guard | Q-M15, Q-I16, Q-I17, Q-I18 | Keep benchmark-only time-signature behavior, keyboard-position voice-steal heuristics and Elektron-style preset switching out of R1 unless the owner adds scope; DEC-032 defines the R1 XY pad. |
 | DEC-042 mixed-layer Global Freeze preparation-failure policy | GS-SMG-021 and AC-AUD-028 | DEC-042 Source Snapshot product semantics are approved. Owner confirmation remains required only for successful-subset versus all-or-nothing behavior when preparation fails for one or more layers. Existing AC-AUD-028 is explicitly proposed pending review. |
 
 ## 6. Exit criteria for this backlog
