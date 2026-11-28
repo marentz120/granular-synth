@@ -43,7 +43,7 @@ Names below are human-readable target labels, not stable IDs or MIDI assignments
 |---|---|---|---|
 | Layer focus | Select Layer L1, L2, L3, L4 | Selection | Global |
 | Engine | Select Granular / Sampler for focused layer | Selection / command | Explicit layer |
-| Core engine controls | Eight logical engine controls, slots A–H, remapped by engine | Continuous parameter | Explicit layer |
+| Core engine controls | Eight logical engine controls, slots A–H, remapped by engine | Parameter / selection | Explicit layer |
 | Granular performance | Scan/Position; Pitch; Size; Density; Spread; Spray; Pan Spray; Direction, where each is an approved R1 control | Continuous parameter | Explicit layer |
 | Sampler performance | Scan; Pitch/playback rate; Spray; Pan Spray; Direction; approved sample/loop boundary controls | Continuous parameter or selection | Explicit layer |
 | Layer mix | Layer Level; Layer Pan; Layer Mute; Layer Solo | Continuous / toggle | Explicit layer |
