@@ -146,7 +146,7 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | AR-02 | GS-ARC-002, GS-ARC-003, GS-ARC-004, GS-GRN-017, GS-VOI-001 | Resolve deterministic voice/grain overload policy; keep voice stealing distinct from global grain-budget reclamation. |
 | Q-T07 | GS-ARC-004, GS-GRN-020, GS-SMG-019, GS-UI-005, GS-NFR-002, GS-NFR-009 | Establish reference hardware and obtain explicit benchmark authorization before numeric performance thresholds or claims. |
 | Q-T12 | GS-NFR-006, GS-MOD-005, GS-UI-002, GS-UI-007 | Approve stable host parameter-ID/exposure scheme before freezing parameter registry coverage. |
-| DEC-042 Global Freeze failure semantics | GS-SMG-021 and AC-AUD-028 | Owner confirmation remains required for successful-subset versus all-or-nothing preparation failure. Existing AC-AUD-028 is explicitly proposed pending review. |
+| DEC-042 mixed-layer Global Freeze preparation-failure policy | GS-SMG-021 and AC-AUD-028 | DEC-042 Source Snapshot product semantics are approved. Owner confirmation remains required only for successful-subset versus all-or-nothing behavior when preparation fails for one or more layers. Existing AC-AUD-028 is explicitly proposed pending review. |
 
 ## 6. Exit criteria for this backlog
 
