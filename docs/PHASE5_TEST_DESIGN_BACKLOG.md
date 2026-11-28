@@ -1,6 +1,6 @@
 # Phase 5 Test-Design Backlog — R1 Acceptance Traceability
 
-**Version:** 0.2 — cross-format event and transport test families added, 2026-11-28
+**Version:** 0.3 — state callback context and snapshot freshness fixtures added, 2026-11-28
 **Status:** Planning backlog only. No new product decisions, acceptance IDs, numeric thresholds, implementation, host prototype or benchmark is authorized by this document.
 **Authority:** `GRANULAR_SYNTH_REQUIREMENTS.md`, `R1_PRODUCT_SPECIFICATION.md`, approved DEC records, `R1_ACCEPTANCE_CRITERIA.md`, and Phase 3 interface/architecture contracts.
 
@@ -334,3 +334,24 @@ These fixtures extend the existing Q-T15/DEC-025/DEC-042 state-container plan. T
 | Transfer/callback failure | Inject AU materialization failure and VST3 short/zero-progress writes | No incomplete container is reported successful; recording and prior runtime remain intact | Q-T15/Q-P09 |
 
 Execution requires pinned host/OS/architecture/plugin builds and separate authorization for any host prototype or benchmark. These are planned tests only.
+
+
+## 14. Cross-host state callback and snapshot freshness fixtures
+
+These planning-only fixtures extend Q-T15/DEC-025/DEC-042 and the host evidence matrix. They add no formal AC IDs or test IDs and are not executed.
+
+| Fixture family | Stimulus | Required evidence | Dependency |
+|---|---|---|---|
+| VST3 realtime state concurrency | Invoke component getState/setState while process continues | Immutable generation read; no render lock/wait or partial candidate publication | Q-T15; VST3 prototype |
+| VST3 offline same-thread context | Exercise state get/set in offline processing context | Actual thread identity; bounded behavior; no assumption of a separate worker | Q-P09/Q-T15 |
+| AU callback discovery | Save/restore with render active in Logic, Live and REAPER | Actual caller thread, render overlap and callback context | Q-P09; AU prototypes |
+| AU nil/failure semantics | Force no fresh descriptor and observe fullStateForDocument/fullState behavior | Host-visible save result; no successful project save with required audio omitted | DEC-025/Q-P09 |
+| VST3 result propagation | Inject getState failure, short/zero transfer and invalid setState | Host-visible failure, retry/rollback behavior and prior-state preservation | Q-T15 |
+| Coherent multi-source watermark | Commit four recording sources at staggered boundaries during token publication | One coherent source-generation/watermark vector; no torn snapshot | Q-T15; capture prototype |
+| Stale descriptor race | Advance a source watermark after descriptor preparation but before callback entry | Stale descriptor rejected; no stale success | Q-T15/Q-P09 |
+| Post-boundary commit | Publish a commit after the capture token linearizes | Current snapshot matches the token; next capture includes the later commit | Q-T15 |
+| Bitwig hosting-mode accounting | Repeat state round-trip in the selected hosting modes | Mode, process count, per-process/aggregate memory and payload hash | Q-P09/Q-T15 |
+| REAPER reset distinction | Compare Hard reset on playback start on/off with project save/reopen | No inference from compatibility setting to generic state callback ordering | Q-P09 |
+| Logic/Live persistence round-trip | Save/reopen AU and VST3 documents with deterministic recording/Freeze payloads | Exact payload hash and host-visible failure semantics | Q-P09/Q-T15 |
+
+Execution requires pinned host/OS/plugin builds and explicit host-prototype authorization. Any performance benchmark or numeric memory-limit exercise requires separate authorization. The fixture design does not close host evidence gates.
