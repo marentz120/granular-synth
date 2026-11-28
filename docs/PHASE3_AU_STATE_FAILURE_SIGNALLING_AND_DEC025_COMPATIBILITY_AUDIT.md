@@ -73,7 +73,7 @@ The restore fallback matters to GRANULAR SYNTH because **fullState** and **fullS
 
 The following constraints remain mandatory:
 
-1. A successful DAW document-state result must contain every required unsaved recording payload and every required persisted Freeze payload for the same coherent capture boundary.
+1. A successful DAW document-state result must contain every required unsaved recording payload and every required persisted Freeze payload in one document-state transaction. Each Freeze payload retains its already-approved immutable Source Snapshot generation/range; it is not recaptured from the live recording ring.
 2. A stale descriptor, missing chunk, failed integrity check, or incomplete required payload must never be represented as a valid complete document state.
 3. The AU adapter must not silently substitute a preset-scoped **fullState** dictionary for required document state.
 4. The adapter must not assume that returning nil from an AUv3 getter cancels the host's save.
