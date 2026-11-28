@@ -9,7 +9,7 @@
 - Plugin builds receive audio/MIDI and expose audio outputs according to host-format support; exact AU/VST3 component and bus layout is Phase 3.
 - Live input is available independently to each of the four layers in Standalone and plugin contexts (DEC-020).
 - R1 supports recording each layer independently and recording the stereo master mix.
-- Each layer has an independently switchable Freeze and there is a global Freeze control. Exact Freeze capture/hold semantics are deferred to Phase 3 and are intentionally not specified here.
+- Each layer has an independently switchable Freeze and there is a global Freeze control. Source Snapshot capture, continuation, thaw, recording independence and failure behavior are approved by DEC-042 and specified in FREEZE_BEHAVIOR_SPECIFICATION.md; this document leaves only implementation/resource/host validation to Phase 3/5.
 - Main stereo output and four stereo layer outputs are in the product requirements; exact host buses/device routing are Phase 3.
 - Audio processing is real-time safe: no blocking I/O, heap allocation, locks, logging or unbounded waits in the audio callback.
 
@@ -88,7 +88,7 @@ Not R1 by current tiering:
 - R1 requires four independently switchable layer Freeze controls and one global Freeze control.
 - Global Freeze applies to all four layers as a single user action.
 - Controller reachability is mandatory under GS-MID-008.
-- This spec does not define whether Freeze captures input, grains, playback heads, buffers, modulation, effects or sequencer state; does not define whether transport continues; and does not define release/thaw behavior. Those are Phase 3 architecture decisions, as explicitly required by GS-SMG-021 and DEC-020.
+- Freeze product behavior is defined by DEC-042 and FREEZE_BEHAVIOR_SPECIFICATION.md: it snapshots the valid source region while voices, new notes, sequencer, MIDI, modulation, transport, FX and independent recording continue; thaw crossfades back to the prior live/rolling source. This document does not redefine that contract. Implementation, memory admission and host validation remain Phase 3/5 work.
 
 ## 9. Real-time, overload and recovery
 
@@ -104,7 +104,7 @@ Not R1 by current tiering:
 - Standalone device selection, channel mapping and device-loss recovery.
 - Live input can be routed independently to each layer.
 - Input level and wet/dry controls function per layer.
-- Per-layer and global Freeze controls exist and are controller-reachable (semantics tested after Phase 3 definition).
+- Per-layer and global Freeze controls exist and are controller-reachable; behavior is tested against the approved DEC-042 contract.
 - Per-layer capture and stereo master capture work independently.
 - One-shot, loop and scrolling recording work; AUTO/fixed buffer and mono/stereo initialization work.
 - Recording can be played/processed while active and safely retained/exported/discarded.
@@ -122,5 +122,5 @@ Not R1 by current tiering:
 - Exact recording start modes and scrolling-record distance controls.
 - Mono input behavior is set by DEC-040; exact channel mapping implementation remains Phase 3.
 - Exact signal tap points for per-layer and master recording.
-- Freeze semantics — explicitly Phase 3.
+- Freeze implementation, memory admission, crossfade and host validation — Phase 3/5; product semantics are approved by DEC-042.
 - Numeric resource limits and overload thresholds — Phase 3/5.
