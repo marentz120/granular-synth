@@ -239,7 +239,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-018 | Tuning reference tone. | L2 | EDT-11 |
 | GS-SMG-019 | Maximum granular sample length ≥ 6 minutes stereo at 48 kHz per layer (exceeds benchmark 5m49s). | R1 | SMG-08, C-02 |
 | GS-SMG-020 | Record each layer independently and record the stereo master mix; save/export captured audio for later sample use. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3 |
-| GS-SMG-021 | Freeze: provide an independently switchable per-layer Freeze and a global Freeze across all layers. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. **Exact freeze semantics are a Phase 3 architecture decision** — this row fixes only the product-level requirement (per-layer + global availability) and its tier, and deliberately makes no claim about what Freeze holds, suspends or continues. |
+| GS-SMG-021 | Freeze: provide an independently switchable per-layer Freeze and a global Freeze across all layers. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. Freeze product semantics are approved by DEC-042 and specified in FREEZE_BEHAVIOR_SPECIFICATION.md; Phase 3/5 work covers engineering, resource admission and host validation. |
 
 ### 3.11 Modulation (MOD)
 
