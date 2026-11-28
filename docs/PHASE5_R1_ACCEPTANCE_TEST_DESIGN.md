@@ -273,6 +273,12 @@ A test with a missing expected result, unpinned fixture or unresolved behavior i
 | Q-I07 | GS-VOI-008 | Confirm the R1 filter-mode inventory and exact relationship between LPF/HPF modes, routing, slopes and bypass; do not infer an undocumented SVF mode list. |
 | Q-I08 | GS-GRN-006 | Define the centre-weighted pan-spray distribution mathematically and specify seeded statistical tolerance alongside the uniform mode. |
 | Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement so the test oracle is unambiguous. |
+| Effects parameter contract | GS-FX-002/004/006 | Specify Delay units/ranges/divisions/sync, Chorus/Compressor/Saturator/Reverb ranges and defaults, EQ3 crossover ordering/invalid-value behavior, send range and effect-specific automation. |
+| Modulation destination inventory (MTX-05) | GS-MOD-005 | Reconcile the exact eligible R1 continuous-destination inventory against the R1 parameter catalogue; exclude deferred-only destinations. |
+| Sampler interpolation contract | GS-SMP-003 | Specify available interpolation modes, default, filter length and transition behavior; keep CPU qualification separate from correctness. |
+| Audio I/O and recording contract | GS-SMG-001/008/009/012/020 | Close decoder/resampling choices, format-specific live-input routing, recording-buffer cap and layer/master tap equivalence; Q-T04/Q-T16/Q-P06/Q-T07 remain relevant. |
+| MIDI protocol contract | GS-MID-002/003/007/008 | Specify MPE zone/member-channel setup, host expression delivery, NRPN timeout/pair handling and 7/14-bit precedence; retain AR-03…AR-05 host gates. |
+| Preset/state contract | GS-PRS-004/006; GS-NFR-012 | Specify serialization schema, atomic save/recovery, version migration, embedded-audio admission and corrupt/missing-asset recovery; Q-T15/state-size gates remain open. |
 | R1 domain-spec gaps | GS-GRN-006/008/012/013, GS-CHD-003/004, GS-VOI-004/006/009, GS-SMG-004, GS-NFR-004/005/009 | Make the referenced algorithm, curve, timing, overlap or measurement semantics explicit in the authoritative specification. |
 | R1 scope guard | Q-M15, Q-I16, Q-I17, Q-I18 | Confirm these benchmark-only questions do not silently expand R1: the current R1 model does not require per-layer time-signature emulation, keyboard-position voice-steal heuristics or Elektron-style preset switching; DEC-032 defines the R1 XY pad. Update OPEN_QUESTIONS to mark non-R1 items deferred/resolved. |
 
