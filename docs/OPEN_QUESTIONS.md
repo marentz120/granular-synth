@@ -1,8 +1,9 @@
 # Open Questions
 
-**Version:** 0.6 (Phase 2 specification completion, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 0.7 (Phase 3 state I/O scheduling addendum, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
 
 **Change summary (v0.5 → v0.6):** Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16, Q-M01, Q-M05, Q-M06, Q-M11 and Q-M12 were resolved or tiered under the owner's explicit product-management delegation and recorded in DEC-022…DEC-037. Q-P18 is answered by DEC-018; MIDI and audio product behaviors were further settled by DEC-038…DEC-040; DEC-041 approves all 168 release-tier assignments. Six domain specifications, R1 Release Scope Matrix and R1 Acceptance Criteria are included. Architecture, numeric feasibility, remaining evidence and legal questions stay open for their proper gates.
+**Change summary (v0.6 → v0.7):** Added Q-T15 state I/O scheduling, capture-watermark, retention-lease, callback-context, cancellation and aggregate peak-admission evidence gates. No product decision or requirement tier changed.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
 
 Status values: `OPEN` · `PROPOSED` (recommendation given, awaiting approval) · `RESOLVED-EVIDENCE` (settled by documentary evidence, no owner decision needed) · `ANSWERED` (move to DECISIONS_LOG.md).
@@ -194,3 +195,17 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md. CC 121/123/120 remain distinct; no new product requirement or default controller value is approved.
 
 *End of OPEN_QUESTIONS.md*
+
+## H. Q-T15 state I/O scheduling and memory-admission evidence — 2026-11-28
+
+The State I/O Scheduling Audit adds engineering evidence gates without changing DEC-025, DEC-042 or product scope:
+
+- Define and verify the per-source committed-frame watermark used by a save snapshot; a stale prepared descriptor must not be reported as a successful DAW document save.
+- Verify retention leases/ring-wrap behavior while recording continues into reserved writable capacity; lease exhaustion must fail capture without stopping or corrupting the recording.
+- Record actual AU/VST3 callback thread/context in normal and offline modes; no render-thread acknowledgement wait, disk I/O or unbounded capture is permitted.
+- Observe AU dictionary Data materialization and VST3 IBStream short-transfer behavior only in an owner-authorized host prototype.
+- Define bounded in-flight save/restore jobs and aggregate physical-memory/retention admission; exact capacities and numeric budgets remain unapproved.
+- Verify cancellation releases leases only after all serializer/copy readers are quiescent.
+- Preserve the distinction between required DAW document payloads and unresolved user-preset payload scope.
+
+See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. These are Q-T15/Q-P09 engineering gates, not new owner-approved product behavior. AR-06 and the mixed-layer Global Freeze preparation-failure policy remain open; no decision is inferred here.
