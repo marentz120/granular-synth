@@ -184,3 +184,15 @@ See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md for format evidence and the 
 - Detailed fixture notation and host evidence are in PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. Fixture coordinates are illustrative and establish no supported block size or timing tolerance.
 
 This refinement does not change GS-MID-002, GS-MOD-004, DEC-034, DEC-038, the 124-row inventory or the 53/124 acceptance-link baseline.
+
+
+### 3.10 AU document-state failure and fallback contract — IF-12 / DEC-025
+
+- Treat AUv3 nullable dictionary getters and AUv2 AudioUnitGetProperty OSStatus as distinct adapter surfaces; do not claim one universal AU error channel.
+- A successful document-state value must include every required DEC-025 recording payload and the persisted DEC-042 Freeze data for the same capture generation.
+- Do not substitute preset-scoped fullState for fullStateForDocument as a successful document save merely because the latter is nil or failed.
+- Apple's ClassInfoFromDocument-to-ClassInfo fallback is documented for document restore. A fallback result is accepted as a complete document restore only after container-kind and required-chunk validation.
+- AUv2 CF objects are owned references; their release is non-render ownership. Nested payload copy/materialization is measured/observed rather than inferred.
+- Host save rollback, nil bridge mapping, callback context and restore fallback remain Q-T15/Q-P09 evidence gates.
+
+See **PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md**. This does not alter DEC-025, DEC-042 or the 124-row R1 inventory.
