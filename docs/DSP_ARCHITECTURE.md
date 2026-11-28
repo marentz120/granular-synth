@@ -249,7 +249,7 @@ Per render block, per voice:
    - pitch = notePitch + pitchKnob + pitchSpray·rand(polarity) + mod, then chord/arp note, then scale quantization (per grain or per voice)
    - pan = pan + panSpray·dist(rand)
    - optional grain probability skip (L2)
-5. **Spawn modes** on note-on: Gradual (start scheduler at phase 0), Direct (pre-populate `round(density)` grains with randomized window phases so the cloud is already "full"), Direct reset (same, but all positions within the spray range), Recycle (revive the last voice's grain set).
+5. **Spawn modes** on note-on — product behavior is approved by DEC-049: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer, falling back to Gradual when unavailable. The following is only a candidate realization, not an approved implementation: start Gradual scheduler at phase 0; pre-populate Direct using a density-derived count and randomized window phases; constrain Direct Reset positions to Spray; preserve/rebind the prior same-layer grain set for Recycle. Exact count/rounding, window-phase distribution, source/configuration compatibility and state mapping require engineering review and deterministic acceptance oracles.
 6. **Idle shutdown:** a voice with no active grains and no gate stops scheduling (no CPU), mirroring SCH-06.
 
 ### 6.3 Grain and voice stealing (R1 architecture proposal; algorithm not approved)
