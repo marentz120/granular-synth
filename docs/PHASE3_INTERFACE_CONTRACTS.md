@@ -172,3 +172,15 @@ See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for API evidence, cand
 - Identity maps, channel groups and fan-out lists are fixed-capacity, generation-checked and audio-thread-owned. Overflow is counted and explicit; no render-time allocation, lock or silent channel-wide fallback is permitted.
 
 See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md for format evidence and the Phase 5 test design. These are candidate engineering contracts; they do not alter GS-MID-002 or DEC-038.
+
+### 3.9 MPE normalization fixture contract — IF-09 / IF-03
+
+- Channelized MPE identity includes an ingress namespace: AU virtual cable, VST3 event-bus index, or Standalone input-port/device identity. Combine it with negotiated zone, member channel and channel-lease generation; a numeric MIDI channel alone is not a key.
+- Explicit VST3 Note Expression remains keyed by event-bus index plus valid host noteId. It is not synthesized from a channelized MPE key.
+- Both paths normalize to SourceNoteIdentity, then create one layer-local NoteInstanceId for each matching layer under DEC-034.
+- Channel-scoped expression updates every active note in the matching member-channel group and no note in another cable, port, event bus or zone. Shared-channel identity remains explicitly qualified.
+- Missing, duplicate, ambiguous and stale identities are explicit outcomes. They must not alias another note or silently downgrade to channel-wide pitch bend.
+- Stable fixture assertions cover identity separation, source-local order, layer fan-out exactly once, generation safety and bounded render work. Same-pitch AU Note Off, sustain/channel reuse, VST3 Pressure/Timbre type IDs and exact ±48 host conversion remain AR-03…AR-05 gates.
+- Detailed fixture notation and host evidence are in PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. Fixture coordinates are illustrative and establish no supported block size or timing tolerance.
+
+This refinement does not change GS-MID-002, GS-MOD-004, DEC-034, DEC-038, the 124-row inventory or the 53/124 acceptance-link baseline.
