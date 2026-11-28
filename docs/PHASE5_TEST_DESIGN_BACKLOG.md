@@ -313,3 +313,24 @@ These fixtures are derived from `PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUD
 | Failure recovery | Corrupt/truncated payload, interrupted save and memory-admission rejection | No partial state accepted; DEC-025/042 audio never silently omitted; previous valid runtime preserved | Q-T15; authorized host prototype |
 
 No payload-size values, memory ceilings, callback deadlines or benchmark claims are assigned. These fixtures are not executed.
+
+## 13. State I/O scheduling and retention fixtures
+
+These fixtures extend the existing Q-T15/DEC-025/DEC-042 state-container plan. They add no R1 requirements, formal AC IDs or pass claims.
+
+| Fixture family | Stimulus | Required assertion | Dependency |
+|---|---|---|---|
+| Capture watermark | Save while recording; advance completed block/page commits around capture | Descriptor contains the latest fully committed range per source; no partial block is included | Q-T15; recorder/capture prototype |
+| Stale descriptor | Advance committed watermark after a prepared snapshot is published | Stale snapshot is not returned as successful document state | Q-T15/Q-P09 |
+| Callback context | Save in normal and offline host processing modes | Actual callback thread is recorded; no render wait, disk I/O or unbounded capture | Q-P09/Q-T15; host prototype |
+| Ring-wrap lease | Wrap the recording ring while a snapshot lease is held | Leased pages remain immutable; recording continues in separate writable capacity | DEC-025; retention implementation |
+| Partial lease rollback | Make one required page unavailable after earlier leases are acquired | No partial snapshot is published; leases roll back off-render | Q-T15; admission |
+| Retention exhaustion | Exhaust pinned-page or writable-headroom reservation | Save fails visibly; recording remains active and intact | Q-T05/Q-T15 |
+| Save cancellation | Cancel while serializer reads a chunk | Lease remains until reader quiescence; no use-after-release | Q-T15; ownership instrumentation |
+| Bounded job queue | Submit beyond in-flight admission | Deterministic busy/failure; no unbounded backlog or render wait | Q-T15; scheduler |
+| Save with Freeze | Save while Source Snapshot Freeze and independent recording continue | Required chunks retain matching source generations and frame ranges | DEC-025/DEC-042 |
+| Save/restore overlap | Hold save leases while preparing a restore candidate | Aggregate peak admission includes all simultaneously live allocations | Q-T07/Q-T15 |
+| Physical memory ledger | Compare aliased pinned pages, copied pages, AU materialization and VST3 transfer staging | Each physical allocation is counted once; capacity reservations remain distinct | GS-NFR-008 |
+| Transfer/callback failure | Inject AU materialization failure and VST3 short/zero-progress writes | No incomplete container is reported successful; recording and prior runtime remain intact | Q-T15/Q-P09 |
+
+Execution requires pinned host/OS/architecture/plugin builds and separate authorization for any host prototype or benchmark. These are planned tests only.
