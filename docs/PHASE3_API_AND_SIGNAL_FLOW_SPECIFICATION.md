@@ -714,6 +714,22 @@ The following supporting symbols are also candidate design vocabulary used by th
 No implementation or benchmark was run. If a future implementation uses different names or combines these responsibilities, update the traceability matrix rather than treating this candidate vocabulary as a binding ABI.
 
 
+
+### 14.2 Cross-format event and transport symbols — 2026-11-28
+
+| Candidate symbol | Responsibility | Boundary / open rule |
+|---|---|---|
+| HostProcessKind / HostProcessEnvelope | Distinguish audio render from control-only parameter flush | A flush has no audio frame range and never advances transport |
+| IHostEventAdapter | Translate AU/VST3 host events into bounded normalized batches | AU absolute sample time uses checked signed conversion; VST3 offsets remain block-relative |
+| EventSourceOrder | Preserve source identity and order within one source | Does not assign cross-source precedence |
+| EventBatch | Group independent events that share one sample offset | Conflicting writes remain under AR-01 |
+| ParameterAutomationCurve / AutomationCurvePoint | Preserve AU ramps and VST3 piecewise-linear parameter queues | VST3 relative position -1 is previous-block continuity metadata, not a discrete event |
+| NoteInstanceId / IMpeNoteIdentityAdapter | Map native VST3 noteId or AU MPE member-channel lifecycle to internal per-note identity | AU retrigger/matching policy remains open; missing identity cannot fall back to channel-wide pitch bend |
+| TransportFieldValidity | Mark sample/PPQ, tempo, time-signature, cycle and play-state fields independently valid or unavailable | Missing host data is not replaced with guessed defaults |
+| IHostTransportAdapter | Build one immutable normalized host transport snapshot per block | VST3 ProcessContext flags and AU callback success/optional fields are authoritative |
+
+These names refine the symbol crosswalk in `PHASE3_API_SYMBOL_TRACEABILITY.md`; they are candidate design vocabulary, not implemented classes or a frozen ABI.
+
 ## 15. Cross-format event, automation and transport normalization — 2026-11-28
 
 The source-format adapters have different timestamp and automation representations. The shared core must preserve their semantics rather than flattening them into a single list of parameter steps. The detailed evidence and host gates are in `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md`.
