@@ -1,6 +1,6 @@
 # Phase 3 Memory Admission and Render Capacity Audit
 
-**Version:** 0.1 — host block-capacity and transient-buffer accounting refinement  
+**Version:** 0.2 — host state materialization and process-boundary accounting refinement  
 **Status:** Proposed engineering contract; no numeric process-memory budget, host topology, framework, or implementation is approved.  
 **Baseline:** DEC-017/020/025/026/028/040; GS-ARC-006/007; AU/VST3 adapter contract; Q-T03/Q-T05/Q-T07/Q-T17.  
 **Scope:** Documentation-only audit. No code, host prototype, benchmark, or runtime measurement was performed.
@@ -222,3 +222,16 @@ If save, restore, Freeze, recording retention or sample replacement overlap, adm
 The capture watermark is the latest fully committed recording block/page included in the immutable descriptor. Stale descriptors cannot be reported as successful DEC-025 document saves. Retention leases protect the exact source-generation/frame range until the last reader completes; the writer continues only into separately reserved writable capacity and never waits.
 
 Reservation rollback and lease release occur off-render after readers quiesce. All totals/offsets use checked wide arithmetic before conversion to size/host API widths. No numeric budget, concurrency count, page capacity, AU payload limit, VST3 transfer slice or callback deadline is selected. See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`.
+
+
+## 11. State callback materialization and host-process accounting — 2026-11-28
+
+The callback evidence matrix adds two memory-accounting constraints:
+
+- AU state is dictionary-shaped. Count the plug-in-owned manifest, Data objects, materialized payloads and any confirmed bridging/copy allocations separately. The number of Foundation/host copies is unknown; do not apply an assumed multiplier.
+- VST3 plug-in-owned transfer buffers are counted at their actual allocated capacity. Host-owned IBStream buffering is unknown and is not a plug-in allocation unless a prototype demonstrates an owned copy.
+- Bitwig's documented hosting modes can place plug-ins in the audio-engine process or in separate shared/individual processes. Any future authorized memory prototype must record the selected mode, per-process memory and aggregate process memory. Process isolation changes accounting boundaries; it does not remove the payload's physical-memory cost.
+- A state callback that overlaps render may retain immutable snapshot pages while the recorder continues. Count those pages once as physical memory and separately reserve the required retention/writable capacity.
+- State save/restore admission continues to include old runtime, snapshot retention/copy, AU materialization or VST3 staging, decode/codec workspace and pending retirement. Unknown host-owned buffers remain an evidence gap, not an invented byte estimate.
+
+No memory measurement, process-memory budget, copy count, payload limit or benchmark was produced. See the callback/freshness evidence matrix and Q-T15/Q-P09 gates.
