@@ -214,11 +214,11 @@ See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`. These are Q
 
 ## I. Cross-host state callback and snapshot freshness evidence — 2026-11-28
 
-The new \`PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md\` records additional Q-T15/Q-P09 engineering gates:
+The new `PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md` records additional Q-T15/Q-P09 engineering gates:
 
 - Determine the actual AU state-property callback thread and render overlap in Logic Pro, Ableton Live and REAPER. Apple's reviewed property documentation does not specify a universal thread or explicit getter error result.
-- Verify how each AU host treats a nil/failed \`fullStateForDocument\` result. Do not assume that nil aborts project save; DEC-025 still requires every unsaved recording payload.
-- Verify VST3 component state callbacks while Processing and host-visible handling of non-success \`tresult\`, short stream transfers and invalid state.
+- Verify how each AU host treats a nil/failed `fullStateForDocument` result. Do not assume that nil aborts project save; DEC-025 still requires every unsaved recording payload.
+- Verify VST3 component state callbacks while Processing and host-visible handling of non-success `tresult`, short stream transfers and invalid state.
 - Include the Steinberg offline same-thread get/set-state clarification as supplemental evidence; do not generalize it into a guarantee for every host.
 - Publish/read one coherent capture-boundary vector across all required recording/Freeze sources. Independent per-source watermark reads can produce a torn snapshot.
 - Reject stale descriptors; never report a successful DEC-025 document save with stale or missing required audio.
