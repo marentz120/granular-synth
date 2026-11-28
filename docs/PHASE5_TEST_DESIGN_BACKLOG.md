@@ -1,6 +1,6 @@
 # Phase 5 Test-Design Backlog — R1 Acceptance Traceability
 
-**Version:** 0.1 — 2026-11-27
+**Version:** 0.2 — cross-format event and transport test families added, 2026-11-28
 **Status:** Planning backlog only. No new product decisions, acceptance IDs, numeric thresholds, implementation, host prototype or benchmark is authorized by this document.
 **Authority:** `GRANULAR_SYNTH_REQUIREMENTS.md`, `R1_PRODUCT_SPECIFICATION.md`, approved DEC records, `R1_ACCEPTANCE_CRITERIA.md`, and Phase 3 interface/architecture contracts.
 
@@ -159,3 +159,22 @@ The earlier 47/77 count was understated because shorthand references in the acce
 ## 7. Current boundary
 
 This document is a planning artifact only. It does not authorize DSP implementation, AU/VST3 Plugin Shells, host prototypes, benchmarks, framework selection, deployment-target selection, parameter-ID freeze or PR merge.
+
+
+## 5. Cross-format event and transport parity supplements
+
+These shared test families supplement the requirement-level backlog above. They do not change the corrected 53/124 acceptance-link count, add AC IDs, or claim passing results. A shared suite may cover both linked and currently unlinked requirements, but each requirement remains individually traceable.
+
+| Test family | Candidate fixture / assertions | Requirement and dependency |
+|---|---|---|
+| AU absolute event time | Valid/invalid block sample-time anchor; signed AU event times; immediate scheduling; negative host sample time; exact offsets 0 and final sample; future/stale handling without clamping | GS-MID-001…008; GS-PLT-003 |
+| VST3 discrete event time | Block-relative offsets; busIndex/channel; source-local order; Note On before Note Expression; missing noteId; event-list ordering | GS-MID-001…008; DEC-038 |
+| AU/VST3 automation equivalence | AU step/ramp and non-rampable behavior; VST3 linear queue points, omitted initial point, previous-block anchor, constant-slope continuation and two-point jumps | GS-MOD-005; GS-SEQ-009; Q-T12/Q-T13 |
+| MPE identity bridge | VST3 noteId versus AU cable/member-channel lifecycle; overlapping notes, same-pitch retrigger, note-off and channel reuse; ±48-semitone per-note pitch | GS-MID-007/008; DEC-038; AU note-retrigger mapping open |
+| Transport validity and discontinuity | Null/failed context; independent field validity; tempo/time-signature change; stop/start; seek; cycle range and loop wrap | GS-SEQ-001…012; DEC-039; Q-P09 |
+| Intra-block cycle transition | Compare host that splits at cycle boundary with host that does not; verify explicit unknown/insufficient intra-block timeline when no reliable transition is supplied | GS-SEQ-001…012; host-specific prototype gate |
+| VST3 parameter flush | No audio buses with parameter updates; no audio scratch access, frame counter, sequencer or transport advance | GS-PLT-003; GS-NFR-001 |
+| Same-offset cross-source batch | Host automation, MIDI mapping, sequencer lock and UI write at identical sample offset; prove deterministic batch capture without asserting a winner | AR-01; GS-MOD-005; GS-SEQ-009 |
+| Variable-block partition parity | Render the same event/automation fixture using different legal block partitions; compare absolute event positions, curve continuity and deterministic output | GS-PLT-003/004; GS-NFR-006 |
+
+**Design restrictions:** no numeric event capacity, timing tolerance, overflow recovery or host version is set here. No benchmark is authorized. Formal AC grouping and pass/fail thresholds remain Phase 5 work.
