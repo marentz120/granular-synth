@@ -240,3 +240,33 @@ The catalogue distinguishes **Invariant verified**, **Invariant failed**, **Deci
 | DEC-042 | CC 120/Panic and host reset do not thaw Freeze or erase snapshot | Freeze/recording state round-trip | DEC-042; recorder behavior across deactivation remains host validation |
 
 No formal AC IDs, test IDs, capacities, pass thresholds or results are created. No benchmark or host prototype is authorized by this backlog.
+
+
+## 10. Cross-host state persistence and reset evidence fixtures
+
+These fixtures extend §9's MPE reset/restore backlog. They are cross-cutting host-integration tests, not new R1 requirements or formal AC IDs. The evidence baseline remains 124 requirements / 53 existing acceptance-or-release-gate links / 71 requirements needing explicit links or cross-cutting rationale.
+
+| Host / format | Candidate test family | Required evidence | Dependency / gate |
+|---|---|---|---|
+| Logic Pro / AU | Project plug-in-state save/reopen; plug-in setting save/load and Reset Setting; AU render reset/deallocation; optional-bus activation after reopen | Host build, AU identifier, state manifest/hash, callback trace, active bus/routing snapshot | Q-P06/Q-P09; AU host prototype; custom payload U |
+| Ableton Live / AU | Live Set save/reopen; AU preset round-trip; DEC-025 recording and DEC-042 Freeze payload; missing external asset/relink; Collect All and Save distinction | Set/project artifact, plug-in state payload hash, relink result, bus/routing snapshot | Q-P09/Q-T15; Ableton does not collect third-party plug-ins as project assets |
+| Ableton Live / VST3 | Live Set and per-instance VST preset/bank round-trip; processor/controller synchronization; embedded payload and bus restore | Component/controller state trace, parameter-write count, chunk hashes, routing snapshot | Q-P09/Q-T15; exact opaque state payload U |
+| Bitwig Studio / VST3 | Project-associated plug-in-state save/reopen; record hosting mode; controlled Reload Plug-in/reopen lifecycle; embedded payload and active-bus restore | Project folder inventory, plug-in-state hashes, hosting mode, process reload trace, routing snapshot | Q-P09/Q-T15; sandbox reload is not proof of transient-voice persistence |
+| REAPER / AU | Project save/reopen; FX-chain preset vs per-instance state; offline/online FX load; AU reset/deallocation | Project artifact, preset/state comparison, lifecycle trace, embedded payload hashes | Q-P09/Q-T15; exact AU state callback behavior U |
+| REAPER / VST3 | Project save/reopen; FX-chain state; default vs optional Hard reset on playback start; offline/online FX load | Project artifact, VST3 component/controller state trace, reset trace, payload hashes | Q-P09/Q-T15; exact opaque state payload U |
+
+### 10.1 Shared state round-trip assertions
+
+- Four-layer parameter sentinels restore exactly.
+- Required unsaved recording and Freeze chunks restore with matching length and checksum.
+- External library references retain stable identity; missing assets produce relink-required status.
+- Active host note IDs, MPE leases and NoteInstanceIds are not serialized or resurrected.
+- VST3 controller synchronization creates no duplicate host parameter writes.
+- Bus activation/routing is asserted separately from plug-in-state restore.
+- Corrupt/truncated payload, migration failure and memory-admission rejection preserve the prior active state.
+- CC 120/121/123, Panic, host stop, process reload and state restore remain separate test stimuli; none may silently thaw DEC-042 Freeze.
+- For active voices at restore commit, retain both AR-06 branches (terminate at commit vs non-addressable old-generation tails) as alternatives until owner approval.
+
+### 10.2 Evidence discipline
+
+No host test, callback trace, payload-size limit, memory threshold, AC ID or pass result is created by this backlog. Pin exact host/OS/architecture/plug-in builds before execution. Any host prototype or benchmark requires separate explicit owner authorization.
