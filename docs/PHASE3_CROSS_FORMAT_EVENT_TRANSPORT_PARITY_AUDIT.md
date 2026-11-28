@@ -214,3 +214,18 @@ This audit preserves the approved product baseline:
 6. [IProcessContextRequirements](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IProcessContextRequirements.html) — request required process-context fields during setup.
 
 **Review outcome:** the API surfaces can be normalized into a shared event/automation/transport model, but host parity is not established by API capability alone. Host prototypes and tests remain separately gated. No code, benchmark or product decision was made.
+
+
+## 9. MPE note identity and lifecycle refinement — 2026-11-28
+
+The high-level NoteInstanceId contract is expanded in [PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md](PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md).
+
+Key refinements:
+- Separate a source note identity from each layer-local voice NoteInstanceId. One input note may fan out to every layer assigned to the matching MIDI channel (DEC-034).
+- A VST3 host key is the event-bus index plus a valid noteId. The value -1 is unavailable, not an identity. Keep the mapping through the voice release because VST3 Note Expression may still address a released voice.
+- AU identity is derived from cable, negotiated zone, member channel and note lifecycle. A member channel is an expression scope; if several notes share it, all active notes in that group share its expression.
+- A released AU note must not follow a subsequently reused member channel. The candidate is to snapshot its final expression and detach it from the active channel group; same-pitch Note Off matching and sustain interaction remain open.
+- VST3 standard/custom Note Expression type mapping for product Pressure and Timbre is not selected. Pitch uses the standard Tuning type as a candidate, with explicit normalized-to-semitone conversion.
+- Identity tables, channel groups and layer fan-out must be bounded and preallocated. No render-time map growth or silent fallback to channel-wide expression is allowed.
+
+Open gates are recorded as AR-03 (AU lifecycle/matching), AR-04 (VST3 Pressure/Timbre type mapping) and AR-05 (DEC-038 public range metadata). The audit does not change GS-MID-002, DEC-034 or DEC-038 and adds no AC IDs.
