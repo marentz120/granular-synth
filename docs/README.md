@@ -36,3 +36,5 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 
 
 - [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md) — official Logic/Live/Bitwig/REAPER state-save, preset/reset and process-reload evidence; separates host documentation from AU/VST3 API contracts, DEC-025/DEC-042 payload tests, AR-06 alternatives and unverified bus/callback behavior. Evidence map only; no host certified.
+
+- [PHASE3_STATE_CONTAINER_AND_MIGRATION_AUDIT.md](PHASE3_STATE_CONTAINER_AND_MIGRATION_AUDIT.md) — Q-T15 proposal for a versioned manifest/binary-chunk envelope, AU/VST3 host-stream boundaries, interrupted-save semantics, schema migration, corruption handling and peak memory admission; recommendation only, no final format/codec/size limit approved.
