@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Encoder, Sequencer Viewport & Performance UX
 
-**Version:** 0.1  
+**Version:** 0.2  
 **Status:** Phase 4 discovery proposal — owner review required  
 **Authority:** UI behavior proposals only. Approved product behavior remains in `R1_PRODUCT_SPECIFICATION.md`, `LIVE_PERFORMANCE_SPECIFICATION.md`, and `DECISIONS_LOG.md`. Nothing here changes R1 scope, DSP behavior, MIDI protocol requirements, architecture, or acceptance thresholds.
 
