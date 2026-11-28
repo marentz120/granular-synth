@@ -289,3 +289,34 @@ The adapter boundary must account for the different producer and callback shapes
 - Cycle/loop discontinuity within a block is host-dependent. Do not assume all hosts split at the loop boundary; report insufficient intra-block timing unless host evidence proves otherwise.
 
 No new queue capacity, event-drop policy, transport fallback policy, note-retrigger policy or cross-source precedence is approved by this section.
+
+
+## 11. MPE note-identity state and bounded lifecycle
+
+The MPE identity audit adds stateful note routing to the existing bounded event model.
+
+### 11.1 Ownership
+
+- The render domain owns the active SourceNoteIdentity table, AU member-channel groups, VST3 host-note lookup and layer-local NoteInstanceId associations.
+- Host adapters copy callback-borrowed event fields into bounded records. They do not retain AU/VST3 event pointers or mutate the render-owned note map from an arbitrary host callback thread.
+- AU MIDI scheduling may enter from multiple producer contexts. Its ingress must follow the documented producer topology; identity assignment occurs only when the ordered event is consumed by the render domain.
+- UI/controller metadata for VST3 Note Expression types is queried outside render. The render path consumes only pre-resolved type IDs and normalized values.
+
+### 11.2 Bounded operations
+
+- Note lookup, source-to-layer fan-out, member-channel expression broadcast and identity retirement must have bounded worst-case work.
+- Active-note lists, identity slots and channel-group membership storage are preallocated. No dynamic map insertion, heap allocation, blocking lock, logging or final destruction is allowed in render.
+- Handles include a generation so a stale note/expression event cannot resolve to a newly reused identity-table slot.
+- Channel-lease generations prevent a released AU voice from following expression on a later reuse of the same member channel.
+- Capacity exhaustion is counted. It must not silently downgrade per-note expression to channel-wide pitch bend. Numeric capacity and exact overload recovery remain Phase 5 engineering gates.
+
+### 11.3 Lifecycle ordering
+
+- Note On allocates a source identity before layer fan-out; each receiving layer allocates its own NoteInstanceId.
+- Per-note expression resolves the source identity and updates all associated live layer voices exactly once.
+- VST3 Note Off moves the identity to released state but does not retire it while a release voice can still receive Note Expression.
+- AU Note Off ends the member-channel association for that source note under the candidate protocol model. Snapshot the last expression onto its release voice before a channel can be reused; same-pitch matching and sustain interaction remain open under AR-03.
+- Voice completion retires the layer-local NoteInstanceId. The source identity is retired only when no format-specific expression target remains.
+- Panic and All Sound Off clear active mappings using bounded operations; they never wait for a worker.
+
+See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md. This section defines ownership and RT constraints, not numeric capacities or a final Note Off matching policy.
