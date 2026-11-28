@@ -296,3 +296,20 @@ These are candidate Phase 5 fixtures for Q-T15, DEC-025 and DEC-042. They add no
 | DEC-025/042 round-trip | Four-layer state with unsaved recordings, Freeze snapshots and missing external library asset | Required embedded payload hashes/lengths restore; external asset is relink-required without losing unrelated state | DEC-025/DEC-042; host prototype |
 
 The exact container bytes, checksum, codec, maximum state size, callback deadline, transfer slice and migration retention window remain open. These fixtures are plans, not executed tests or benchmarks.
+
+
+## 12. AU/VST3 host payload feasibility fixtures
+
+These fixtures are derived from `PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md`. They are planning-only and add no formal AC/test IDs or pass results.
+
+| Fixture family | Stimulus | Required evidence | Gate |
+|---|---|---|---|
+| AU state scope and fallback | Logic AU user-setting save/load, project save/reopen, `fullStateForDocument` implemented vs fallback | Which AU property path is used; exact payload hash/bytes; callback context; memory materialization | Q-T15/Q-P09; authorized AU prototype |
+| Ableton reserved binary block | Live AU and VST3 save/reopen with DEC-025 recording and DEC-042 Freeze payload | Exact per-instance binary payload round-trip and failure behavior; distinguish Set state from plug-in binary collection and default parameter configuration | Q-T15/Q-P09; authorized host prototype |
+| Bitwig process-hosting modes | VST3 save/reopen and Reload Plug-in across selected hosting modes | `plugin-states` artifacts, host mode, process boundary, payload hashes and peak process memory | Q-P09/Q-T15; authorized host prototype |
+| REAPER state and compatibility options | AU/VST3 project save/reopen, VST bank where applicable, Hard reset on playback start on/off, FX offline/online load | Opaque plug-in state versus FX-chain/preset state; reset/lifecycle trace; payload hashes | Q-P09/Q-T15; authorized host prototype |
+| VST3 stream progress | Partial read/write, zero progress, EOS, error, seek failure, logical payload split across int32-sized calls | No truncation/false success; checked int64 offsets; prior state remains active | Q-T15; VST3 adapter prototype |
+| Host payload/memory ladder | Owner-approved small/medium/large deterministic payload sizes, with repeated save/reopen | Actual payload bytes, plug-in/process peak memory, copy/materialization count where observable, method thread and elapsed time | Q-T15/Q-P09; explicit prototype authorization; benchmark separately authorized |
+| Failure recovery | Corrupt/truncated payload, interrupted save and memory-admission rejection | No partial state accepted; DEC-025/042 audio never silently omitted; previous valid runtime preserved | Q-T15; authorized host prototype |
+
+No payload-size values, memory ceilings, callback deadlines or benchmark claims are assigned. These fixtures are not executed.
