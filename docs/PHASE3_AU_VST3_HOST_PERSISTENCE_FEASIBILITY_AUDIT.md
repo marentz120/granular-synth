@@ -223,3 +223,16 @@ The [Cross-Host State Callback & Snapshot Freshness Evidence Matrix](PHASE3_CROS
 - A cross-source capture token must be coherent across every required recording/Freeze source. The serializer rejects stale descriptors and never substitutes an older snapshot.
 
 The AU nil-result path and VST3 host reaction to non-success `tresult` remain Q-T15/Q-P09 prototype gates. No callback timing, maximum payload, copy count or host certification is approved.
+
+
+## 10. AU failure surface: AUv3 nil versus AUv2 OSStatus — 2026-11-28
+
+The prior §9 shorthand is refined: AU does have an explicit result at the AUv2 property-call surface, but the AUv3 property getter itself is nullable and has no separate error parameter.
+
+- **fullState** bridges to **kAudioUnitProperty_ClassInfo**; **fullStateForDocument** bridges to **kAudioUnitProperty_ClassInfoFromDocument**.
+- **AudioUnitGetProperty** returns OSStatus for AUv2 property reads.
+- Apple documents a ClassInfoFromDocument-to-ClassInfo fallback for **document restoration** when the document property errors or is not implemented. That is not evidence of save-time fallback or save rollback.
+- The exact AUv3 nil bridge mapping, and Logic/Live/REAPER behavior after nil or non-success OSStatus during save, remain unobserved.
+- An owned CF object returned by AUv2 must be released; do not assume that this reference duplication deep-copies the nested audio payload.
+
+A fallback to preset state must not be called a successful DEC-025 document restore unless all required document chunks are present. See [the dedicated AU failure-signalling audit](PHASE3_AU_STATE_FAILURE_SIGNALLING_AND_DEC025_COMPATIBILITY_AUDIT.md).
