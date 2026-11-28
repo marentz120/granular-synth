@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Phase 5 Decision Closure Register
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Date:** 2026-11-28  
 **Status:** Consolidated decision register; no unresolved decision is silently approved by this document.  
 **Authority:** `DECISIONS_LOG.md`, `OPEN_QUESTIONS.md`, `R1_PRODUCT_SPECIFICATION.md`, `PHASE5_ALL_REQUIREMENTS_AUDIT.md`.
@@ -33,7 +33,7 @@ These questions affect existing R1 requirements. They must be resolved or explic
 | Q-I07 | GS-VOI-008 | **Approved — DEC-052:** LPF and HPF only; LPF-only / LPF+HPF / HPF-only routing; chain bypass; independent 6/12/18/24 dB/oct slopes and resonance; no notch/band-pass/peak modes in R1 | Define filter topology and resonance range/curve as technical decisions; verify routing and slope behavior | Filter response tests |
 | Q-I08 | GS-GRN-006 | **Approved — DEC-053:** Uniform over legal spread interval; Centre Weighted uses normalized triangular density peaking at base pan and tapering linearly to available spread limits; amount zero preserves base pan; each grain samples independently at spawn | Define seeded statistical tolerance and sample size; verify legal-boundary truncation/renormalization | Pan-spray tests |
 | Q-I12 | GS-VOI-010 | **Approved — DEC-054:** fixed sine waveform in R1; no waveform selector. Existing −1/−2 octave, level, poly-balance and quantization controls remain | Verify sine output, octave tracking, level, poly balance and shared quantization behavior; oscillator implementation remains technical | Sub-oscillator tests |
-| FX parameter contract | GS-FX-002/004/006 | Effect inventory is approved; many units/ranges/defaults remain TBD | Define Delay units/range/sync, Chorus/Compressor/Saturator/Reverb ranges/defaults, EQ3 crossover behavior, send range and automation scaling | FX acceptance and host parameter registry |
+| FX parameter contract | GS-FX-001/002/004/006 | **Approved scope — DEC-023; sequencing — DEC-056:** seven R1 effects remain mandatory, but detailed parameter contract and FX implementation are deferred to final Phase 6 milestone M14 | Before M14, define Delay units/range/sync, Chorus/Compressor/Saturator/Reverb ranges/defaults, EQ3 crossover behavior, send range and automation scaling; reconcile parameter IDs, modulation/automation and acceptance coverage | M14 FX integration and R1 release gate; does not block core engine milestones |
 | MTX-05 | GS-MOD-005 | R1 destination coverage must exclude deferred-only targets | Reconcile the eligible R1 destination inventory against the canonical parameter catalogue | Modulation and parameter registry tests |
 | Sampler interpolation | GS-SMP-003 | High-quality interpolation is required; exact modes/default/filter length remain open | Select modes/default and define transition behavior; CPU budget is a separate technical gate | Sampler quality tests |
 | Patch comments | GS-PRS-009 | R1 tier is approved; feature behavior/UI remain proposed | Confirm whether patch comments are required in R1 and define editing/search/persistence behavior; do not inherit the benchmark's 100-character limit automatically | Preset/library acceptance |
