@@ -138,3 +138,14 @@ Checked 2026-11-28. Host documentation is version-sensitive; pin the exact targe
 ## 8. Exit condition
 
 A host/format cell may be called supported only after an owner-authorized prototype passes the relevant signal-level, MPE, bus activation, master fallback, lifecycle and save/reopen tests on a pinned host build and macOS environment. Until then this document is an evidence map, not a certification report.
+
+
+## 9. VST3 state persistence and process lifecycle evidence — 2026-11-28
+
+The VST3 host cells are refined by [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md):
+
+- **Ableton Live:** Live Set device/control settings and per-instance VST preset banks are documented; exact opaque processor/controller state round-trip with DEC-025 recording/Freeze payload remains unverified.
+- **Bitwig:** project-associated `plugin-states` storage and sandbox/reload controls are documented; exact VST3 component/controller restore order and transient-voice behavior remain unverified.
+- **REAPER:** FX-chain parameter settings and optional hard-reset-on-playback-start behavior are documented; exact per-instance opaque VST3 state and embedded-audio round-trip remain unverified.
+
+Steinberg's VST3 persistence sequence is an **API contract**, not proof that a given host has been tested. Bus activation/routing after save/reopen remains unverified for the exact GRANULAR SYNTH topology. No host is certified.
