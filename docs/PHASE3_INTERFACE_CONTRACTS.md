@@ -189,7 +189,7 @@ This refinement does not change GS-MID-002, GS-MOD-004, DEC-034, DEC-038, the 12
 ### 3.10 AU document-state failure and fallback contract — IF-12 / DEC-025
 
 - Treat AUv3 nullable dictionary getters and AUv2 AudioUnitGetProperty OSStatus as distinct adapter surfaces; do not claim one universal AU error channel.
-- A successful document-state value must include every required DEC-025 recording payload and the persisted DEC-042 Freeze data for the same capture generation.
+- A successful document-state value must include every required DEC-025 recording payload and the persisted DEC-042 Freeze data, retaining each Freeze payload's immutable Source Snapshot generation/range within the same document-state transaction.
 - Do not substitute preset-scoped fullState for fullStateForDocument as a successful document save merely because the latter is nil or failed.
 - Apple's ClassInfoFromDocument-to-ClassInfo fallback is documented for document restore. A fallback result is accepted as a complete document restore only after container-kind and required-chunk validation.
 - AUv2 CF objects are owned references; their release is non-render ownership. Nested payload copy/materialization is measured/observed rather than inferred.
