@@ -1,10 +1,12 @@
 # Phase 5 Test-Design Backlog — R1 Acceptance Traceability
 
-**Version:** 0.2 — cross-format event and transport test families added, 2026-11-28
+**Version:** 0.3 — linked to the R1 acceptance test-design blueprint, 2026-11-28
 **Status:** Planning backlog only. No new product decisions, acceptance IDs, numeric thresholds, implementation, host prototype or benchmark is authorized by this document.
 **Authority:** `GRANULAR_SYNTH_REQUIREMENTS.md`, `R1_PRODUCT_SPECIFICATION.md`, approved DEC records, `R1_ACCEPTANCE_CRITERIA.md`, and Phase 3 interface/architecture contracts.
 
 ## 1. Purpose
+
+The companion `PHASE5_R1_ACCEPTANCE_TEST_DESIGN.md` assigns all 71 unlinked requirements to shared test families, adds candidate observable oracles, fixture sequences, evidence rules and decision/measurement gates. This backlog remains the canonical requirement-level intent/evidence/dependency register; the companion document does not create formal AC IDs or claim execution.
 
 This backlog converts every R1 requirement that still lacks an acceptance link into a Phase 5 test-design task. Each row retains the canonical requirement ID, identifies the observable behavior to validate, suggests evidence suitable for the test family, and records unresolved dependencies. Rows may later be grouped into shared suites, but each requirement must remain individually traceable. Candidate evidence is not a pass result, and a candidate API symbol is not acceptance coverage.
 
