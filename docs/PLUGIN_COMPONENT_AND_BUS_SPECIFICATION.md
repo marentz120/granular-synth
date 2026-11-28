@@ -297,8 +297,8 @@ AU and VST3 must present the same musical behavior to the shared core, but their
 
 ### 12.2 Parameter automation
 
-- AU parameter ramps preserve start sample time, duration and target value. Check the AU parameter's rampable capability; a non-rampable nonzero-duration request must not be reinterpreted as an immediate step.
-- VST3 `IParameterChanges`/`IParamValueQueue` is a piecewise-linear curve per changed parameter, not one step per queue. Preserve implicit initial values, jump pairs and the signed previous-block anchor at relative position -1.
+- AU parameter ramps preserve start sample time, duration and target value. AUValue uses the AU parameter's declared range/unit (min/max/unit metadata), not an assumed normalized domain. Resolve AUParameterAddress to the canonical ID and normalize through the parameter descriptor. Check the AU parameter's rampable capability; a non-rampable nonzero-duration request must not be reinterpreted as an immediate step.
+- VST3 `IParameterChanges`/`IParamValueQueue` is a piecewise-linear curve per changed parameter, not one step per queue. ParamValue is normalized [0,1]; resolve ParamID to the canonical ID and convert through the parameter descriptor. Preserve implicit initial values, jump pairs and the signed previous-block anchor at relative position -1.
 - The normalized core receives a curve representation separate from discrete `TimedEvent::ParameterChange`. Parameter smoothing is applied only according to the parameter-class policy; do not double-ramp.
 - Stable canonical parameter IDs and format-specific numeric ID mapping remain Q-T12.
 
