@@ -139,3 +139,18 @@ Until then, this matrix is an evidence map, not a certification report.
 ## 9. VST3-specific host evidence
 
 The combined format table above is intentionally high-level. The VST3-specific instrument, full-band input, MPE, five-output, dynamic-bus and save/reopen evidence is expanded in [PHASE3_VST3_HOST_CAPABILITY_MATRIX.md](PHASE3_VST3_HOST_CAPABILITY_MATRIX.md). That document separates host-documented facilities from product-specific proof and records the current REAPER VST3 side-chain channel-count caveat. Neither matrix certifies a host or resolves Q-P06/Q-P09.
+
+
+## 10. MPE host-delivery evidence — 2026-11-28
+
+The detailed format/host audit is recorded in [PHASE3_MPE_HOST_COMPATIBILITY_EVIDENCE_AUDIT.md](PHASE3_MPE_HOST_COMPATIBILITY_EVIDENCE_AUDIT.md). The key cross-format finding is that host MPE support does not imply one common event representation:
+
+- **Logic Pro / AU — P:** Apple documents MIDI Mono Mode, with each note and its control messages received on a separate channel and a configurable pitch range. The reviewed guide does not prove automatic MPE recognition for every third-party AU or the exact `supportsMPE` query path.
+- **Ableton Live / AU — D at host API level:** Live queries `kAudioUnitProperty_SupportsMPE` (AUv3: `supportsMPE`) and, in MPE mode, sends channelized MIDI 1.0 per-note channels, Pitch Bend, CC74 and Channel Pressure; RPN 6 communicates zone configuration.
+- **Ableton Live / VST3 — P:** VST3 has no MPE capability flag used by Live. Automatic recognition requires Ableton's recognized-plug-in list; manual MPE mode is available. The documented event path is channelized MIDI 1.0, not proof of VST3 `noteId` Note Expression delivery.
+- **Bitwig / VST3 — D/P:** Bitwig documents VST3 per-note expressions, plug-in Use MPE/Force MPE controls and a configurable pitch-bend range. Exact event representation in each mode still requires a host trace.
+- **REAPER / AU and VST3 — U:** official documentation reviewed confirms AU/VST3 formats and multichannel MIDI routing, but not an MPE plug-in handshake, zone contract or VST3 Note Expression delivery guarantee.
+
+Architectural consequence: preserve both `MpeChannelKey` and `Vst3HostNoteKey` as distinct ingress identities that normalize to `SourceNoteIdentity`. Do not fabricate a VST3 note ID from a MIDI member channel. DEC-038 remains the product authority for ±48 semitones; each host must be configured and tested at minimum/center/maximum rather than assumed to use the product range by default.
+
+This is evidence refinement only. It does not change DEC-026, DEC-034 or DEC-038; does not resolve Q-P06/Q-P09 or AR-03…AR-05; and does not certify any host or authorize a prototype.
