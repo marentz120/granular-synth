@@ -59,6 +59,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-042 | R1 Freeze uses Source Snapshot semantics: capture the layer's current valid source region into an immutable snapshot; continue grains/voices, new notes, sequencer, MIDI, modulation, transport and FX; independent recording continues; thaw crossfades to the prior live/rolling source; global Freeze applies across all four layers at one logical boundary; static library samples report already static/disable redundant capture; Freeze state and snapshot persist under DEC-025; failure is safe and visible; panic does not thaw | **Approved** | Owner approved Option A as written on 2026-11-27. Product behavior only; numeric memory limits, capture duration, crossfade and implementation remain Phase 3/5 engineering work. See FREEZE_BEHAVIOR_SPECIFICATION.md v1.0. |
 
+| DEC-043 | When the Granular Scan value enters the defined near-zero region, retain the last valid Rate and Size values; do not reset them or calculate through a zero/undefined Scan value. Resume normal calculation when Scan exits that region. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. The epsilon threshold, initialization behavior and exact state-reset conditions remain technical/acceptance details to specify; no numeric threshold is approved here. Resolves Q-M03. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
