@@ -1,7 +1,13 @@
 # Development Roadmap
 
 **Status:** Proposal; gated by research and owner approval. No phase is automatically authorized by this roadmap. Do not build all features in parallel or skip real-time validation.
-**Version:** 0.7 (Freeze retention and global transaction contract, 2026-11-27)
+**Version:** 0.8 (FX module moved to final Phase 6 integration milestone, 2026-11-28)
+
+## Change summary (v0.7 → v0.8)
+
+- Re-sequenced the R1 effects subsystem to the final Phase 6 implementation milestone (M14), after the core engine, layers/state, sequencer and primary UI are complete.
+- This is an implementation-order decision only: DEC-023 and the seven-effect R1 scope remain approved. FX is not removed from R1; its module, UI controls, parameter integration, persistence and acceptance work must be completed before Phase 6 exits.
+- Core architecture and state/parameter planning must preserve a future FX integration point, but this roadmap does not approve a plug-in/add-on SDK, public extension API, framework, class design or DSP implementation.
 
 ## Change summary (v0.2 → v0.3)
 
@@ -189,11 +195,11 @@ flowchart TD
 | M8 | Sampler engine | M4/M5 | GS-SMP-* (R1) | Loop one-shot/wrap/bounce edge cases tested; sample-rate and loop-boundary tests pass |
 | M9 | Recording & live-input granulation, scrolling record | M3, M4, Q-P06 | GS-SMG-008…012 | 1-h loop-record soak with granulation: 0 dropouts, 0 allocations |
 | M10 | FX slot host + R1 effects | M2, Q-P11 | GS-FX-001/002/004/006 | Each effect passes impulse/sine tests; FX swap click-free |
-| M11 | 4 layers, multi-out buses, presets/templates/library, plugin state | M7–M10, Q-P07/Q-P08 | GS-ARC-001/006, GS-PRS-* | State round-trip bit-exact; preset migration test; standalone vs plugin bit-identical render (GS-PLT-004) |
-| M13 | Central step sequencer, pattern library/chains, Performance Sets, live editing and controller mapping | M2, M7, M11 | GS-SEQ-001…012, DEC-019/021 | Variable-length patterns, 8 simultaneous events/step, four-layer event routing, bar-quantized pattern changes, sync sources and controller-only editing pass deterministic timing tests |
-| M12 | UI implementation | M2 (snapshots), Phase 4 spec, M13 | GS-UI-* | UI never blocks audio (callback timing unchanged with UI open); all R1 controls present |
+| M11 | 4 layers, multi-out buses, presets/templates/library, plugin state baseline | M7–M9, Q-P07/Q-P08 | GS-ARC-001/006, GS-PRS-* (FX-specific persistence completed in M14) | State round-trip and migration tests for the implemented core; FX state is integrated in M14 |
+| M13 | Central step sequencer, pattern library/chains, Performance Sets, live editing and controller mapping | M2, M7, M11 | GS-SEQ-001…012, DEC-019/021 | Variable-length patterns, 8 simultaneous events/step, four-layer event routing, bar-quantized pattern changes, sync sources and controller-only editing pass deterministic timing tests |\n| M14 | Final FX module: slot host, seven R1 effects, FX UI, parameter/modulation/automation integration, state and tails | M11–M13, Q-P11; FX parameter contract closed before start | GS-FX-001/002/004/006; DEC-023 | All seven effects, four-slot routing, sends, automation/modulation, preset state and tail policies pass their acceptance suite; RT/CPU and click-free swap gates pass |
+| M12 | Core UI implementation (FX-specific controls deferred to M14) | M2 (snapshots), Phase 4 spec, M13 | GS-UI-* excluding FX-specific controls until M14 | UI never blocks audio; all non-FX R1 controls present |
 
-**Phase 6 exit:** all R1 milestones accepted and merged after review.
+**Phase 6 exit:** all R1 milestones, including final FX integration milestone M14, accepted and merged after review. FX remains mandatory for R1; the sequencing change does not authorize dropping or shipping without it.
 
 ---
 
