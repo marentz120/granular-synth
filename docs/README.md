@@ -17,6 +17,7 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 | [PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md](PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md) | Four-encoder workspaces, proposed R1-backed A–H engine banks, variable-length Pattern viewport and persistent performance controls | Phase 4 draft v0.2 — owner review required |
 | [PHASE4_PERFORMANCE_ACCESSIBILITY_AUDIT.md](PHASE4_PERFORMANCE_ACCESSIBILITY_AUDIT.md) | Action-by-action audit with closure progress, remaining owner UX reviews and Phase 3/5 gates | Phase 4 audit v0.2 — owner review required |
 | [PHASE4_CONTROLLER_ACTION_AND_TARGET_CATALOG.md](PHASE4_CONTROLLER_ACTION_AND_TARGET_CATALOG.md) | Named MIDI/controller targets, explicit scopes, chord-record and audio-record workflows, Performance Bank/Set and Program Change UX | Phase 4 draft v0.2 — owner review required |
+| [PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md](PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md) | Consolidated wireframe-level layouts for six workspaces, global frame, performance row, sequencer strip, library and MIDI overlays | Phase 4 draft v0.1 — owner review required |
 | [LIVE_PERFORMANCE_SPECIFICATION.md](LIVE_PERFORMANCE_SPECIFICATION.md) | Controller-only live-performance and R1 sequencer behavior; detailed UI/acceptance work remains later-phase | Product behavior approved v0.3; UI design pending |
 | [DEVELOPMENT_ROADMAP.md](DEVELOPMENT_ROADMAP.md) | Phases, dependencies, exit criteria, milestone plan | Proposal v0.2 |
 | [DECISIONS_LOG.md](DECISIONS_LOG.md) | Decision records and approval status | Living |
