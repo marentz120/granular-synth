@@ -243,3 +243,16 @@ The proposed JSON-manifest/binary-chunk architecture is a recommendation for own
 - Steinberg, IBStream: https://steinbergmedia.github.io/vst3_doc/base/classSteinberg_1_1IBStream.html
 - Steinberg, IStreamAttributes: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IStreamAttributes.html
 - Steinberg, StateType: https://steinbergmedia.github.io/vst3_doc/vstinterfaces/group__stateType.html
+
+
+## 12. AU/VST3 host feasibility implications — 2026-11-28
+
+The dedicated [PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md](PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md) refines the format and host evidence.
+
+- AU `fullState` / `fullStateForDocument` are dictionary-shaped persistence properties, not documented seekable streams. `fullStateForDocument` is specifically document-oriented; a subclass that does not implement it interfaces with `fullState`. No maximum payload, callback deadline or universal callback-thread guarantee is published in the reviewed Apple references.
+- Ableton explicitly documents a reserved binary data block in a Live Set for VST/AU plug-in state. This proves an opaque per-instance state path exists, not that large embedded audio of any size is accepted.
+- VST3 `IBStream` supports bounded int32 read/write calls and int64 seek/tell positions. Partial transfer counts must be honored. No total state-size limit or host-side streaming guarantee follows from the interface.
+- Steinberg annotates component `getState/setState` as UI-thread calls permitted while the component is Processing; this does not authorize direct mutation of render-owned objects.
+- Bitwig hosting mode can change process isolation and memory profile; record it in any future host prototype.
+
+The peak-memory model must retain an explicit unknown host/stream staging term. Do not assign a numeric size, copy multiplier or callback deadline. Q-T15, Q-P09 and AR-06 remain open; DEC-025/DEC-042 are unchanged.
