@@ -244,11 +244,11 @@ The new [Cross-Host State Callback & Snapshot Freshness Evidence Matrix](PHASE3_
 
 Key refinements:
 
-- VST3 component \`getState/setState\` are documented as UI-thread calls permitted while Processing; this does not stop or quiesce \`process\`. A Steinberg developer-forum clarification says offline get/set-state may run on the same thread as process; treat this as supplemental caution, not a universal host guarantee.
-- AU \`fullState/fullStateForDocument\` do not publish a callback-thread guarantee or an explicit property-getter error result. A \`nil\` dictionary must not be assumed to abort the host's project save.
+- VST3 component `getState/setState` are documented as UI-thread calls permitted while Processing; this does not stop or quiesce `process`. A Steinberg developer-forum clarification says offline get/set-state may run on the same thread as process; treat this as supplemental caution, not a universal host guarantee.
+- AU `fullState/fullStateForDocument` do not publish a callback-thread guarantee or an explicit property-getter error result. A `nil` dictionary must not be assumed to abort the host's project save.
 - Logic, Live, Bitwig and REAPER host guides establish persistence/hosting controls but do not establish the exact state-callback thread, deadline, stale-snapshot handling or failure propagation.
 - A prepared descriptor must match one coherent cross-source capture-boundary vector: persistent state epoch, publication sequence, and every required source generation/committed-frame watermark. Independent unsynchronized per-source reads can produce a torn snapshot.
 - If the descriptor is stale, a required chunk is absent, or the capture boundary cannot be read coherently, never report successful DEC-025 document state. A bounded refresh is allowed only where the actual callback context permits it and all leases are already available without waiting for render.
-- AU's missing explicit getter error channel is a compatibility blocker until each target host's handling of nil/failed document state is observed. VST3 \`tresult\` is an explicit plug-in result, but host-visible save rollback/failure still requires prototype evidence.
+- AU's missing explicit getter error channel is a compatibility blocker until each target host's handling of nil/failed document state is observed. VST3 `tresult` is an explicit plug-in result, but host-visible save rollback/failure still requires prototype evidence.
 
 No host callback was observed and no host was certified. DEC-025/DEC-042, AR-06, Q-T15 and Q-P09 remain unchanged. See the evidence matrix for host rows and planned fixtures.
