@@ -120,3 +120,15 @@ Fixture definitions are not passing results. No host is certified; no numeric ca
 DEC-025, DEC-034, DEC-038, DEC-042, GS-MID-002 and GS-MOD-004 remain unchanged. No new R1 requirement, MIDI feedback, named-controller template, engine, layer or compatibility promise is introduced.
 
 No DSP, Plugin Shell, host prototype, benchmark, framework selection, parameter-ID freeze or PR merge is authorized.
+
+
+## 11. Cross-host state restore and reset evidence — 2026-11-28
+
+Host evidence is consolidated in [PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md](PHASE3_CROSS_HOST_STATE_RESTORE_AND_RESET_EVIDENCE_MATRIX.md). The evidence map distinguishes:
+
+- Logic's documented plug-in setting recall on project reopen and its UI-level Reset Setting command;
+- Ableton Live Set/device settings and per-instance VST preset banks, separately from third-party plug-in binary collection;
+- Bitwig's project-associated `plugin-states` folder and sandbox/reload controls;
+- REAPER's FX-chain parameter settings, offline/online project-load options and optional VST/VST3 hard-reset-on-playback-start setting.
+
+None of these host-level statements establishes the exact custom DEC-025 recording/DEC-042 Freeze payload round-trip, bus activation persistence, callback ordering or audible treatment of active voices. The matrix therefore keeps those items unverified and preserves AR-06 as an owner decision. No host prototype or reset test was run.
