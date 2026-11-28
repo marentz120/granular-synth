@@ -156,6 +156,12 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | Q-I07 | GS-VOI-008 | Confirm R1 filter-mode inventory and the relationship between LPF/HPF modes, routing, slopes and bypass. |
 | Q-I08 | GS-GRN-006 | Define centre-weighted pan-spray distribution and the statistical oracle alongside uniform distribution. |
 | Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement. |
+| Effects parameter contract | GS-FX-002/004/006 | Specify Delay units/ranges/sync, effect parameter ranges/defaults, EQ3 crossover behavior, send range and effect-specific automation. |
+| Modulation destination inventory (MTX-05) | GS-MOD-005 | Reconcile the eligible R1 continuous destinations against the R1 parameter catalogue; exclude deferred-only targets. |
+| Sampler interpolation contract | GS-SMP-003 | Specify interpolation modes, default, filter length and transition behavior; keep CPU qualification separate. |
+| Audio I/O and recording contract | GS-SMG-001/008/009/012/020 | Close decoder/resampling choices, live-input routing, recording-buffer cap and layer/master tap equivalence. |
+| MIDI protocol contract | GS-MID-002/003/007/008 | Specify MPE zone/member-channel setup, host expression delivery, NRPN timeout/pair handling and 7/14-bit precedence. |
+| Preset/state contract | GS-PRS-004/006; GS-NFR-012 | Specify serialization schema, atomic save/recovery, version migration, embedded-audio admission and corrupt/missing-asset recovery. |
 | R1 scope guard | Q-M15, Q-I16, Q-I17, Q-I18 | Keep benchmark-only time-signature behavior, keyboard-position voice-steal heuristics and Elektron-style preset switching out of R1 unless the owner adds scope; DEC-032 defines the R1 XY pad. |
 | DEC-042 mixed-layer Global Freeze preparation-failure policy | GS-SMG-021 and AC-AUD-028 | DEC-042 Source Snapshot product semantics are approved. Owner confirmation remains required only for successful-subset versus all-or-nothing behavior when preparation fails for one or more layers. Existing AC-AUD-028 is explicitly proposed pending review. |
 
