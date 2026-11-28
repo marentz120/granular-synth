@@ -1,6 +1,6 @@
 # Phase 3 API and Signal-Flow Specification
 
-**Version:** 0.4 — render-capacity and logical input routing clarified  
+**Version:** 0.5 — cross-format event, automation-curve and transport normalization clarified  
 **Status:** Proposed for owner/architecture review. This document does not approve a framework, public C++ ABI, plugin topology, numeric queue capacity, DSP implementation or benchmark work.  
 **Baseline:** Phase 2 merged baseline; DEC-015…DEC-042; IF-01…IF-12.  
 **Companion documents:** `PHASE3_INTERFACE_CONTRACTS.md`, `THREADING_AND_OWNERSHIP_SPECIFICATION.md`, `SAMPLE_AND_STATE_LIFECYCLE_SPECIFICATION.md`, `PLUGIN_COMPONENT_AND_BUS_SPECIFICATION.md`, `FREEZE_BEHAVIOR_SPECIFICATION.md`.
@@ -712,3 +712,83 @@ The following supporting symbols are also candidate design vocabulary used by th
 | ParameterScaleVersion | versioned scale conversion | Preserves preset sound across schema versions; Q-T15 remains open. |
 
 No implementation or benchmark was run. If a future implementation uses different names or combines these responsibilities, update the traceability matrix rather than treating this candidate vocabulary as a binding ABI.
+
+
+## 15. Cross-format event, automation and transport normalization — 2026-11-28
+
+The source-format adapters have different timestamp and automation representations. The shared core must preserve their semantics rather than flattening them into a single list of parameter steps. The detailed evidence and host gates are in `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md`.
+
+### 15.1 Process kind
+
+`ProcessBlock` represents an actual audio render only. A host callback that contains parameter/control updates but no audio buffers is represented as a separate control-only process envelope:
+
+```cpp
+enum class HostProcessKind : std::uint8_t {
+    AudioRender,
+    ParameterFlush
+};
+
+struct HostProcessEnvelope {
+    HostProcessKind kind;
+    FrameCount frames; // meaningful only for AudioRender
+    const TransportSnapshot* transport; // field-validity is explicit
+};
+```
+
+A VST3 zero-audio-bus Parameter Flush must not be converted into a fabricated zero-frame or silent audio render. It may apply permitted bounded parameter state, but it does not access audio scratch, advance transport, consume sequencer time or increment rendered-frame counters.
+
+### 15.2 Discrete event time
+
+- `TimedEvent::offset` is a validated block-relative offset in `[0, frames)` for discrete events only.
+- AU absolute `AUEventSampleTime` is converted using checked signed subtraction from the valid render-block sample-time anchor. Immediate scheduling is resolved at the AU adapter boundary. Negative host sample times are legal inputs to the conversion and must not wrap through an unsigned cast.
+- VST3 `Event::sampleOffset` is already block-relative. Preserve `busIndex`, `ppqPosition`, note identity and source-local event-list order.
+- Preserve source-local order for equal-offset events. Cross-source equal-offset events are emitted as one timestamp batch; do not assign a producer-arrival priority. Same-target write conflicts remain open under AR-01.
+- Future, stale, invalid and in-block timestamps remain distinct. Never clamp an event to sample zero or the final sample.
+
+### 15.3 Parameter automation is a curve, not a discrete event
+
+```cpp
+struct AutomationCurvePoint {
+    std::int32_t relativeSample;
+    double normalizedValue;
+    // relativeSample == -1 is reserved for the previous-block last-sample anchor.
+};
+
+struct ParameterAutomationCurve {
+    ParameterId parameter;
+    double previousBlockValue;
+    std::span<const AutomationCurvePoint> points;
+};
+```
+
+- AU zero-duration parameter events normalize to a step. A ramp event retains its start offset, ramp duration and target value, and is accepted only where the AU parameter is rampable.
+- VST3 `IParamValueQueue` normalizes to piecewise-linear segments using the previous parameter value and ordered points. An implicit initial point may be omitted. Relative position `-1` is a previous-block continuity anchor, not a current-block event; it must remain signed and must never be cast to `SampleOffset`, clamped to zero or discarded.
+- A VST3 jump's old/new point pair remains a step discontinuity at the specified sample boundary.
+- `TimedEvent::ParameterChange` means an instantaneous step only. It does not represent an AU ramp or VST3 automation curve.
+- Parameter-class smoothing remains separate from host automation reconstruction. Do not double-ramp or silently turn a ramp into a step; Q-T13 and parameter-class policy remain open.
+
+### 15.4 Transport validity
+
+The four-field illustrative `TransportSnapshot` in IF-08 is shorthand only. The normalized snapshot must include field-level validity for:
+- host timeline sample position and PPQ at block start;
+- bar-start PPQ and cycle start/end PPQ;
+- tempo and time signature;
+- playing, recording and cycle-active state;
+- transport source/authority and a discontinuity generation or equivalent seek/loop marker.
+
+AU musical-context and transport-state callbacks are independent and have independent success/optional-field semantics. VST3 ProcessContext fields are valid only when their state flags are set; a null context means unavailable. Missing tempo is not 120 BPM, missing PPQ is not zero, and absent transport state is not an invented stop.
+
+The adapter supplies one immutable block snapshot to the shared transport. The four layers do not query host transport independently. Valid host transport remains authoritative in AU/VST3; MIDI Clock does not become a second plugin clock master. Standalone still selects exactly one authority among internal clock, MIDI Clock and Ableton Link.
+
+### 15.5 Per-note identity
+
+Use an internal `NoteInstanceId`:
+- VST3 maps a valid `(eventBusIndex, noteId)` to the internal note instance. Missing note ID is not a valid per-note identity.
+- AU maps MPE member-channel expression using cable, negotiated zone/member channel and active note lifecycle. The exact ambiguous/retriggered same-pitch matching policy remains open; do not invent FIFO/LIFO semantics here.
+- If identity is unavailable, report per-note expression unavailable. Never substitute channel-wide pitch bend while claiming DEC-038 compliance.
+
+### 15.6 Deterministic merge boundary
+
+The merge key is first the validated sample offset, then source-local order within each source. Events from different sources at the same offset form a batch; a total cross-source priority is deliberately not specified. Host automation, MIDI mapping, sequencer parameter locks and UI writes that collide on one parameter remain subject to AR-01's future writer matrix.
+
+The adapter performs bounded validation/merge using preallocated storage. No host pointer, SDK interface, dynamic sort buffer or callback-owned event list is retained after the callback. Exact event/automation capacities and overflow policy remain Phase 5 gates.
