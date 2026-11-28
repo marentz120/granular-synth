@@ -1,6 +1,6 @@
 # Plugin Component and Bus Specification
 
-**Version:** 0.5 — AU component decision gate clarified  
+**Version:** 0.6 — AU and VST3 component decision gates clarified  
 **Status:** Proposed; host validation and owner approval required. No plugin implementation is authorized.  
 **Authority:** DEC-020/026, GS-PLT-001/004/005, GS-ARC-006, GS-SMG-020, Q-P06/Q-P09/Q-T01/Q-T03.
 
@@ -39,6 +39,10 @@ Candidate instrument component:
 - Optional live-input bus collection, with one stereo input as the minimum host-validation configuration. This is not a product-level maximum: DEC-020 does not impose a fixed product cap on live-input channels/sources. The adapter must normalize the host's negotiated input bus/channel collection and expose explicit per-layer source routing; a read-only input view may be shared by multiple layers without copying. Actual additional input availability is host/device-specific and must be validated.
 
 The VST3 API supports multiple dynamic audio input/output buses and event buses. That API capability does not guarantee identical host UI/routing behavior.
+
+Instrument identity is communicated through the VST3 plug-in class subcategory (candidate: `Instrument|Synth|Sampler`), not by selecting a separate processor base interface. The SDK's `AudioEffect` helper can declare audio and event buses and may be used for an instrument-classified component; its class name does not make the host-visible plug-in an insert effect. See `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md`.
+
+The baseline is one 16-channel event input bus, with internal channel-to-layer routing. The four product layers are not automatically four VST3 event buses or Units. The live-audio input bus type (`kMain` versus `kAux`) remains open until the target hosts prove full-band source delivery. Do not claim VST3 simple mode or a dual Fx/Instrument category without host evidence.
 
 ### 3.2 Audio Unit
 
@@ -163,6 +167,7 @@ This prototype is an architecture validation spike. It is not production DSP imp
 |---|---|---|
 | R1 formats | AU + VST3 + Standalone | Approved by DEC-026 |
 | VST3 live-input bus | Optional stereo input on instrument component | Proposed; validate |
+| VST3 instrument identity | Instrument class subcategory; one 16-channel event bus; no automatic per-layer Units | Proposed; host discovery, routing and MPE validation required |
 | VST3 outputs | Stereo master + four stereo layer outputs | Required product output; host exposure validate |
 | AU component | `aumu` first validation candidate; `aufm` fallback; dual only on demonstrated distinct workflow need | Open — no subtype selected |
 | AU live input | Must satisfy DEC-020 through a tested host workflow | Open |
@@ -230,6 +235,21 @@ The exact C++ representation remains open. This refinement is necessary to prese
 The host matrix must explicitly cover: VST3 parameter flush with no audio buses; an inactive middle bus with a later active bus; trailing inactive buses omitted from ProcessData; kDefaultActive not honored; block-size/sample-rate reconfiguration while inactive; invalid AU pull-input result; AU maximum-frame reconfiguration; missing AU/VST3 transport context; and offline VST3 state callbacks. These are host-adapter contract tests, not evidence that any target host has passed them.
 
 **Sources:** Apple AUAudioUnit, maximumFramesToRender, renderBlock, scheduleParameterBlock, AURenderPullInputBlock; Steinberg VST3 ProcessData, AudioBusBuffers, IAudioProcessor, IProcessContextRequirements, and Processing FAQ. Exact URLs are listed in PHASE3_PLATFORM_AND_PLUGIN_RESEARCH.md §8.
+
+### 10.5 VST3 instrument component and host integration
+
+The VST3 instrument-classification, event/audio-bus and MPE evidence is consolidated in `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md`. Key constraints:
+
+- VST3 uses `IComponent` + `IAudioProcessor` for the processing component and a separate `IEditController`; the processor must work when the controller is not instantiated.
+- Instrument identity is class subcategory metadata. `AudioEffect` is an SDK bus/processing helper, not the instrument/effect product category.
+- One 16-channel event input bus is the candidate baseline. Internal routing must preserve DEC-034 so every layer assigned to the same channel receives the event.
+- The live-audio bus must deliver raw full-band samples. Its `kMain` versus `kAux` bus type remains open pending host tests.
+- One main stereo master plus four auxiliary stereo layer outputs remains the required semantic model. `kDefaultActive` is not a guarantee; inactive outputs must not remove or double-sum a layer in the master.
+- MPE per-note pitch must use note identity and VST3 Note Expression; ordinary channel pitch bend is not sufficient evidence for DEC-038's per-note ±48-semitone behavior.
+- Four product layers do not automatically require four VST3 Units. Do not publish one-to-one routing metadata when a MIDI channel can trigger multiple layers.
+- Do not claim simple mode or Fx|Instrument dual categorization without target-host evidence.
+
+This is a documentation-level adapter refinement only; no VST3 category, bus type, Unit model or host compatibility cell is approved.
 
 ## 11. Render capacity, bus fan-out and transient memory
 
