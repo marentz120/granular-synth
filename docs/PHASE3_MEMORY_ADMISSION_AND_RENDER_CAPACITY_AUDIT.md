@@ -199,3 +199,26 @@ Required invariants:
 6. No compression, digest, allocation, file I/O or host-stream transfer is performed by the audio callback.
 
 No maximum embedded-state size, AU materialization limit, VST3 transfer-slice size, codec workspace, compression ratio, warning threshold or process-memory budget is set. Q-T15/Q-T07 and host prototypes remain gates. This section contains accounting requirements only; no benchmark or memory measurement was performed.
+
+## 10. State I/O scheduling and unified peak admission — 2026-11-28
+
+State-save admission must distinguish physical bytes from retention-capacity reservations:
+
+- A pinned page that aliases the live recording pool is counted once as physical memory; its pinned-page occupancy still consumes retention capacity.
+- A copied snapshot/staging page is an additional allocation and is counted separately.
+- Shared immutable library assets are counted once. AU Data materialization is an additional allocation only when it creates an additional owned copy.
+- VST3 transfer staging is counted at its actual allocated capacity. Unknown host-owned stream buffering remains an evidence limitation, not an invented multiplier.
+- Spare writable recording pages are included in the recording pool's physical allocation once; their availability is tracked separately from pinned-page occupancy.
+- A retired generation is not counted twice if it is already included in the old-runtime allocation set.
+
+Planning models:
+
+`M_save_peak = M_live_runtime_and_recording_pool + M_snapshot_copy + M_manifest_directory + M_AU_materialization + M_VST3_or_file_transfer + M_codec_workspace + M_digest_workspace + M_other_retired_allocations`
+
+`M_restore_peak = M_old_runtime + M_candidate_runtime + M_decode_or_conversion_staging + M_manifest_and_migration + M_transport_staging + M_codec_workspace + M_other_retired_allocations`
+
+If save, restore, Freeze, recording retention or sample replacement overlap, admission uses their union of simultaneously live physical allocations and capacity reservations. Independent per-feature budgets are not sufficient.
+
+The capture watermark is the latest fully committed recording block/page included in the immutable descriptor. Stale descriptors cannot be reported as successful DEC-025 document saves. Retention leases protect the exact source-generation/frame range until the last reader completes; the writer continues only into separately reserved writable capacity and never waits.
+
+Reservation rollback and lease release occur off-render after readers quiesce. All totals/offsets use checked wide arithmetic before conversion to size/host API widths. No numeric budget, concurrency count, page capacity, AU payload limit, VST3 transfer slice or callback deadline is selected. See `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`.
