@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 1.7 (Q-I07 R1 filter mode scope resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 1.8 (Q-I08 pan-spray distribution resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.7 → v1.8):** Q-I08 is answered by DEC-053: Uniform samples evenly over the legal spread interval; Centre Weighted uses a normalized triangular density peaking at base pan and tapering linearly to the available spread limits. Pan-spray amount zero preserves base pan; each grain samples independently at spawn. Seeded tolerance/sample-size details remain test gates.
 
 **Change summary (v1.6 → v1.7):** Q-I07 is answered by DEC-052: R1 exposes LPF and HPF only, with LPF-only / LPF+HPF / HPF-only routing, chain bypass, independent 6/12/18/24 dB/oct slopes and resonance. No notch/band-pass/peak response modes are included. Filter topology and resonance range/curve remain technical gates.
 
@@ -164,8 +166,8 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-I04 | Drawing modulator (Draw X/Y) | p.80; NRPN 1100–1104, 1122–1124; RN 1.8.0 | Confirmed as touchscreen "Draw XY" trajectory modulator with waypoints; detailed semantics still to verify. Natural fit for mouse/trackpad in software | PROPOSED |
 | Q-I05 | Front-panel "mod pages" 1–4 | NRPN 340–347, 397–400, 1135–1144 | Same | OPEN |
 | Q-I06 | Window parameter 3 | NRPN 217 | Same | OPEN |
-| Q-I07 | Filter mode enum (SVF modes), routing, bypass | NRPN 289, 293, 391; RN 1.8.0 (classic SVF notch) | Full mode list still unknown | OPEN |
-| Q-I08 | Pan-spray distribution shapes | p.37; NRPN 505 | Same | OPEN |
+| Q-I07 | Filter mode enum (SVF modes), routing, bypass | NRPN 289, 293, 391; RN 1.8.0 (classic SVF notch) | **R1 product scope answered — DEC-052:** LPF/HPF only with defined routes, slopes and chain bypass. Additional benchmark SVF response modes are not in R1; topology remains technical. | ANSWERED — DEC-052; benchmark-only details excluded |
+| Q-I08 | Pan-spray distribution shapes | p.37; NRPN 505 | **Answered — DEC-053:** Uniform over the legal spread interval; Centre Weighted uses a normalized triangular density peaking at base pan and tapering linearly to the available spread limits. Amount zero preserves base pan; pan is sampled independently per grain at spawn. Seeded tolerance/sample-size details remain test gates. | ANSWERED — DEC-053 |
 | Q-I09 | Auto-slice detection algorithm | p.46 | Our own design (spectral-flux onset detector) — no investigation needed beyond A/B feel | PROPOSED |
 | Q-I10 | Gran filter analysis (centroid map) | p.56 | Our own design: per-window spectral centroid map computed on load | PROPOSED |
 | Q-I11 | Full scale list incl. microtonal | p.54 | Use standard scale set + Scala import | PROPOSED |
