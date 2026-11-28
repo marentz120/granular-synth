@@ -197,12 +197,12 @@ This boundary is intentional: the benchmark's physical control table is referenc
 
 | Item | Why it remains open | Required closure |
 |---|---|---|
-| A–H mapping for Granular and Sampler | No complete approved R1 per-engine mapping table exists in the current product baseline | Review a requirement-backed assignment matrix; explicitly approve or defer each slot |
-| Chord Record gesture | GS-CHD-004 requires chord recording but does not define the performance gesture/state sequence | Confirm Arm/Start/Stop/Commit behavior |
-| Macro scope and selection | Ten macros are per patch; per-layer UI focus and explicit MIDI target semantics need final alignment | Confirm whether macro values are patch-global or layer-contextual in the live UI |
-| Pattern/Performance Set recall | R1 defines recall and end-of-bar Pattern activation; detailed navigation and PC assignment remain Phase 4/5 work | Approve selection vs recall and Program Change mapping behavior |
-| Recording arm semantics | R1 requires independent per-layer and stereo master recording; detailed controller workflow is not yet normative | Confirm whether Arm is a separate state or Start immediately begins capture |
-| Mapping-state recall | Global and preset-specific mappings are described; a separate named mapping-set library is not an approved R1 feature | Keep recall within approved global/preset state unless separately approved |
+| A–H mapping for Granular and Sampler | A requirement-backed R1 A–H proposal now exists in `PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md` §2.5 | Owner review of the proposed eight assignments per engine; Phase 3/Q-T12 still owns IDs and scaling |
+| Chord Record gesture | A safe Arm → Capture → Stop & Commit / Cancel proposal now exists in §4.5 | Owner review against GS-CHD-004; exact note-count/duplicate behavior remains open |
+| Macro scope and selection | DEC-031 establishes ten macro base values shared per layer Patch; target scope is now explicit | Validate UI focus and MIDI mapping against per-layer Patch model |
+| Pattern/Performance Set recall | DEC-033 governs Program Change lookup; Performance Bank and Performance Set are now separated in §4.7 | Owner review of bank editor UX and active-bank selection persistence |
+| Recording arm semantics | Arm → Start → Stop workflow is proposed in §4.6; concurrent target recording is not assumed | Owner review of target selection and status presentation |
+| Mapping-state recall | Global and preset-specific mapping scopes are defined; no separate named mapping-set library is introduced | Confirm the precise UI affordance for recalling saved mapping state |
 
 ## 7. Phase 4 sign-off checklist
 
