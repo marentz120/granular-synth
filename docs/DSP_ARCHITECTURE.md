@@ -241,7 +241,7 @@ Per render block, per voice:
    - ScanRate: rate = A·|scan|, size = B / |scan| (with ε-floor and defined behavior at scan = 0 — ⚑ Q-M03)
    - ScanOverlap: rate = A·|scan|, size = B
    - TimeStretch: 2 grains, interval = size/2, constant output overlap
-2. If **sync** is on, the interval comes from the transport (host playhead / internal clock) at the chosen division; spawn times aligned to the musical grid. With **voice sync** on, all voices of the layer share one phase.
+2. If **sync** is on, the interval comes from the transport (host playhead / internal clock) at the chosen division; spawn times aligned to the musical grid. With **Voice Sync ON** (DEC-050), all voices in a layer share one grain-clock phase and newly started voices join the current phase without resetting existing voices; with OFF, each voice has an independent phase initialized when its scheduler starts. DEC-055 defines active-mode toggles at the next valid scheduler boundary without restarting active grains/envelopes. Host/transport clock authority remains an unresolved technical integration gate.
 3. Emit spawns at **fractional sample offsets** inside the block (sub-sample accurate: the first output sample of a grain is computed with the fractional phase applied to both read position and window phase).
 4. For each spawn:
    - position = basePos(scan-integrated) + spray·rand(polarity) (Gran-filter weighting if enabled, L2)
@@ -249,7 +249,7 @@ Per render block, per voice:
    - pitch = notePitch + pitchKnob + pitchSpray·rand(polarity) + mod, then chord/arp note, then scale quantization (per grain or per voice)
    - pan = pan + panSpray·dist(rand)
    - optional grain probability skip (L2)
-5. **Spawn modes** on note-on: Gradual (start scheduler at phase 0), Direct (pre-populate `round(density)` grains with randomized window phases so the cloud is already "full"), Direct reset (same, but all positions within the spray range), Recycle (revive the last voice's grain set).
+5. **Spawn modes** on note-on — product behavior is approved by DEC-049: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer, falling back to Gradual when unavailable. The following is only a candidate realization, not an approved implementation: start Gradual scheduler at phase 0; pre-populate Direct using a density-derived count and randomized window phases; constrain Direct Reset positions to Spray; preserve/rebind the prior same-layer grain set for Recycle. Exact count/rounding, window-phase distribution, source/configuration compatibility and state mapping require engineering review and deterministic acceptance oracles.
 6. **Idle shutdown:** a voice with no active grains and no gate stops scheduling (no CPU), mirroring SCH-06.
 
 ### 6.3 Grain and voice stealing (R1 architecture proposal; algorithm not approved)
@@ -297,7 +297,7 @@ Granular engines: each new grain takes the next chord note per arp mode (up, dow
 
 | Class | Examples | Applied |
 |---|---|---|
-| **Spawn-sampled** | position, spray, pitch, pitch spray, pan, pan spray, direction, size, window snapshot | Read once when a grain is born. Naturally zipper-free. |
+| **Spawn-sampled** | position, spray, pitch, pitch spray, pan, pan spray, direction, size, window snapshot | Read once when a grain is born. Naturally zipper-free. Pan-spray distribution semantics are defined by DEC-053; this note does not approve a specific random-number generator or DSP implementation. |
 | **Grain-continuous** | pitch when Local pitch OFF, global pan of running grains (optional) | Updated per control sub-block, smoothed |
 | **Voice-continuous** | filter cutoff/res, amp, sub-osc level | Smoothed per sample / sub-block |
 
@@ -359,7 +359,7 @@ Instance
 
 - **Voice allocation:** reuse same-note voice when env pile-up is ON; otherwise steal: released & not sustained → oldest → keyboard-position heuristic (benchmark VOI-02), with a 2–5 ms fade instead of an abrupt cut (GS-VOI-001).
 - **MPE:** each voice binds to a member channel; per-note pitch, pressure, timbre feed voice-level mod sources.
-- **Filters:** TPT state-variable filter (benchmark hints "trap-SVF", FLT-03); 6 dB = 1-pole TPT; 12/18/24 dB by cascading; cutoff modulation at audio rate safe by construction.
+- **Filters (candidate implementation only):** a TPT state-variable filter is one possible realization; 6/12/18/24 dB slopes may be built from suitable stages. DEC-052 approves only the R1 LPF/HPF response functions, routing, bypass and slope choices; it does not approve TPT topology, cascade architecture, resonance response or cutoff-modulation implementation.
 
 ---
 

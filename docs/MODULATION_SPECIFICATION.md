@@ -1,6 +1,6 @@
 # Modulation Specification
 
-**Version:** 0.1 — Phase 2 working specification  
+**Version:** 0.2 — R1 destination eligibility baseline added  
 **Status:** Product behavior approved for Phase 2; DEC-024, DEC-031 and DEC-032 settle the relevant product semantics. This document does not authorize DSP implementation.  
 **Authority:** R1_PRODUCT_SPECIFICATION.md, GRANULAR_SYNTH_REQUIREMENTS.md GS-MOD-001…012, DEC-015…024 and DEC-031/032.  
 **Benchmark evidence:** GR_MEGA_FEATURE_MAP.md §10.1–10.4. Manual-derived behavior is identified as benchmark reference, not automatically a product requirement.
@@ -71,7 +71,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 - Every continuous R1 parameter in the engine, voice, envelope, filter, LFO, effect and macro domains must be considered for modulation.
 - Discrete/enum parameters are excluded unless an explicit requirement defines safe stepped modulation.
 - FFT-size controls, CV destinations, Draw X/Y, and parameters belonging only to deferred engines/effects are not R1 obligations.
-- Host automation exposure is governed by the parameter exposure decision in Q-T12; this specification does not decide the exact exposed parameter count or ID scheme.
+- Host automation exposure is governed by the parameter exposure decision in Q-T12; this specification does not decide the exact exposed parameter count or ID scheme.\n- The domain-level candidate inventory and explicit R1 exclusions are recorded in `R1_MODULATION_DESTINATION_ELIGIBILITY_MATRIX.md`. This is not a final parameter registry; MTX-05 remains open until Q-T12 and the descriptor-by-descriptor reconciliation are complete.
 
 ### 3.6 Macros
 
@@ -117,7 +117,7 @@ The benchmark describes a curve control from low-flat through linear to high-fla
 | MTX-03 | Exact curve equation and taper | Needs a precise product definition; manual provides qualitative behavior only. |
 | MTX-04 | XY pad coordinate and source normalization | **ANSWERED — DEC-032:** each axis normalized 0.0–1.0; saved patch recall position defaults to center (0.5, 0.5). UI details Phase 4. |
 | Q-T12 | Exact host parameter exposure and stable IDs | Phase 3 decision; this document does not decide it. |
-| MTX-05 | Exact R1 destination inventory | Reconcile against the final R1 parameter inventory; do not count deferred-only parameters. |
+| MTX-05 | Exact R1 destination inventory | **PARTIALLY PREPARED:** see `R1_MODULATION_DESTINATION_ELIGIBILITY_MATRIX.md` for domain-level candidate families and explicit exclusions. Final descriptor-by-descriptor inventory depends on approved Q-T12 registry; no count or final closure claimed. |
 
 ## 7. Benchmark-only / deferred capabilities
 

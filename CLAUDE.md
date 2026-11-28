@@ -63,18 +63,19 @@ Do not skip gates without owner approval. Do not attempt to build the entire ins
 Maintain the project documents listed in docs/README.md. Keep docs/DECISIONS_LOG.md and docs/OPEN_QUESTIONS.md current.
 
 ## Current authorization
-Current phase: Phase 3 architecture completion and implementation preparation. Phase 2 product requirements and R1 release tiers are approved; Phase 3 remains an open Draft PR pending owner review.
+Current working phase: Phase 4 UI/UX documentation and Phase 5 acceptance-test design/requirements audit on branch `phase4/ui-ux-specification`. Phase 2 product requirements and R1 release-tier placement are approved. Phase 3 architecture remains a proposal with open technical decisions and is not formally closed.
 
-Authorized:
-- Read and review the repository, requirements, decisions, architecture proposals and acceptance criteria.
-- Perform implementation-readiness analysis and identify contradictions, missing decisions, test gaps and build prerequisites.
-- Prepare implementation plans, test plans, code skeleton proposals and narrowly scoped prototype plans for owner review.
-- Update documentation and traceability on the authorized Phase 3 branch.
+Authorized for the current documentation pass:
+- Read and review all 168 requirement rows, approved decisions, architecture proposals, domain specifications, UI/UX documents and acceptance/test-design material.
+- Reconcile requirement inventory, release tiers, traceability, acceptance links and test-design coverage.
+- Identify contradictions, unresolved R1 behavior, technical gates, missing evidence and implementation prerequisites.
+- Update documentation, audit reports and traceability on `phase4/ui-ux-specification`.
 
 Not authorized without explicit owner approval:
 - Production DSP, plugin shell, host adapter or UI implementation.
 - Framework/toolchain lock-in or public parameter-ID commitment.
 - Host prototype code, benchmark execution or performance measurement.
-- Scope expansion, PR merge or release/tag creation.
+- Product-scope expansion or changing approved product behavior.
+- PR merge or release/tag creation.
 
-Claude Code must first return an implementation-readiness report. It must wait for explicit owner authorization naming the milestone before editing production code. The handoff in `docs/CLAUDE_CODE_IMPLEMENTATION_HANDOFF.md` governs the proposed implementation workflow.
+The current pass is documentation and planning only. No implementation, host prototype, benchmark or acceptance-test execution is authorized by this status. Claude Code must wait for explicit owner authorization naming the milestone before editing production code. The handoff in `docs/CLAUDE_CODE_IMPLEMENTATION_HANDOFF.md` governs the proposed implementation workflow.

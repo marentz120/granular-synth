@@ -1,6 +1,34 @@
 # Open Questions
 
-**Version:** 0.6 (Phase 2 specification completion, 2026-11-27). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 2.0 (Voice Sync active-mode transition semantics resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.9 → v2.0):** Voice Sync active-mode transition behavior is answered by DEC-055: changes affect future spawns at the next valid scheduler boundary; ON aligns active schedulers to the layer phase, OFF detaches each at its current phase; existing grains/envelopes are untouched. Host/transport clock arbitration and benchmark label equivalence remain unverified.
+
+**Change summary (v1.8 → v1.9):** Q-I12 is answered by DEC-054: R1 sub-oscillator uses a fixed sine waveform and exposes no waveform selector. Existing −1/−2 octave, level, poly-balance and quantization controls remain. Oscillator implementation and level response remain technical/acceptance details.
+
+**Change summary (v1.7 → v1.8):** Q-I08 is answered by DEC-053: Uniform samples evenly over the legal spread interval; Centre Weighted uses a normalized triangular density peaking at base pan and tapering linearly to the available spread limits. Pan-spray amount zero preserves base pan; each grain samples independently at spawn. Seeded tolerance/sample-size details remain test gates.
+
+**Change summary (v1.6 → v1.7):** Q-I07 is answered by DEC-052: R1 exposes LPF and HPF only, with LPF-only / LPF+HPF / HPF-only routing, chain bypass, independent 6/12/18/24 dB/oct slopes and resonance. No notch/band-pass/peak response modes are included. Filter topology and resonance range/curve remain technical gates.
+
+**Change summary (v1.5 → v1.6):** Q-M18 is answered by DEC-051: all time-valued R1 ADSR stages range from 0.1 ms to 45 s; no zero-duration stage exists, and values below the floor resolve to 0.1 ms. Sustain remains a level. Host/MIDI mapping and timing tolerance remain technical gates.
+
+**Change summary (v1.4 → v1.5):** Q-M16 R1 behavior is answered by DEC-050: Voice Sync ON shares one grain-clock phase across voices in a layer; newly started voices join the current phase. OFF gives each voice an independent phase initialized when its scheduler starts. Historical benchmark label equivalence remains unverified; active-mode toggle and host/transport arbitration remain technical gates.
+
+**Change summary (v1.3 → v1.4):** Q-M17 product behavior is answered by DEC-049: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer and falls back to Gradual when unavailable. Exact scheduler/randomization/reuse mapping and resource details remain technical gates.
+
+**Change summary (v1.2 → v1.3):** Q-M14 is answered by DEC-048: Off ignores key-triggered grain spawning; On triggers on every accepted Note On; Legato triggers only on transition from no held notes to one or more held notes. Note Off/voice-release and grain clock remain independent.
+
+**Change summary (v1.1 → v1.2):** Q-M04 exact Kill behavior is answered by DEC-047: at the terminal sample-region boundary, stop spawning and immediately terminate active grains in that layer; no bounce/wrap, global Panic or transport-state change. Explicit Stop/Panic command semantics remain separate.
+
+**Change summary (v1.0 → v1.1):** Q-M09 normalization law is answered by DEC-046: per-grain gain follows 1/√N relative to the single-grain reference. The active-grain counting domain, smoothing, ON/OFF reference details and headroom oracle remain technical/acceptance gates; benchmark matching still requires measurement.
+
+**Change summary (v0.9 → v1.0):** Q-M04 mode count is answered by DEC-045: exactly three Scan modes (Bounce, Wrap, Kill); One-Shot is a separate behavior governed by DEC-044. Exact Kill behavior and Stop/Panic transitions remain open.
+
+**Change summary (v0.8 → v0.9):** Q-M04 One-Shot subdecision is answered by DEC-044: complete the current scan cycle, stop spawning new grains, and let existing grains finish their envelopes. The Scan mode count and exact Bounce/Wrap/Kill/Stop transitions remain open.
+
+**Change summary (v0.7 → v0.8):** Q-M03 is answered by DEC-043: retain the last valid Rate/Size values inside the Scan near-zero region; epsilon and initialization/reset details remain technical acceptance work.
+
+**Change summary (v0.6 → v0.7):** Q-M15 and Q-I16/Q-I18 are explicitly deferred as non-R1 benchmark behaviors; Q-I17 is marked benchmark-only because DEC-032 and GS-MOD-004 define the R1 XY pad. R1 product semantics and approved decisions are unchanged.
 
 **Change summary (v0.5 → v0.6):** Q-P02, Q-P07, Q-P08, Q-P11, Q-P15, Q-P16, Q-M01, Q-M05, Q-M06, Q-M11 and Q-M12 were resolved or tiered under the owner's explicit product-management delegation and recorded in DEC-022…DEC-037. Q-P18 is answered by DEC-018; MIDI and audio product behaviors were further settled by DEC-038…DEC-040; DEC-041 approves all 168 release-tier assignments. Six domain specifications, R1 Release Scope Matrix and R1 Acceptance Criteria are included. Architecture, numeric feasibility, remaining evidence and legal questions stay open for their proper gates.
 **Owners of answers:** **Owner** = product owner (human, final authority) · **CGPT** = ChatGPT (technical decision authority) · **Research** = Claude (investigation task)
@@ -112,22 +140,22 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 |---|---|---|---|---|
 | Q-M01 | Grain size minimum | 5 ms (p.39) vs 0.1 ms (p.142) | R1 product range 0.1–5000 ms; parameter taper/scaling Phase 3 | **ANSWERED — DEC-035** |
 | Q-M02 | Granular sample length | 5m49s (p.74, p.171) vs 3 min (p.162) | Product target ≥6 min stereo at 48 kHz; benchmark discrepancy does not change our requirement | **ANSWERED — DEC-028** |
-| Q-M03 | Ratio modes: TimeStretch existence & ScanRate at scan = 0 | 6 modes on p.40 vs 5 enums p.143/147; division by scan undefined | Implement 6; at |scan| < ε hold last valid rate/size | PROPOSED |
-| Q-M04 | Scan modes count / "kill" | "four modes" lists 3 (p.58); spec "Bounce, wrap, kill" (p.162) | One-shot = kill/stop; implement 3 modes; verify on unit | OPEN |
+| Q-M03 | Ratio modes: TimeStretch existence & ScanRate at scan = 0 | 6 modes on p.40 vs 5 enums p.143/147; division by scan undefined | Retain last valid Rate/Size inside the defined near-zero Scan region; resume calculation outside it. Epsilon, initialization and reset conditions remain technical acceptance details. | **ANSWERED — DEC-043** |
+| Q-M04 | Scan modes count / "kill" | "four modes" lists 3 (p.58); spec "Bounce, wrap, kill" (p.162) | **Mode count answered — DEC-045:** exactly Bounce, Wrap and Kill; One-Shot is separate per DEC-044. **Kill answered — DEC-047:** at the terminal sample-region boundary, stop spawning and immediately terminate active grains in that layer; no wrap/bounce, global Panic or transport-state change. Explicit Stop/Panic command semantics remain separately specified; verify transitions. | PARTIALLY ANSWERED — DEC-044/045/047; command semantics/tests remain open |
 | Q-M05 | Looped release ON/OFF semantics | p.58–59 vs p.102–103 contradict | GRANULAR SYNTH behavior: ON continues looping through voice release; OFF exits at the next valid loop boundary and continues toward Stop. This is our product behavior, not a verified benchmark claim. | **ANSWERED — DEC-030** |
 | Q-M06 | Number of macros | 10 (p.23) vs 20 NRPNs (p.150) | Ten macros are R1; 20 are not required in R1 | **ANSWERED — DEC-036** |
 | Q-M07 | Mod source count (24/25/26) | p.78, p.157–158, p.163 | Use enumerated source table (25 + None) as reference | **RESOLVED-EVIDENCE** |
 | Q-M08 | Mod destination count (140/149/150) | p.23, p.76, p.78, p.158–161 | Use enumerated destination table (149) as benchmark reference; GRANULAR SYNTH implements only destinations for R1 parameters | **RESOLVED-EVIDENCE** |
-| Q-M09 | Grain-count normalization law | Only "max volume at density 17" (p.33) | Energy-preserving 1/√density beyond d0; match level at density 17 by measurement | OPEN |
+| Q-M09 | Grain-count normalization law | Only "max volume at density 17" (p.33) | **Law answered — DEC-046:** per-grain gain = 1/√N relative to the single-grain reference. Define N counting domain, smoothing and ON/OFF reference details; validate four-layer headroom. Density-17 benchmark matching requires authorized measurement. | PARTIALLY ANSWERED — DEC-046; technical gates open |
 | Q-M10 | Tape chord: tracking head = first or lowest note | p.48 "TBV" | Lowest note (consistent with p.53 rule "lowest chord note matches the played note") | PROPOSED |
 | Q-M11 | LFO scope: per voice or per layer | p.79 "each layer has its own LFOs"; key sync Legato | Per-LFO Poly/Mono mode; default Mono (shared per-layer phase), Poly uses per-voice phase | **ANSWERED — DEC-024** |
 | Q-M12 | Patch spray / patch bias semantics | p.19 "grain counts boosted based on which part of the screen you focus on" | Deferred to L2; benchmark semantics remain unverified and are not an R1 dependency | **ANSWERED — DEC-029** (tier decision only; behavior research may continue for L2) |
 | Q-M13 | Spectral C+Shift: Amp smear vs FFT reducer | p.37 vs p.49, p.148 | Firmware 1.8.0 release notes: FFT reducer merged into amp threshold → C+Shift = Amp smear; no separate reducer needed | RESOLVED-EVIDENCE |
-| Q-M14 | Grain key trigger values (On/Off vs Off/On/Legato) | p.54 vs p.135 | Implement Off/On/Legato | PROPOSED |
-| Q-M15 | Sequencer "Rate sets time signature" | p.22 vs p.134 | Treat as rate division; time signature not modelled per layer | PROPOSED |
-| Q-M16 | "Voice sync" vs "Clock retrigger" | p.55 text vs p.54 screenshot | Release notes 1.8.0-a19: "voice retrigger" renamed "voice sync" (screenshot is from 1.8.0-a14). Very likely the same control; confirm on unit | PROPOSED |
-| Q-M17 | Spawn modes 3 vs 4 | p.55 vs p.162 | Implement 4 | PROPOSED |
-| Q-M18 | Envelope minimum 0 vs 0.1 ms | p.143 vs p.163 | 0.1 ms minimum (click-safe) | PROPOSED |
+| Q-M14 | Grain key trigger values (On/Off vs Off/On/Legato) | p.54 vs p.135 | **Answered — DEC-048:** Off ignores key-triggered spawning; On triggers on every accepted Note On; Legato triggers only when held-note count changes from zero to nonzero. Note Off/voice-release and grain clock are unaffected. | ANSWERED — DEC-048 |
+| Q-M15 | Sequencer "Rate sets time signature" | p.22 vs p.134 | Benchmark behavior only. R1 defines pattern length/edit resolution and shared timing grids; it does not require per-layer time-signature emulation. Keep outside R1 unless scope is explicitly added. | DEFERRED — not an R1 requirement |
+| Q-M16 | "Voice sync" vs "Clock retrigger" | p.55 text vs p.54 screenshot | **R1 behavior answered — DEC-050/055:** ON shares one grain-clock phase across voices in a layer; new voices join current phase. OFF gives each voice an independent phase. Mode changes apply at the next valid scheduler boundary without restarting existing grains or envelopes. Historical benchmark label equivalence remains unverified; host/transport clock arbitration remains technical. | PARTIALLY ANSWERED — DEC-050/055; integration gate open |
+| Q-M17 | Spawn modes 3 vs 4 | p.55 vs p.162 | **Product behavior answered — DEC-049:** four modes: Gradual builds from an empty cloud; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior grain set from the same layer, falling back to Gradual when unavailable. Exact scheduler phase, grain count/rounding, randomization, reuse mapping and resource behavior remain technical/acceptance gates. | PARTIALLY ANSWERED — DEC-049; technical gates open |
+| Q-M18 | Envelope minimum 0 vs 0.1 ms | p.143 vs p.163 | **Answered — DEC-051:** all time-valued R1 ADSR stages range from 0.1 ms to 45 s; no zero-duration stage exists, values below the floor resolve to 0.1 ms, and Sustain remains a level. Host/MIDI mapping and timing tolerance remain technical gates. | ANSWERED — DEC-051 |
 | Q-M19 | "Sampler slice mode possible" | p.162 only | Treat as Slice engine with sampler-style (single head) playback option — L2 | OPEN |
 
 ---
@@ -142,18 +170,18 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-I04 | Drawing modulator (Draw X/Y) | p.80; NRPN 1100–1104, 1122–1124; RN 1.8.0 | Confirmed as touchscreen "Draw XY" trajectory modulator with waypoints; detailed semantics still to verify. Natural fit for mouse/trackpad in software | PROPOSED |
 | Q-I05 | Front-panel "mod pages" 1–4 | NRPN 340–347, 397–400, 1135–1144 | Same | OPEN |
 | Q-I06 | Window parameter 3 | NRPN 217 | Same | OPEN |
-| Q-I07 | Filter mode enum (SVF modes), routing, bypass | NRPN 289, 293, 391; RN 1.8.0 (classic SVF notch) | Full mode list still unknown | OPEN |
-| Q-I08 | Pan-spray distribution shapes | p.37; NRPN 505 | Same | OPEN |
+| Q-I07 | Filter mode enum (SVF modes), routing, bypass | NRPN 289, 293, 391; RN 1.8.0 (classic SVF notch) | **R1 product scope answered — DEC-052:** LPF/HPF only with defined routes, slopes and chain bypass. Additional benchmark SVF response modes are not in R1; topology remains technical. | ANSWERED — DEC-052; benchmark-only details excluded |
+| Q-I08 | Pan-spray distribution shapes | p.37; NRPN 505 | **Answered — DEC-053:** Uniform over the legal spread interval; Centre Weighted uses a normalized triangular density peaking at base pan and tapering linearly to the available spread limits. Amount zero preserves base pan; pan is sampled independently per grain at spawn. Seeded tolerance/sample-size details remain test gates. | ANSWERED — DEC-053 |
 | Q-I09 | Auto-slice detection algorithm | p.46 | Our own design (spectral-flux onset detector) — no investigation needed beyond A/B feel | PROPOSED |
 | Q-I10 | Gran filter analysis (centroid map) | p.56 | Our own design: per-window spectral centroid map computed on load | PROPOSED |
 | Q-I11 | Full scale list incl. microtonal | p.54 | Use standard scale set + Scala import | PROPOSED |
-| Q-I12 | Sub-oscillator waveform | — | Unit / videos; default sine | OPEN |
+| Q-I12 | Sub-oscillator waveform | — | **Answered — DEC-054:** fixed sine waveform in R1; no waveform selector. Preserve −1/−2 octave, level, poly-balance and quantization controls. Oscillator implementation and level response remain technical/acceptance details. | ANSWERED — DEC-054 |
 | Q-I13 | Phase-vocoder hop/overlap/window | — | Our own design (Q-T11) | PROPOSED |
 | Q-I14 | Resonator scale list ("inharmonic e.g. metal rods") | p.86 | Physical-model mode tables (bars, plates) — our design | PROPOSED |
 | Q-I15 | Firmware changes and roadmap | Release notes 1.8.0–1.8.4 reviewed → feature map §16. Roadmap 1.9–1.12 (Dec 2026–Jul 2027) not yet reviewed | Review roadmap at Phase 2 start | OPEN |
-| Q-I16 | Voice-stealing keyboard-position heuristic | p.120 | Our own design (protect lowest/highest held notes) | PROPOSED |
-| Q-I17 | "Pos Y" modulation source | RN 1.8.4 mentions POS X and POS Y; manual table lists only Pos X | Verify; our XY pad covers both | OPEN |
-| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Capture semantics before Phase 4/5 acceptance design for the R1 sequencer | OPEN |
+| Q-I16 | Voice-stealing keyboard-position heuristic | p.120 | Not an R1 requirement. GS-VOI-001 defines the R1 priority as released, non-sustained, then oldest voices; do not add a keyboard-position rule without a scope decision. | DEFERRED — not R1 |
+| Q-I17 | "Pos Y" modulation source | RN 1.8.4 mentions POS X and POS Y; manual table lists only Pos X | DEC-032 and GS-MOD-004 define the R1 source as a normalized two-axis XY performance pad; separate benchmark Pos Y semantics are not required. | DEFERRED — benchmark-only; R1 behavior defined |
+| Q-I18 | Sequencer preset switching ("Elektron-style", System → preset change) | RN 1.8.0 only | Not an R1 requirement. R1 separately defines end-of-bar Pattern switching and states that Preset recall does not replace the active Pattern. Retain only as optional benchmark research unless scope is added. | DEFERRED — not R1 |
 
 ---
 

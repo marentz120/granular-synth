@@ -23,8 +23,45 @@ Both studio sound design and live performance are primary use cases (DEC-015). C
 - R1 engines: **Granular and Sampler**.
 - The engine is selectable per layer.
 - Granular Slice is not an R1 engine; defer it to a later release for separate scoping.
-- Tape is later (proposed L2); Spectral is later (proposed L3).
+- Tape is L2; Spectral is L3, per the approved release-tier classification in DEC-041.
+- Granular Scan modes (DEC-045): exactly Bounce, Wrap and Kill. One-Shot is not a fourth Scan mode; it is a separate behavior: complete the current scan cycle, stop spawning new grains at its boundary, and allow already-spawned grains to continue through their existing envelopes (DEC-044). In Kill mode, reaching the terminal sample-region boundary stops spawning and immediately terminates all active grains in that layer (DEC-047); it does not invoke global Panic or change transport state. Explicit Stop/Panic command semantics remain separate.
+- Grain-count normalization (DEC-046): when enabled, per-grain gain scales by 1/√N relative to the single-grain reference, where N is the active grain count in the applicable normalization domain. This is an energy-oriented gain law, not a limiter or a universal no-clipping guarantee. The counting domain, smoothing and ON/OFF reference details remain technical/acceptance work; density-17 benchmark matching requires separate measurement.
+- Granular spawn modes (DEC-049): **Gradual** starts a new voice with an empty grain cloud and builds toward target density through the normal scheduler from phase zero; **Direct** starts immediately with a full initial cloud representing target density, as if the scheduler had already been running; **Direct Reset** also starts with a full initial cloud but constrains initial grain positions to the configured Spray range; **Recycle** reuses the most recent reusable grain set from the same layer as the new voice's initial cloud, falling back to Gradual when no valid same-layer set is available. Recycle is an initialization mode, not grain stealing. Exact count/rounding, scheduler phase, randomization distribution, reuse-state mapping and resource budgets remain technical/acceptance details.
+- Voice Sync (DEC-050) is a per-layer grain-clock phase mode: ON makes all voices in a layer share one phase, and newly started voices join the phase already in progress without resetting existing voices; OFF gives each voice an independent phase initialized when its scheduler starts. This product definition does not assume historical benchmark label equivalence. Mode changes take effect for future spawns at the next valid scheduler boundary: ON aligns active schedulers to the layer phase; OFF detaches each at its current phase. Already-playing grains and voice envelopes continue unchanged (DEC-055). Host/transport clock arbitration remains a technical/acceptance detail.
+- Grain Key Trigger modes (DEC-048): Off ignores MIDI Note On for key-triggered grain spawning; On issues a new trigger for each accepted Note On; Legato triggers only on the transition from no held key-trigger notes to at least one held note, without retriggering for additional overlapping notes. These modes do not alter Note Off/voice-release behavior or the independent grain clock.
 - This engine selection does not prescribe DSP implementation or engine-internal limits.
+
+### 2.3 Envelopes
+
+- R1 provides four ADSR envelopes: Pitch, Filter, Amp and Aux.
+- Every time-valued envelope stage has a range of **0.1 ms to 45 s** (DEC-051). R1 does not expose a zero-duration stage; values below the minimum resolve to 0.1 ms.
+- Sustain is a level, not a time stage. Stage curves, bipolar amount and inversion remain part of the R1 envelope contract.
+- The 0.1 ms floor does not guarantee click-free output for every signal or modulation condition. Host/MIDI parameter mapping and timing tolerances remain technical/acceptance details.
+
+### 2.4 Granular pan spray
+
+- R1 exposes Uniform and Centre Weighted pan-spray distributions (DEC-053).
+- The pan-spray amount defines the maximum spread around the base pan, constrained to the legal stereo interval [−1,+1]. Amount zero keeps every grain at the base pan.
+- Uniform samples evenly over the available legal interval.
+- Centre Weighted uses a normalized triangular probability density: its peak is at the base pan and its density decreases linearly toward the available left and right spread limits. At stereo boundaries, the distribution is truncated to the legal interval and renormalized rather than clamped into endpoint piles.
+- Each grain samples its pan independently at spawn and retains that pan for its lifetime. Pan-spray remains independent from the base pan control.
+- Random-seed behavior and statistical tolerances are test/engineering details.
+
+### 2.4 Per-voice filters
+
+- Each voice has an LPF followed by an HPF in the R1 signal chain.
+- R1 filter functions are limited to **LPF** and **HPF**; no notch, band-pass or peak response modes are included (DEC-052).
+- Routing options are LPF only, LPF+HPF, or HPF only. A filter-chain bypass is available and preserves the configured filter settings.
+- Each filter independently exposes 6, 12, 18 or 24 dB/oct slopes and a resonance control.
+- Filter topology, resonance range/curve and DSP realization are technical decisions and are not fixed by this product behavior decision.
+
+### 2.6 Per-voice sub-oscillator
+
+- R1 includes a per-voice sub-oscillator with a fixed **sine** waveform (DEC-054).
+- R1 does not expose a waveform selector.
+- Frequency options are −1 or −2 octaves relative to the played note; level, poly balance and quantization remain available.
+- Sub-oscillator quantization follows the canonical scale/pitch quantization contract in GS-CHD-005.
+- Oscillator implementation and detailed level response remain technical/acceptance details.
 
 ## 3. Live audio, Freeze and recording
 

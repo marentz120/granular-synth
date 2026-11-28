@@ -76,7 +76,7 @@ The existing requirements use “Patch”, “Preset”, “Multi” and “Proj
 ## 8. Patch metadata
 
 - Favourites, tags, banks and searchable names are R1.
-- Comments per patch are present in benchmark mapping (PRS-08) but current GRANULAR SYNTH requirement GS-PRS-009 is proposed R1. Retain the requirement pending owner review; benchmark character limit of 100 is not imposed unless approved.
+- The R1 tier placement of GS-PRS-009 is approved by DEC-041. The comments-per-patch feature behavior and UI remain a proposed product requirement pending owner review; the benchmark's 100-character limit is not imposed unless separately approved.
 - One-click sample-name-to-patch-name is benchmark convenience only, not a current R1 requirement.
 - Importing GR-1/GR-MEGA patches is optional and blocked pending legal review (Q-L01); no reverse engineering or proprietary format compatibility work is authorized.
 

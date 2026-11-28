@@ -17,7 +17,7 @@
 
 Corrections only — no decision status or R1 scope changed beyond what DEC-017…DEC-021 already approved:
 - GS-UI-007: removed the controller-feedback clause from its R1 text (DEC-021 excludes MIDI feedback from R1); the requirement itself is unchanged otherwise, still Approved.
-- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's already-approved scope — the only new requirement added. Per PR #4 review, its wording is deliberately neutral: it states per-layer and global availability only, and defers freeze semantics to Phase 3.
+- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's approved scope — the only new requirement added in that pass. Its original wording was deliberately neutral; Freeze product semantics were subsequently approved by DEC-042 and are specified in FREEZE_BEHAVIOR_SPECIFICATION.md.
 - GS-ARC-001: fixed a stale citation (cited Q-P04 as open; it is ANSWERED via DEC-017) and cross-referenced GS-ARC-005.
 - GS-MID-007 and GS-SEQ-005 cross-reference each other instead of independently restating MIDI-Clock sync — no ID removed, no tier changed.
 - §6 Requirement summary fully recounted against §3/§4 and restructured per PR #4 review into an explicit counting method (§6.1), a plain-integer table that reconciles row-by-row and column-by-column (§6.2), and footnotes listing the split-tier, "Other" and Approved rows (§6.3). Corrects stale Slice/Sequencer/MIDI counts and the grand total (164 → 168).
@@ -77,7 +77,7 @@ GRANULAR SYNTH is a professional, sample-based granular instrument for macOS, de
 
 Functional benchmark: Tasty Chips GR-MEGA (manual 1.8.d) — DEC-001. We reproduce *documented behavior and workflows*, not firmware, code, UI artwork or file formats, and we add improvements where software allows (marked **[PROP]** in the feature map).
 
-## 2. Priority tiers (proposed)
+## 2. Priority tiers (approved by DEC-041)
 
 | Tier | Meaning |
 |---|---|
@@ -95,7 +95,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 ### 3.1 Platform & formats (PLT)
 
-| ID | Requirement | Proposed tier | Source / notes |
+| ID | Requirement | Approved tier | Source / notes |
 |---|---|---|---|
 | GS-PLT-001 | The product shall ship as a standalone macOS app and as AU and VST3 plugins built from one shared DSP/state core. | R1 | Refines REQ-PLAT-001…003; DEC-026; exact component/bus design Phase 3 |
 | GS-PLT-002 | Native Apple Silicon and Intel (Universal 2) binaries. | R1 | Q-T03 |
@@ -112,7 +112,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-ARC-002 | Per-layer polyphony 1–20 voices (patch parameter). | R1 | ARCH-05, VOI-01 |
 | GS-ARC-003 | Up to 128 simultaneous grains per voice. | R1 | ARCH-06 |
 | GS-ARC-004 | A global, configurable grain budget across all layers with graceful (click-free), deterministic degradation when exceeded. | R1 | ARCH-07; refines REQ-AUD-003; [PROP] — budget value set by CPU benchmark (Q-T07) |
-| GS-ARC-005 | Engine selectable per layer: Granular and Sampler (R1); Granular Slice deferred (L2 candidate), Tape L2, Spectral L3. | R1/L | ARCH-01; DEC-018 |
+| GS-ARC-005 | Engine selectable per layer: Granular and Sampler in R1; Granular Slice is deferred (L2 candidate), Tape L2, Spectral L3. | R1 | ARCH-01; DEC-018 |
 | GS-ARC-006 | Multi-output: stereo main + 4 stereo layer outputs (plugin busses / standalone channel routing). | R1 | SIG-07 |
 | GS-ARC-007 | Signal chain per voice: engine + sub-osc → LPF → HPF; per layer: FX×4 → M-S → patch volume → layer mix → wet; dry live-input path summed before master. | R1 | SIG-01…04 |
 | GS-ARC-008 | Default voice gain and grain-count normalization designed so 4 dense layers do not clip at default settings. | R1 | SIG-08, SIG-09 |
@@ -213,7 +213,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-VOI-007 | Envelope loop modes. | L2 | ENV-05 [UNV] |
 | GS-VOI-008 | LPF and HPF per voice, 0–20 kHz, resonance, slopes 6/12/18/24 dB/oct, routing (LP / LP+HP / HP) and bypass. | R1 | FLT-01, FLT-02, FLT-04 |
 | GS-VOI-009 | Filter key tracking. | R1 | FLT-05 |
-| GS-VOI-010 | Sub-oscillator per voice: −1/−2 octave, level, poly balance, quantize option. | R1 | SUB-01, SUB-02 |
+| GS-VOI-010 | Fixed-sine sub-oscillator per voice: −1/−2 octave, level, poly balance, quantize option; no R1 waveform selector (DEC-054). | R1 | SUB-01, SUB-02 |
 
 ### 3.10 Sample management & recording (SMG)
 
@@ -223,7 +223,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-002 | Drag-and-drop from Finder and from DAW; in-app browser with audition preview. | R1 | SMG-07 [PI: drag & drop] |
 | GS-SMG-003 | Loading never blocks or glitches audio; previous sample keeps playing until the new one is ready. | R1 | Non-functional; benchmark warns of crackle on offline ops |
 | GS-SMG-004 | Optional normalize on import. | R1 | SMG-06 |
-| GS-SMG-005 | Waveform view with zoom/scroll, all voice/grain positions, flags, slices, record head; spectrogram view. | R1 (waveform) / L2 (spectrogram) | EDT-12, EDT-13, SMP-08 |
+| GS-SMG-005 | R1 waveform view with zoom/scroll, all voice/grain positions, flags and record head; spectrogram view is deferred to L2. | R1 | EDT-12, EDT-13, SMP-08 |
 | GS-SMG-006 | Flags: start, stop, loop start, loop end; scan modes one-shot / loop / bounce; scan key trigger Off/On/Legato/Poly; scan sync; loop clock sync; looped release. | R1 | EDT-01…07 |
 | GS-SMG-007 | Crop (to view, to recorded, to flags), soft-cut crossfade, normalize; non-destructive with undo. | R1 | EDT-08…10, EDT-P2 [PROP] |
 | GS-SMG-008 | Record live input into the layer buffer: one-shot or loop recording; record start modes; input gain ±12 dB; mono duplication LL/RR. | R1 | REC-03, REC-04, REC-06, REC-07 |
@@ -239,7 +239,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-018 | Tuning reference tone. | L2 | EDT-11 |
 | GS-SMG-019 | Maximum granular sample length ≥ 6 minutes stereo at 48 kHz per layer (exceeds benchmark 5m49s). | R1 | SMG-08, C-02 |
 | GS-SMG-020 | Record each layer independently and record the stereo master mix; save/export captured audio for later sample use. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3 |
-| GS-SMG-021 | Freeze: provide an independently switchable per-layer Freeze and a global Freeze across all layers. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. **Exact freeze semantics are a Phase 3 architecture decision** — this row fixes only the product-level requirement (per-layer + global availability) and its tier, and deliberately makes no claim about what Freeze holds, suspends or continues. |
+| GS-SMG-021 | Freeze: provide an independently switchable per-layer Freeze and a global Freeze across all layers. MIDI-controller-reachable per GS-MID-008. | R1 — product scope approved | DEC-020; R1_PRODUCT_SPECIFICATION.md §3. Freeze product semantics are approved by DEC-042 and specified in FREEZE_BEHAVIOR_SPECIFICATION.md; Phase 3/5 work covers engineering, resource admission and host validation. |
 
 ### 3.11 Modulation (MOD)
 
@@ -248,8 +248,8 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MOD-001 | 4 LFOs per layer: 0–50 Hz free or tempo-synced; waveforms sine/tri/saw/−saw/square/random (S&H); phase; amplitude quantization; polarity (4 modes); key sync Off/On/Legato. | R1 | LFO-01…08 |
 | GS-MOD-002 | Each LFO has a selectable Poly/Mono phase mode: Mono shares phase per layer (default); Poly has independent phase per voice. | R1 — approved product behavior | LFO-11 [UNV] → Q-M11; DEC-024; MODULATION_SPECIFICATION.md §2.1 |
 | GS-MOD-003 | Modulation matrix with ≥ 50 rows: enable, source, curve, amount, polarity, destination. | R1 | MTX-01…03 |
-| GS-MOD-004 | Sources (R1): LFO1–4, mod wheel, key track, velocity, pitch bend, channel/poly aftertouch, MPE timbre, release velocity, aux env, Random1–4 (per note, independent streams), XY performance pad (replaces "Pos X/Pos Y"), seq mod lanes (once sequencer exists), envelope follower (input and layers). CV inputs and Draw X/Y later. | R1 (CV, Draw: L) | MTX-04, MTX-11, RN-13, RN-19 |
-| GS-MOD-005 | Destinations: every continuous engine, envelope, filter, LFO, FX and macro parameter; parity with the benchmark's 149 destinations at minimum. | R1 (for R1 features) | MTX-05 |
+| GS-MOD-004 | R1 sources: LFO1–4, mod wheel, key track, velocity, pitch bend, channel/poly aftertouch, MPE timbre, release velocity, aux env, Random1–4 (per note, independent streams), XY performance pad (replaces "Pos X/Pos Y"), sequencer mod lanes and envelope follower (input and layers). CV inputs and Draw X/Y are not R1. | R1 | MTX-04, MTX-11, RN-13, RN-19 |
+| GS-MOD-005 | Destinations: every eligible continuous parameter belonging to an R1 engine, envelope, filter, LFO, FX or macro; benchmark-only and deferred-feature destinations are not required in R1. | R1 | MTX-05 |
 | GS-MOD-006 | Hold-and-turn style quick assignment (UI: modifier + drag on any control), and direct per-LFO destination routing. | R1 | MTX-07, LFO-09, LFO-10 |
 | GS-MOD-007 | Copy/paste/delete matrix rows. | R1 | MTX-09 |
 | GS-MOD-008 | 10 macros per patch in R1; multi-destination with start/end range, curve, invert; macros themselves modulatable; exposed to host automation. 20 macros are not an R1 requirement. | R1 | MAC-01…07; Q-M06 resolved by DEC-036 |
@@ -286,7 +286,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MID-005 | Program change → preset recall (standalone; plugin where host allows). | R1 | MID-06 |
 | GS-MID-006 | Channel-mode messages: all notes off, all sound off (incl. FX tails), reset controllers. | R1 | MID-12 |
 | GS-MID-007 | MIDI clock in (standalone), as a MIDI-input/protocol requirement. | R1 | MID-08; DEC-019. Refines the MIDI-Clock element of GS-SEQ-005's broader synchronization requirement (which also covers BPM, Ableton Link and DAW/host transport) — not an independent synchronization spec; kept as its own ID because it is also a MIDI-protocol/input-handling requirement (§3.13 MID), distinct from sequencer behavior (§3.12 SEQ). |
-| GS-MID-008 | Standalone operation shall be fully operable via MIDI controller alone for all *essential live-performance* operations, without requiring a computer keyboard or mouse. "Essential" excludes one-time setup/configuration tasks (sample loading, patch editing detail, initial mapping). | **R1 — Approved** | DEC-016 (owner decision, PR #2, 2026-11-27). Detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Generic class-compliant controller is the R1 target; no named-controller template or MIDI feedback is required (DEC-021). |
+| GS-MID-008 | Standalone operation shall be fully operable via MIDI controller alone for all *essential live-performance* operations, without requiring a computer keyboard or mouse. "Essential" excludes one-time setup/configuration tasks (sample loading, patch editing detail, initial mapping). | R1 | DEC-016 (owner decision, PR #2, 2026-11-27). Detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md. Generic class-compliant controller is the R1 target; no named-controller template or MIDI feedback is required (DEC-021). |
 
 ### 3.14 Effects (FX)
 
@@ -326,7 +326,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-UI-004 | Resizable, HiDPI, keyboard-navigable UI; tooltips; value readout on hover. | R1 | PRF-03 [PROP] |
 | GS-UI-005 | CPU meter by category (voices / FX / housekeeping). | R1 | PRF-07 |
 | GS-UI-006 | Plugin UI and standalone UI are the same component. | R1 | GS-PLT-004 |
-| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery — sufficient to satisfy GS-MID-008. Controller feedback (motorized faders, LED rings/displays) is explicitly **not** an R1 requirement; it is deferred beyond R1. | **R1 — Approved** | DEC-016; scope narrowed by **DEC-021** (2026-11-27): no R1 MIDI feedback or named-controller template. Mapping architecture and conflict handling detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; its acceptance criteria (§9 there) are **proposed**, not approved — final criteria are a Phase 5 deliverable per §8 below. Does not decide parameter-exposure scope (Q-T12, still OPEN). Q-P12 is **ANSWERED** by DEC-021: generic MIDI Learn/manual mapping is the R1 baseline, and no named-controller template or specific-controller auto-mapping is required in R1. |
+| GS-UI-007 | The UI shall provide a MIDI Learn / mapping system — global and per-preset mappings, conflict detection and recovery — sufficient to satisfy GS-MID-008. Controller feedback (motorized faders, LED rings/displays) is explicitly **not** an R1 requirement; it is deferred beyond R1. | R1 | DEC-016; scope narrowed by **DEC-021** (2026-11-27): no R1 MIDI feedback or named-controller template. Mapping architecture and conflict handling detailed in docs/LIVE_PERFORMANCE_SPECIFICATION.md; its acceptance criteria (§9 there) are **proposed**, not approved — final criteria are a Phase 5 deliverable per §8 below. Does not decide parameter-exposure scope (Q-T12, still OPEN). Q-P12 is **ANSWERED** by DEC-021: generic MIDI Learn/manual mapping is the R1 baseline, and no named-controller template or specific-controller auto-mapping is required in R1. |
 
 ---
 
@@ -371,7 +371,7 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 
 1. **Unit of count:** one table row whose first cell is exactly a `GS-<AREA>-<NNN>` id. Prose mentions, dependency-table references (§7) and exclusion-table rows (§5) are not counted.
 2. **One row → exactly one bucket.** A row's tier cell is normalised by its leading token: `R1…` → **R1**, `L2…` → **L2**, `L3…` → **L3**, `OPT…` → **OPT**, anything else → **Other**. Trailing qualifiers do not change the bucket (`R1 — Approved`, `R1 — product scope approved`, `R1 (for R1 features)` all count as one R1 row).
-3. **Split-tier rows are counted once**, under their primary (R1) tier, and are listed explicitly in §6.3 instead of being written as an inline "+1" annotation. No row is counted in two buckets, so **every area's buckets sum to that area's row count, and the area rows sum to the grand total.**
+3. **Deferred subfeatures do not change the row's primary tier.** Where an R1 requirement mentions a later capability, the requirement text labels that subfeature as deferred; the tier cell remains the single approved primary tier. No row is counted in two buckets, so **every area's buckets sum to that area's row count, and the area rows sum to the grand total.**
 4. **Zero is written `0`**, not `—`, so each row and column can be added up directly.
 
 **Reconciliation:** 124 + 27 + 9 + 8 + 0 = **168**, and the 17 area row-counts (6+10+23+7+6+7+2+6+10+21+12+12+8+8+10+7+13) also total **168**. The two agree, and both match the number of `GS-*` rows actually present in §3/§4.
@@ -401,10 +401,10 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 
 ### 6.3 Footnotes to the counts
 
-- **Split-tier rows (3), each counted once under R1:** `GS-ARC-005` (R1/L — Granular + Sampler in R1, Slice/Tape/Spectral later), `GS-SMG-005` (R1 waveform / L2 spectrogram), `GS-MOD-004` (R1 sources; CV and Draw X/Y later).
+- **R1 rows with explicitly deferred subfeatures (3):** `GS-ARC-005` (Granular + Sampler in R1; Slice/Tape/Spectral later), `GS-SMG-005` (waveform in R1; spectrogram L2), `GS-MOD-004` (listed R1 sources; CV and Draw X/Y are not R1). Each row has one primary tier of R1.
 - **"Other" (0):** every requirement row now has an approved tier; `GS-SEQ-010` is L2 by DEC-029/DEC-041.
 - **Rows whose tier cell is explicitly marked Approved (2):** `GS-MID-008`, `GS-UI-007` (DEC-016, narrowed by DEC-021). DEC-041 approves the tier classification for all 168 rows; numeric technical values tied to Q-Txx remain proposals until their architecture/validation gates.
-- **Phase 2 reconciliation (v1.0):** all 168 requirement rows have exactly one approved tier; `GS-SEQ-010` is L2 (DEC-029). Totals reconcile to 124 R1 + 27 L2 + 9 L3 + 8 OPT + 0 Other = 168. Split-tier rows are counted once under their primary R1 tier per §6.1.
+- **Phase 2 reconciliation (v1.0):** all 168 requirement rows have exactly one approved primary tier; `GS-SEQ-010` is L2 (DEC-029). Totals reconcile to 124 R1 + 27 L2 + 9 L3 + 8 OPT + 0 Other = 168. Later subfeatures described in an R1 row are explicitly excluded from R1 and do not create a second tier.
 
 ## 7. Dependencies between requirement areas
 
@@ -420,7 +420,7 @@ The table in §6.2 is derived mechanically from the requirement rows in §3 and 
 | MOD-008 macros | MOD-003 | Macros are matrix sources and destinations |
 | SEQ | Transport abstraction (Arch §11), MOD (mod lanes, p-locks) | p-locks override registered parameters |
 | SMG-008…012 (live input) | Q-P06 (plugin input bus), ARC-006/007 | Bus layout and AU component type |
-| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Freeze is switchable per layer and globally; its semantics are a Phase 3 architecture decision and are not specified at requirement level |
+| GS-SMG-021 (Freeze) | ARC-005 (engine/voice state), GS-MID-008 (controller reachability) | Per-layer/global Source Snapshot behavior is approved by DEC-042 and specified in FREEZE_BEHAVIOR_SPECIFICATION.md; implementation and resource validation remain Phase 3/5 |
 | FX | Parameter registry, ARC-007 | Slot host + registered FX params |
 | PRS | Parameter registry, SMG (sample refs), Q-P07/Q-P08 | Serialization of every registered parameter + sample references |
 | MID | Parameter registry, VOI (MPE voice mapping) | MIDI learn binds to parameter IDs; MPE binds to voices |
@@ -454,7 +454,7 @@ The following documents expand behavior, edge cases and acceptance coverage with
 - `SAMPLER_SPECIFICATION.md` — GS-SMP-001…007; Q-M05 remains open pending evidence.
 - `PRESET_LIBRARY_SPECIFICATION.md` — GS-PRS-001…010; DEC-022 resolves Q-P07 and DEC-025 resolves the product policy in Q-P08.
 - `MIDI_SPECIFICATION.md` — GS-MID-001…008; preserves DEC-016/021 and the controller-only operation set.
-- `AUDIO_IO_SPECIFICATION.md` — GS-SMG-001…021 and relevant GS-PLT/GS-NFR requirements; Freeze semantics remain Phase 3.
+- `AUDIO_IO_SPECIFICATION.md` — GS-SMG-001…021 and relevant GS-PLT/GS-NFR requirements; Freeze semantics follow approved DEC-042 and FREEZE_BEHAVIOR_SPECIFICATION.md.
 - `R1_RELEASE_SCOPE_MATRIX.md` — consolidated tier view; pending owner approvals are called out explicitly.
 - `R1_ACCEPTANCE_CRITERIA.md` — testable product-level pass conditions; numeric performance thresholds and implementation-level test design remain Phase 3/5.
 
