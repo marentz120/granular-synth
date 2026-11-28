@@ -127,6 +127,7 @@ Phase 4 has six workspace layouts, a controller target catalogue, proposed Granu
 - Performance Bank editor and active-bank persistence.
 - Global frame, persistent performance row and screen layouts.
 - Final set of controls that must be immediately reachable during live performance.
+- `GS-PRS-009` patch-comments behavior and UI; its R1 tier is approved, but the feature details remain a proposed product requirement pending owner review.
 
 The accessibility audit says operations are specified at proposal level; no controller-only workflow has been implemented or proven.
 
