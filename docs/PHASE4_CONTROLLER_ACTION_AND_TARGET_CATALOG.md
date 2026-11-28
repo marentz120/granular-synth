@@ -49,8 +49,8 @@ Names below are human-readable target labels, not stable IDs or MIDI assignments
 | Layer mix | Layer Level; Layer Pan; Layer Mute; Layer Solo | Continuous / toggle | Explicit layer |
 | Play/drone | Play/Drone mode | Toggle | Explicit layer |
 | Panic | Panic / All Sound Off | Momentary command | Global |
-| Macros | Macro 1–10 value; Macro 1–10 select/focus | Continuous / selection | Active patch; explicit layer context |
-| XY performance pad | X value; Y value | Continuous parameter | Active patch/layer context as defined by R1 |
+| Macros | Macro 1–10 value; Macro 1–10 select/focus | Continuous / selection | Explicit layer Patch (ten macros per Patch) |
+| XY performance pad | X value; Y value | Continuous parameter | Explicit layer Patch; recall position belongs to that Patch |
 | Fill | Fill On/Off; Fill Intensity | Toggle / continuous parameter | Global, affects active layers |
 | Freeze | Freeze L1, L2, L3, L4; Freeze All; Thaw L1…L4; Thaw All | Toggle / command | Explicit layer or global |
 | Transport | Start; Stop; Continue where supported by the approved transport model | Command | Global |
@@ -62,18 +62,22 @@ Names below are human-readable target labels, not stable IDs or MIDI assignments
 | Sequencer timing | BPM; Swing; Humanize; Quantization; Microtiming; straight/triplet grid selection; Pattern length and edit resolution | Continuous / selection | Global or active Pattern per R1 semantics |
 | Mute editing | Mute/Unmute Layer; Mute/Unmute Step; Mute/Unmute Event; select unmute timing (immediate or next occurrence) | Toggle / selection | Explicit layer / active Pattern / selected event |
 | Pattern history | Save Pattern; Restore Draft; Undo; Redo | Command | Active Pattern |
-| Chord workflow | Chord Hold; Chord Record Start; Chord Record Stop/Commit | Momentary / command | Active layer/patch context |
-| Recording | Arm/Start/Stop Layer Recording L1–L4; Arm/Start/Stop Master Recording; select One-shot/Loop mode | Command / selection | Explicit layer or global |
-| MIDI mapping | Enter Learn; Exit Learn; Confirm; Cancel; Unmap; Reset Global Scope; Reset Preset Scope; Recall Global/Preset Mapping State | Mode / command | Global or active preset |
+| Chord workflow | Select Chord Slot 1–12; Arm Chord Record; Start Capture; Stop & Commit; Cancel Capture; Chord Hold | Selection / command / momentary | Explicit layer Patch |
+| Recording | Select Layer L1–L4 or Master target; Arm; Start; Stop; select One-shot/Loop mode | Selection / command | Explicit layer or global Master |
+| Performance Bank / Program Change | Select Active Performance Bank; assign/unassign PC 0–127 to a library Preset slot; browse/recall assigned slot | Selection / command | Global active-bank state |
+| Performance Set | Previous/Next entry; Select entry; Recall Preset/Pattern entry; show current/pending/active entry | Navigation / selection / command | Active Performance Set |
+| MIDI mapping | Enter Learn; Exit Learn; Confirm; Cancel; Unmap; Reset Global Scope; Reset Preset Scope; Recall Global/Preset Mapping State | Mode / command | Global or active layer Patch |
 
 ### 3.1 Explicit scope rules
 
 - Layer-specific mappings are addressed directly to L1–L4. Changing the visible layer does not redirect them.
 - Global Panic, transport, Fill, Pattern navigation and Performance Set navigation remain global.
 - Event-level controls require a selected event. If no event is selected, the UI shows “No event selected” and does not silently apply the command to another event.
-- Macro targets identify Macro 1–10, not an implicit “current macro”. A separate selection target may change focus, but it does not change the destination of an existing mapping.
+- Macro targets identify Macro 1–10 within an explicit layer Patch, not an implicit “current macro”. DEC-031 makes each macro's base value shared within that layer Patch; per-note modulation may still produce per-voice destination values. A separate selection target may change focus, but it does not change the destination of an existing mapping.
 - Freeze has distinct per-layer and global targets. A single selected-layer Freeze target is not sufficient.
-- Layer recording and master recording are separate targets and must have separate status indicators.
+- Layer recording and master recording are separate targets and must have separate status indicators. Arm selects/prepares the target; Start begins capture; Stop ends it. Do not show Recording until capture has actually started.
+- Program Change follows DEC-033: the incoming program number resolves only through an explicit assignment in the currently active Performance Bank. An unmapped value is ignored; it must never fall through to an arbitrary library item or Performance Set entry.
+- Performance Bank and Performance Set are distinct concepts. The Bank is the explicit Program Change lookup table; the Set is the ordered live set-list of Preset and Pattern references. Do not conflate their navigation or recall behavior.
 
 ### 3.2 R1 boundary corrections
 
@@ -124,11 +128,47 @@ The UI must support up to eight simultaneous events per step. No operation in th
 
 ### 4.5 Chord hold and chord recording
 
-- Chord Hold is a held/momentary operation and must not be confused with Chord Record.
-- Chord Record has visible Idle, Recording and Completed/Cancelled states.
-- Exact start/stop/commit gesture and whether recording is armed or immediately begins remain a Phase 4 owner-review item; the catalogue does not invent a new chord-recording product behavior.
+Proposed controller-only workflow for GS-CHD-004, subject to owner review:
 
-### 4.6 MIDI Learn during a set
+1. Select one of the 12 chord slots in the explicit layer Patch.
+2. Arm Chord Record; show the selected slot and an Armed state without changing the stored chord.
+3. Start Capture; collect played notes for that slot while showing the captured-note count.
+4. Stop & Commit stores the captured chord in the selected slot and returns to Idle.
+5. Cancel Capture discards the in-progress take and preserves the previously stored chord.
+
+Rules:
+- Chord Hold is a separate held/momentary operation and must not be confused with Chord Record.
+- Show Idle, Armed, Recording, Completed and Cancelled states distinctly.
+- Do not silently overwrite a chord slot before Stop & Commit.
+- The requirements specify 12 chord slots and recording from played notes; note-count limits, duplicate handling during capture and exact commit semantics remain subject to the chord specification/owner review.
+
+### 4.6 Recording workflow
+
+Proposed safe, controller-only transaction for GS-SMG-020:
+
+1. Select exactly one capture target: Layer L1, L2, L3, L4, or Stereo Master.
+2. Select One-shot or Loop recording mode.
+3. Arm the selected target. Show Armed, target name and mode.
+4. Start begins capture; show Recording only after the recording subsystem confirms that capture has started.
+5. Stop ends capture and reports Completed or Failed. The resulting audio is retained/exportable under the approved sample/state lifecycle.
+6. Disarm returns the target to Idle without starting or stopping another target.
+
+Rules:
+- Layer targets and Stereo Master are separate; their controls and status must never be ambiguous.
+- This workflow does not assert that multiple targets can record concurrently; concurrency and resource ceilings remain engineering/acceptance questions.
+- Recording remains independent of Freeze under DEC-042.
+- Panic, transport Stop, Freeze and recording Stop are distinct actions. Stopping transport must not be presented as stopping audio capture.
+
+### 4.7 Performance Bank, Performance Set and Program Change
+
+- A Performance Bank is the active Program Change lookup table. Each slot explicitly maps one incoming Program Change value (0–127) to a library Preset recall target.
+- Editing the bank supports Assign, Replace, Unassign and Browse Library. Duplicate Program Change assignments within one active bank are disallowed in the proposed editor to keep recall deterministic.
+- A Program Change for an assigned value requests recall of that mapped Preset. An unmapped value is ignored and leaves the current sound unchanged (DEC-033).
+- A Performance Set is a separate ordered set-list of Presets and Patterns. Its UI shows entry index/name/type and current, selected, pending or active state. Navigation changes selection; Recall requests activation.
+- Pattern changes during playback retain the approved end-of-bar switching behavior. Preset recall does not replace or stop the active Pattern.
+- A Performance Set does not silently redefine the active Performance Bank. Any bank activation is an explicit user action; persistence/recall of the active-bank selection is a Phase 3/4 state detail.
+
+### 4.8 MIDI Learn during a set
 
 - Existing mappings are always usable without entering Learn.
 - Enter/Exit Learn and Confirm/Cancel must be reachable through the controller if the performer needs to adjust mappings mid-set.
@@ -174,8 +214,9 @@ This boundary is intentional: the benchmark's physical control table is referenc
 - [ ] FX targets are resolved per effect; no universal Wet/Dry assumption is made.
 - [ ] Up to eight events per step can be navigated and edited controller-only.
 - [ ] Freeze, Panic, Mute, Stop and recording remain distinct.
-- [ ] Chord Hold and Chord Record are distinct and have owner-approved workflows.
-- [ ] Program Change, Pattern recall and Performance Set navigation are consistent with the preset model.
+- [ ] Chord Hold and Chord Record are distinct; the proposed Arm/Capture/Commit/Cancel flow is reviewed against GS-CHD-004.
+- [ ] Recording Arm/Start/Stop is explicit for each layer and Stereo Master; concurrency is not assumed.
+- [ ] Program Change uses only explicit assignments in the active Performance Bank (DEC-033); Performance Sets remain a separate ordered set-list.
 - [ ] All owner decisions are recorded in `DECISIONS_LOG.md`; technical gates remain in `OPEN_QUESTIONS.md`.
 - [ ] Phase 5 acceptance tests are planned for every essential operation; this document does not claim test coverage.
 
