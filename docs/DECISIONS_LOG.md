@@ -83,6 +83,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-054 | R1 sub-oscillator uses a fixed sine waveform. R1 does not expose a waveform selector; frequency remains selectable at −1 or −2 octaves relative to the played note, with the specified level, poly-balance and quantization controls. | **Approved** | Product behavior decision made under the owner's explicit instruction to follow the assistant's recommendations for subsequent project decisions (2026-11-28). A sine provides fundamental reinforcement without adding upper harmonics or introducing an unnecessary waveform control into R1. Oscillator implementation, anti-aliasing and exact level response remain technical/acceptance details. |
 
+| DEC-055 | Changing Voice Sync affects future grain-spawn scheduling at the next valid scheduler boundary. Switching ON makes active voice schedulers adopt the layer's shared phase at that boundary; switching OFF detaches each active voice at its current phase and lets it advance independently. Already-playing grains and voice envelopes are not restarted, truncated or re-pitched by the mode change. New voices use the currently selected mode from their first scheduled spawn. | **Approved** | Product behavior decision made under the owner's explicit instruction to follow the assistant's recommendations for subsequent project decisions (2026-11-28). Completes the user-visible transition semantics of DEC-050 while avoiding abrupt grain/voice restarts. Host/transport clock arbitration remains a technical integration gate. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
