@@ -3,7 +3,7 @@
 **Version:** 0.1 — callback context, failure signalling and coherent capture boundaries  
 **Checked:** 2026-11-28  
 **Status:** Official-documentation evidence map and Phase 5 test design only. No host callback was observed, no host is certified, and no callback deadline, payload limit, container ABI or memory budget is approved.  
-**Baseline:** DEC-025, DEC-042, Q-T15, Q-P09, GS-NFR-001/008, AR-06; \`PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md\`; \`PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md\`; \`THREADING_AND_OWNERSHIP_SPECIFICATION.md\`.  
+**Baseline:** DEC-025, DEC-042, Q-T15, Q-P09, GS-NFR-001/008, AR-06; `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md`; `PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md`; `THREADING_AND_OWNERSHIP_SPECIFICATION.md`.  
 **Scope:** Logic Pro/AU, Ableton Live/AU+VST3, Bitwig/VST3 and REAPER/AU+VST3. Research and contract refinement only; no implementation, host prototype, benchmark or runtime measurement.
 
 ## 1. Executive findings
@@ -16,7 +16,7 @@ The evidence separates into three layers that must not be conflated:
 
 The most consequential refinement is the VST3 concurrency boundary: Steinberg's API documents state calls as UI-thread operations and permits component state calls while the component is in Processing. This does not mean audio processing is stopped. A Steinberg developer-forum clarification additionally warns that offline get/set-state calls may occur on the same thread as process. The latter is supplemental vendor clarification, not a universal host guarantee.
 
-For AU, Apple's public \`fullState\` and \`fullStateForDocument\` descriptions do not specify a callback thread, callback deadline or explicit failure result for the optional dictionary property. Returning \`nil\` must not be assumed to make the DAW's project save fail.
+For AU, Apple's public `fullState` and `fullStateForDocument` descriptions do not specify a callback thread, callback deadline or explicit failure result for the optional dictionary property. Returning `nil` must not be assumed to make the DAW's project save fail.
 
 A successful DEC-025 document save therefore needs a **fresh, coherent, immutable capture descriptor**. A stale prepared descriptor must never be silently returned as successful state. Where the format API does not expose a proven failure channel, the target host's handling is a compatibility gate—not permission to omit required audio.
 
@@ -38,9 +38,9 @@ A project-save statement, an opaque plug-in-state block, an API thread annotatio
 
 Apple documents:
 
-- \`AUAudioUnit.fullState\` as an optional persistable \`[String: Any]\` snapshot suitable for a user preset; a host may use it for a preset or a document.
-- \`AUAudioUnit.fullStateForDocument\` as the document-oriented state property. A subclass that does not implement it interfaces with \`fullState\`.
-- The base \`fullState\` implementation saves parameter-tree values.
+- `AUAudioUnit.fullState` as an optional persistable `[String: Any]` snapshot suitable for a user preset; a host may use it for a preset or a document.
+- `AUAudioUnit.fullStateForDocument` as the document-oriented state property. A subclass that does not implement it interfaces with `fullState`.
+- The base `fullState` implementation saves parameter-tree values.
 
 The reviewed API references do **not** specify:
 
@@ -48,10 +48,10 @@ The reviewed API references do **not** specify:
 - whether the getter can be called while render is active or from a realtime context;
 - a callback deadline or interruption contract;
 - a maximum dictionary/Data payload size or copy count;
-- whether a getter returning \`nil\` aborts the host's project save, omits only the plug-in state, or invokes a fallback;
+- whether a getter returning `nil` aborts the host's project save, omits only the plug-in state, or invokes a fallback;
 - a transactional error result for the property setter during restore.
 
-The property type is optional, but optionality is not a documented save-failure protocol. Do not infer that \`nil\` is a reliable error signal. \`presetState(for:)\` is a separate throwing API and does not establish an error channel for the \`fullState\` property getter.
+The property type is optional, but optionality is not a documented save-failure protocol. Do not infer that `nil` is a reliable error signal. `presetState(for:)` is a separate throwing API and does not establish an error channel for the `fullState` property getter.
 
 **Project consequence:** prepare an immutable document-state dictionary off-render and make its recording/Freeze chunks generation-consistent. The AU adapter must not return a stale dictionary as a successful DEC-025 save. Until a host prototype establishes how a failed/nil document-state result is handled, the AU failure path remains unproven.
 
@@ -61,20 +61,20 @@ Sources: [AUAudioUnit.fullState](https://developer.apple.com/documentation/audio
 
 Steinberg documents:
 
-- \`IComponent::getState/setState\` as UI-thread calls, permitted in lifecycle states that include Processing.
-- \`IEditController::getState/setState/setComponentState\` as UI-thread calls in the Connected state.
-- Save order: component \`getState\`, then controller \`getState\`.
-- Restore order: component \`setState\`, controller \`setComponentState\`, then controller \`setState\`.
-- The general VST3 threading model places exported plug-in calls on the UI thread except \`IAudioProcessor::process\` and \`IAudioProcessor::setProcessing\`, which may be called on an audio thread.
+- `IComponent::getState/setState` as UI-thread calls, permitted in lifecycle states that include Processing.
+- `IEditController::getState/setState/setComponentState` as UI-thread calls in the Connected state.
+- Save order: component `getState`, then controller `getState`.
+- Restore order: component `setState`, controller `setComponentState`, then controller `setState`.
+- The general VST3 threading model places exported plug-in calls on the UI thread except `IAudioProcessor::process` and `IAudioProcessor::setProcessing`, which may be called on an audio thread.
 
 Interpretation:
 
 - “Permitted while Processing” does not mean processing is suspended. The audio process may continue while a UI-thread state callback runs.
 - The component state callback must not mutate render-owned graphs, voices, note maps, recording writers or audio buffers directly.
 - A candidate state must be parsed/validated separately and published through the existing safe-point/generation contract.
-- \`IBStream\` and \`tresult\` provide a transfer/result surface, but the reviewed host documentation does not establish how each target host reacts to a failed \`getState\`, short transfer or invalid \`setState\`.
+- `IBStream` and `tresult` provide a transfer/result surface, but the reviewed host documentation does not establish how each target host reacts to a failed `getState`, short transfer or invalid `setState`.
 
-**Offline caveat (supplemental):** a Steinberg developer-forum response states that in an offline context, \`getState/setState\` may be called on the same thread as \`process\`. Treat this as a conservative scheduling warning, not as a guarantee for every SDK version or host. The implementation must not assume that every state callback is safely off the processing thread merely because the realtime API annotation says UI thread.
+**Offline caveat (supplemental):** a Steinberg developer-forum response states that in an offline context, `getState/setState` may be called on the same thread as `process`. Treat this as a conservative scheduling warning, not as a guarantee for every SDK version or host. The implementation must not assume that every state callback is safely off the processing thread merely because the realtime API annotation says UI thread.
 
 Sources: [VST3 API threading model](https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical%2BDocumentation/API%2BDocumentation/Index.html), [IComponent](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IComponent.html), [IEditController](https://steinbergmedia.github.io/vst3_doc/vstinterfaces/classSteinberg_1_1Vst_1_1IEditController.html), [VST3 Persistence](https://steinbergmedia.github.io/vst3_dev_portal/pages/FAQ/Persistence.html), [Steinberg offline-thread clarification](https://forums.steinberg.net/t/is-icomponent-getstate-setstate-thread-safe/201734/2).
 
@@ -82,12 +82,12 @@ Sources: [VST3 API threading model](https://steinbergmedia.github.io/vst3_dev_po
 
 | Host / format | Positive persistence evidence | Callback thread/context | Stale-state failure signal | Current classification |
 |---|---|---|---|---|
-| **Logic Pro / AU** | Plug-in settings are stored with the project and recalled on reopen. | No callback-thread or render-concurrency contract found in the reviewed Logic/Apple sources. | AU property returns an optional dictionary; Logic's behavior for \`nil\`/stale state is unverified. | Project setting **D**; AU API **API**; callback/failure/freshness **U**. |
+| **Logic Pro / AU** | Plug-in settings are stored with the project and recalled on reopen. | No callback-thread or render-concurrency contract found in the reviewed Logic/Apple sources. | AU property returns an optional dictionary; Logic's behavior for `nil`/stale state is unverified. | Project setting **D**; AU API **API**; callback/failure/freshness **U**. |
 | **Ableton Live / AU** | Live documents a reserved binary plug-in-state block in the Set, read/written by the plug-in. | No AU state callback thread/deadline documented. | AU property has no documented explicit error result; Live's handling of nil/stale document state is unverified. | Opaque state path **D**; callback/failure/freshness **U**. |
-| **Ableton Live / VST3** | Same documented reserved binary state block; Live supports VST3. | VST3 API annotations apply, but Live's actual callback thread and offline behavior are not documented by the reviewed Live pages. | \`tresult\` exists; Live's project-save response to failure/short stream is unverified. | Host state path **D**; VST3 API **API**; callback/failure/freshness **U**. |
-| **Bitwig Studio / VST3** | Project-associated \`plugin-states\` storage and multiple plug-in hosting modes are documented. | No official Bitwig state-callback thread contract found. Hosting mode changes process isolation, not the VST3 callback contract. | VST3 \`tresult\` exists; Bitwig's save failure and stale-snapshot handling are unverified. | Project storage/hosting modes **D**; callback/failure/freshness **U**. |
+| **Ableton Live / VST3** | Same documented reserved binary state block; Live supports VST3. | VST3 API annotations apply, but Live's actual callback thread and offline behavior are not documented by the reviewed Live pages. | `tresult` exists; Live's project-save response to failure/short stream is unverified. | Host state path **D**; VST3 API **API**; callback/failure/freshness **U**. |
+| **Bitwig Studio / VST3** | Project-associated `plugin-states` storage and multiple plug-in hosting modes are documented. | No official Bitwig state-callback thread contract found. Hosting mode changes process isolation, not the VST3 callback contract. | VST3 `tresult` exists; Bitwig's save failure and stale-snapshot handling are unverified. | Project storage/hosting modes **D**; callback/failure/freshness **U**. |
 | **REAPER / AU** | AU FX and project/FX persistence are documented. | No AU state callback thread contract found. | AU nil/property-set failure behavior in REAPER is unverified. | General persistence **D/P**; callback/failure/freshness **U**. |
-| **REAPER / VST3** | FX-chain/preset controls and optional “Hard reset on playback start” compatibility setting are documented. | No REAPER VST3 state callback thread contract found. | VST3 \`tresult\` exists; REAPER's project-save handling of failure/short stream is unverified. | FX/preset controls **D/P**; callback/failure/freshness **U**. |
+| **REAPER / VST3** | FX-chain/preset controls and optional “Hard reset on playback start” compatibility setting are documented. | No REAPER VST3 state callback thread contract found. | VST3 `tresult` exists; REAPER's project-save handling of failure/short stream is unverified. | FX/preset controls **D/P**; callback/failure/freshness **U**. |
 | **Standalone** | The application owns its project/preset file path. | A dedicated non-render file worker can be explicitly owned by the application; this is not DAW-host evidence. | File transaction can report an application-level error, subject to the standalone file-owner contract. | Application-controlled design; separate from host certification. |
 
 ### 4.1 Host-specific cautions
@@ -104,9 +104,9 @@ The State I/O audit already requires per-source committed-frame watermarks. This
 
 ### 5.1 Candidate capture-boundary token
 
-A conceptual immutable \`CaptureBoundaryToken\` contains:
+A conceptual immutable `CaptureBoundaryToken` contains:
 
-- the persistent \`RuntimeStateEpoch\`;
+- the persistent `RuntimeStateEpoch`;
 - a monotonically increasing capture/publication sequence;
 - for every required recording source, its source generation and latest fully committed frame/page watermark;
 - the source-generation identity for every required Freeze payload.
@@ -133,15 +133,15 @@ With four independent recording sources, reading source A's watermark, then sour
 | Condition | Required product/architecture behavior | Format/host evidence |
 |---|---|---|
 | Fresh prepared descriptor | Serialize/return the complete required document state. | API path exists; host round-trip still requires prototype. |
-| Stale descriptor | Never return it as a successful DEC-025 save. | AU nil semantics and VST3 host reaction to failed \`tresult\` are U. |
+| Stale descriptor | Never return it as a successful DEC-025 save. | AU nil semantics and VST3 host reaction to failed `tresult` are U. |
 | Missing required recording/Freeze chunk | Reject the complete state transaction; never silently omit the chunk. | Host failure propagation U. |
 | VST3 short/zero-progress stream transfer | Treat as incomplete; do not emit a valid completion footer. | Plug-in can observe transfer result; host's project-save response U. |
 | AU getter cannot provide fresh state | Do not substitute an older snapshot. | No documented property-getter error result; nil behavior must be observed per host. |
 | Invalid restored state | Preserve the prior active runtime; do not publish a partial candidate. | AU setter failure reporting and VST3 host handling require validation. |
 
-**AU-specific compatibility gate:** the AU property surface does not document a result code for a failed getter. If a target host treats \`nil\` as “no plug-in state” and still completes the DAW project save, that behavior cannot satisfy DEC-025 for an active unsaved recording. The host must be shown to reject the save or another supported failure path must be established. Do not return stale state or weaken the product requirement to work around this gap.
+**AU-specific compatibility gate:** the AU property surface does not document a result code for a failed getter. If a target host treats `nil` as “no plug-in state” and still completes the DAW project save, that behavior cannot satisfy DEC-025 for an active unsaved recording. The host must be shown to reject the save or another supported failure path must be established. Do not return stale state or weaken the product requirement to work around this gap.
 
-**VST3-specific compatibility gate:** the adapter can return a non-success \`tresult\`, but the host's visible save failure, rollback and retry behavior must be observed. A return code alone is not proof that the DAW project remains unchanged.
+**VST3-specific compatibility gate:** the adapter can return a non-success `tresult`, but the host's visible save failure, rollback and retry behavior must be observed. A return code alone is not proof that the DAW project remains unchanged.
 
 These are technical compatibility gates, not new product decisions.
 
