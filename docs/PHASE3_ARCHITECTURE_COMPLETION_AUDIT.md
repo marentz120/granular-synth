@@ -1,6 +1,6 @@
 # Phase 3 Architecture Completion Audit
 
-**Version:** 0.5 — AU component strategy evidence gate added  
+**Version:** 0.6 — AU and VST3 component evidence gates added  
 **Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
 **Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
 **Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
@@ -18,7 +18,7 @@ The repository already contains a substantial **candidate** architecture in `DSP
 ### Phase 3 exit blockers
 
 1. Framework, supported macOS baseline and binary architecture are not approved (Q-T01…Q-T03).
-2. Audio/plugin component and bus design is not host-validated, especially AU live input (Q-P06 / DEC-020 / Q-P09).
+2. Audio/plugin component and bus design is not host-validated: AU subtype/live input (Q-P06) and VST3 instrument classification, raw live-input routing, MPE Note Expression and five-output activation (Q-P09).
 3. Stable parameter IDs, host exposure, parameter grouping and migration rules are not frozen (Q-T12).
 4. Sample and recording-buffer lifecycle, including embedded plugin-state serialization, is incomplete (Q-T04…Q-T05, Q-T15…Q-T16, DEC-025).
 5. Freeze product behavior is approved as Source Snapshot (DEC-042); the rolling-buffer retention lease and single global transaction are now specified as candidate contracts, while exact mechanisms, spare capacity, memory budget, crossfade and RT proof remain engineering work.
@@ -399,3 +399,17 @@ Key findings:
 - REAPER documents AU/VST3 on macOS, multichannel track routing, plug-in pin connectors and a four-stereo-output VSTi example; the exact five-output plus live-instrument-input topology remains unverified.
 
 The matrix defines the minimum host prototype tests, session persistence checks, block/lifecycle checks and evidence fields. It does not certify any host/format cell. DEC-020, DEC-026 and GS-ARC-006 remain unchanged; Q-P06/Q-P09 remain open. No prototype, code or benchmark was performed.
+
+
+## 7. VST3 instrument component audit — 2026-11-28
+
+The new `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md` establishes the following evidence-based refinements:
+
+- VST3 instrument identity is conveyed through class subcategory metadata; the processing component remains `IComponent` + `IAudioProcessor`, with a separate `IEditController`. The SDK's `AudioEffect` helper is not the host-visible category.
+- A single 16-channel event input bus is the candidate baseline. The four R1 layers remain internal engine layers; DEC-034 is implemented by internal fan-out, not by assuming four VST3 event buses or Units.
+- One full-band live-audio input is the minimum host-validation case. Its `kMain` versus `kAux` bus type remains unresolved until raw source samples are proven to reach the Granular/Sampler path.
+- One main stereo master plus four auxiliary stereo layer outputs remains the semantic output model. Host activation is not guaranteed by `kDefaultActive`; inactive layer outputs must not remove or double-sum layer contributions in the master.
+- DEC-038 requires per-note pitch identity and VST3 Note Expression; ordinary MIDI channel pitch bend alone is insufficient.
+- Simple mode, `Fx|Instrument`, per-layer VST3 Units and input/output routing metadata are not claimed.
+
+The API model is capable of expressing the proposed topology, but this is not host evidence. No VST3 host prototype, SDK integration, DSP code or benchmark was performed. Q-P09 exact versions, live-input routing, MPE delivery, output activation and save/reopen remain blockers.
