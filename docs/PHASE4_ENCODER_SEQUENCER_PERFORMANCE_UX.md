@@ -62,6 +62,10 @@ All detailed assignments and screen behavior below are **proposals**, not owner-
 - No parameter may be reachable only through an undocumented gesture.
 - The complete R1 parameter inventory must be audited against touch controls, encoder focus pages and MIDI Learn targets before Phase 4 UI sign-off. This document does not claim that the matrix alone covers every R1 parameter.
 
+### 2.4 Granular primary-control exception
+
+The Granular workspace permanently exposes Size, Density, Position, Pitch and Spread on screen, as required by the owner-confirmed UI direction. The four physical encoders default to Size, Density, Position and Pitch. Spread remains directly touch-editable and is reachable through the encoder focus sequence/context page. No primary Granular control is removed to make the four-encoder count fit.
+
 ### 2.5 Eight-knob engine assignment — R1 proposal
 
 GS-UI-002 requires eight logical controls A–H and per-engine remapping. The assignments below use only R1 controls present in the approved requirements and domain specifications. They are product-UX defaults proposed for owner review; they do not define stable parameter IDs, scaling curves or MIDI CC values.
@@ -84,10 +88,6 @@ Rules:
 - If the current sample/engine state makes a control inapplicable, show it disabled with its reason; do not silently rebind the physical encoder to another parameter.
 - The eight logical slots are distinct from the four physical encoders. The four encoders page/focus across A–H in a stable order; the current A–D or E–H bank is visible. A short press changes focus only; it does not execute a toggle or destructive action.
 - Exact parameter ranges, taper, fine/coarse modifiers and stable IDs remain Phase 3/Q-T12/Phase 5 work.
-
-### 2.4 Granular primary-control exception
-
-The Granular workspace permanently exposes Size, Density, Position, Pitch and Spread on screen, as required by the owner-confirmed UI direction. The four physical encoders default to Size, Density, Position and Pitch. Spread remains directly touch-editable and is reachable through the encoder focus sequence/context page. No primary Granular control is removed to make the four-encoder count fit.
 
 ## 3. Sequencer viewport for Patterns longer than 16 steps
 
