@@ -351,3 +351,20 @@ The following candidate symbols make the DEC-025/DEC-042 persistence path explic
 | Q-P09 | HostPersistenceEvidence.capture | Host/format/version, callback context, payload size, round-trip and failure evidence | Approved host matrix and prototypes |
 
 The 124-row R1 requirement inventory and the 53/124 existing acceptance-or-release-gate link baseline are unchanged. No AC IDs or formal test IDs are created by this extension.
+
+## 16. State I/O scheduling and peak-memory traceability
+
+The following are candidate service boundaries for existing requirements/decisions. They are not final class names, signatures, ABI or implementation authorization.
+
+| Requirement / decision | Candidate operation or type | Required observable contract | Gate |
+|---|---|---|---|
+| DEC-025 | `StateIOScheduler.submitDocumentSave` | Bounded save-job admission; explicit busy/failure; no unbounded queue | Q-T15; scheduler tests |
+| DEC-025 | `RecordingCommitWatermark` / `StateSnapshotDescriptor` | Per-source generation and latest fully committed frame range; no mutable writer pointer | Capture watermark fixtures |
+| DEC-025 | `RecordingRetentionLease.tryAcquireAll` | All required ranges retained transactionally; writer never waits or overwrites leased pages | Q-T05/Q-T15; ring-wrap fixtures |
+| DEC-025/DEC-042 | `StateCaptureCoordinator.prepareSnapshot` | One immutable descriptor for all required recording and Freeze chunks | Source-generation and required-chunk checks |
+| Q-T15/Q-P09 | `HostStateAdapter.writePreparedSnapshot` | AU dictionary materialization or bounded VST3 stream transfer; no stale-success or false completion | Host callback/payload prototype |
+| Q-T15 | `StateSaveJob.cancelAndQuiesce` | Cancellation does not release pages while serializer/copy readers remain active | Cancellation/ownership tests |
+| GS-NFR-008 | `StateIOMemoryAdmission.reserveAggregate` | Save, restore, Freeze and recording-retention jobs reserve aggregate physical bytes and capacity | Admission/overflow tests |
+| GS-NFR-001 | `RenderCommitPublisher.publishWatermark` | Bounded commit metadata only; no allocation, blocking, hashing, I/O or final destruction on render | RT instrumentation |
+
+The 124-row R1 inventory and 53/124 existing acceptance-or-release-gate link baseline are unchanged. Candidate symbols do not count as acceptance coverage. No AC IDs or formal test IDs are created.
