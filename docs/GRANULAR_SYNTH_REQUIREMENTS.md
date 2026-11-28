@@ -17,7 +17,7 @@
 
 Corrections only — no decision status or R1 scope changed beyond what DEC-017…DEC-021 already approved:
 - GS-UI-007: removed the controller-feedback clause from its R1 text (DEC-021 excludes MIDI feedback from R1); the requirement itself is unchanged otherwise, still Approved.
-- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's already-approved scope — the only new requirement added. Per PR #4 review, its wording is deliberately neutral: it states per-layer and global availability only, and defers freeze semantics to Phase 3.
+- Added **GS-SMG-021** (Freeze, per-layer and global) to complete DEC-020's approved scope — the only new requirement added in that pass. Its original wording was deliberately neutral; Freeze product semantics were subsequently approved by DEC-042 and are specified in FREEZE_BEHAVIOR_SPECIFICATION.md.
 - GS-ARC-001: fixed a stale citation (cited Q-P04 as open; it is ANSWERED via DEC-017) and cross-referenced GS-ARC-005.
 - GS-MID-007 and GS-SEQ-005 cross-reference each other instead of independently restating MIDI-Clock sync — no ID removed, no tier changed.
 - §6 Requirement summary fully recounted against §3/§4 and restructured per PR #4 review into an explicit counting method (§6.1), a plain-integer table that reconciles row-by-row and column-by-column (§6.2), and footnotes listing the split-tier, "Other" and Approved rows (§6.3). Corrects stale Slice/Sequencer/MIDI counts and the grand total (164 → 168).
@@ -454,7 +454,7 @@ The following documents expand behavior, edge cases and acceptance coverage with
 - `SAMPLER_SPECIFICATION.md` — GS-SMP-001…007; Q-M05 remains open pending evidence.
 - `PRESET_LIBRARY_SPECIFICATION.md` — GS-PRS-001…010; DEC-022 resolves Q-P07 and DEC-025 resolves the product policy in Q-P08.
 - `MIDI_SPECIFICATION.md` — GS-MID-001…008; preserves DEC-016/021 and the controller-only operation set.
-- `AUDIO_IO_SPECIFICATION.md` — GS-SMG-001…021 and relevant GS-PLT/GS-NFR requirements; Freeze semantics remain Phase 3.
+- `AUDIO_IO_SPECIFICATION.md` — GS-SMG-001…021 and relevant GS-PLT/GS-NFR requirements; Freeze semantics follow approved DEC-042 and FREEZE_BEHAVIOR_SPECIFICATION.md.
 - `R1_RELEASE_SCOPE_MATRIX.md` — consolidated tier view; pending owner approvals are called out explicitly.
 - `R1_ACCEPTANCE_CRITERIA.md` — testable product-level pass conditions; numeric performance thresholds and implementation-level test design remain Phase 3/5.
 
