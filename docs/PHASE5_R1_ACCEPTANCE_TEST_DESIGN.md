@@ -55,7 +55,7 @@ The detailed candidate test intent, evidence and dependency for each row remain 
 | GS-GRN-011 | Ratio modes | Each of six modes follows its specified mapping; scan=0 behavior is tested only after the source specification states that behavior unambiguously. | Specification gate |
 | GS-GRN-012 | Window functions | PowAR and Raised Cosine variants match approved numerical reference vectors for sides/tilt/curve/AM settings. | Numerical tolerance gate |
 | GS-GRN-013 | Active-grain window transition | Window changes/modulation do not create a discontinuity in already-playing grains under the approved measurement method. | GS-NFR-003 threshold gate |
-| GS-GRN-014 | Trigger / clock division | Off/On/Legato and straight/triplet/dotted divisions schedule events at the expected positions on a deterministic transport timeline. | IF-08/clock authority gate |
+| GS-GRN-014 | Grain clock division | Straight/triplet/dotted divisions schedule events at the expected positions on a deterministic transport timeline. | IF-08/clock authority gate |
 | GS-GRN-015 | Spawn modes | Gradual, Direct, Direct-reset and Recycle produce the specified state transitions and reset/recycle boundaries. | Specification gate |
 | GS-GRN-016 | Local pitch | ON retains the grain's birth pitch after later note changes; OFF follows the specified live-pitch behavior. | Designable |
 | GS-GRN-017 | Grain stealing | OFF preserves the configured pool behavior; active mode selects/retire grains according to the approved policy without an audible discontinuity. | AR-02 gate |
