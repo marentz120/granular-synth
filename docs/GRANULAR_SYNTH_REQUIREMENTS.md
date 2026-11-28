@@ -77,7 +77,7 @@ GRANULAR SYNTH is a professional, sample-based granular instrument for macOS, de
 
 Functional benchmark: Tasty Chips GR-MEGA (manual 1.8.d) — DEC-001. We reproduce *documented behavior and workflows*, not firmware, code, UI artwork or file formats, and we add improvements where software allows (marked **[PROP]** in the feature map).
 
-## 2. Priority tiers (proposed)
+## 2. Priority tiers (approved by DEC-041)
 
 | Tier | Meaning |
 |---|---|
@@ -95,7 +95,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 
 ### 3.1 Platform & formats (PLT)
 
-| ID | Requirement | Proposed tier | Source / notes |
+| ID | Requirement | Approved tier | Source / notes |
 |---|---|---|---|
 | GS-PLT-001 | The product shall ship as a standalone macOS app and as AU and VST3 plugins built from one shared DSP/state core. | R1 | Refines REQ-PLAT-001…003; DEC-026; exact component/bus design Phase 3 |
 | GS-PLT-002 | Native Apple Silicon and Intel (Universal 2) binaries. | R1 | Q-T03 |
@@ -112,7 +112,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-ARC-002 | Per-layer polyphony 1–20 voices (patch parameter). | R1 | ARCH-05, VOI-01 |
 | GS-ARC-003 | Up to 128 simultaneous grains per voice. | R1 | ARCH-06 |
 | GS-ARC-004 | A global, configurable grain budget across all layers with graceful (click-free), deterministic degradation when exceeded. | R1 | ARCH-07; refines REQ-AUD-003; [PROP] — budget value set by CPU benchmark (Q-T07) |
-| GS-ARC-005 | Engine selectable per layer: Granular and Sampler (R1); Granular Slice deferred (L2 candidate), Tape L2, Spectral L3. | R1/L | ARCH-01; DEC-018 |
+| GS-ARC-005 | Engine selectable per layer: Granular and Sampler in R1; Granular Slice is deferred (L2 candidate), Tape L2, Spectral L3. | R1 | ARCH-01; DEC-018 |
 | GS-ARC-006 | Multi-output: stereo main + 4 stereo layer outputs (plugin busses / standalone channel routing). | R1 | SIG-07 |
 | GS-ARC-007 | Signal chain per voice: engine + sub-osc → LPF → HPF; per layer: FX×4 → M-S → patch volume → layer mix → wet; dry live-input path summed before master. | R1 | SIG-01…04 |
 | GS-ARC-008 | Default voice gain and grain-count normalization designed so 4 dense layers do not clip at default settings. | R1 | SIG-08, SIG-09 |
@@ -223,7 +223,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-SMG-002 | Drag-and-drop from Finder and from DAW; in-app browser with audition preview. | R1 | SMG-07 [PI: drag & drop] |
 | GS-SMG-003 | Loading never blocks or glitches audio; previous sample keeps playing until the new one is ready. | R1 | Non-functional; benchmark warns of crackle on offline ops |
 | GS-SMG-004 | Optional normalize on import. | R1 | SMG-06 |
-| GS-SMG-005 | Waveform view with zoom/scroll, all voice/grain positions, flags, slices, record head; spectrogram view. | R1 (waveform) / L2 (spectrogram) | EDT-12, EDT-13, SMP-08 |
+| GS-SMG-005 | R1 waveform view with zoom/scroll, all voice/grain positions, flags and record head; spectrogram view is deferred to L2. | R1 | EDT-12, EDT-13, SMP-08 |
 | GS-SMG-006 | Flags: start, stop, loop start, loop end; scan modes one-shot / loop / bounce; scan key trigger Off/On/Legato/Poly; scan sync; loop clock sync; looped release. | R1 | EDT-01…07 |
 | GS-SMG-007 | Crop (to view, to recorded, to flags), soft-cut crossfade, normalize; non-destructive with undo. | R1 | EDT-08…10, EDT-P2 [PROP] |
 | GS-SMG-008 | Record live input into the layer buffer: one-shot or loop recording; record start modes; input gain ±12 dB; mono duplication LL/RR. | R1 | REC-03, REC-04, REC-06, REC-07 |
@@ -248,8 +248,8 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-MOD-001 | 4 LFOs per layer: 0–50 Hz free or tempo-synced; waveforms sine/tri/saw/−saw/square/random (S&H); phase; amplitude quantization; polarity (4 modes); key sync Off/On/Legato. | R1 | LFO-01…08 |
 | GS-MOD-002 | Each LFO has a selectable Poly/Mono phase mode: Mono shares phase per layer (default); Poly has independent phase per voice. | R1 — approved product behavior | LFO-11 [UNV] → Q-M11; DEC-024; MODULATION_SPECIFICATION.md §2.1 |
 | GS-MOD-003 | Modulation matrix with ≥ 50 rows: enable, source, curve, amount, polarity, destination. | R1 | MTX-01…03 |
-| GS-MOD-004 | Sources (R1): LFO1–4, mod wheel, key track, velocity, pitch bend, channel/poly aftertouch, MPE timbre, release velocity, aux env, Random1–4 (per note, independent streams), XY performance pad (replaces "Pos X/Pos Y"), seq mod lanes (once sequencer exists), envelope follower (input and layers). CV inputs and Draw X/Y later. | R1 (CV, Draw: L) | MTX-04, MTX-11, RN-13, RN-19 |
-| GS-MOD-005 | Destinations: every continuous engine, envelope, filter, LFO, FX and macro parameter; parity with the benchmark's 149 destinations at minimum. | R1 (for R1 features) | MTX-05 |
+| GS-MOD-004 | R1 sources: LFO1–4, mod wheel, key track, velocity, pitch bend, channel/poly aftertouch, MPE timbre, release velocity, aux env, Random1–4 (per note, independent streams), XY performance pad (replaces "Pos X/Pos Y"), sequencer mod lanes and envelope follower (input and layers). CV inputs and Draw X/Y are not R1. | R1 | MTX-04, MTX-11, RN-13, RN-19 |
+| GS-MOD-005 | Destinations: every eligible continuous parameter belonging to an R1 engine, envelope, filter, LFO, FX or macro; benchmark-only and deferred-feature destinations are not required in R1. | R1 | MTX-05 |
 | GS-MOD-006 | Hold-and-turn style quick assignment (UI: modifier + drag on any control), and direct per-LFO destination routing. | R1 | MTX-07, LFO-09, LFO-10 |
 | GS-MOD-007 | Copy/paste/delete matrix rows. | R1 | MTX-09 |
 | GS-MOD-008 | 10 macros per patch in R1; multi-destination with start/end range, curve, invert; macros themselves modulatable; exposed to host automation. 20 macros are not an R1 requirement. | R1 | MAC-01…07; Q-M06 resolved by DEC-036 |
