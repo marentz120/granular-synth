@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Phase 5 Decision Closure Register
 
-**Version:** 0.1  
+**Version:** 0.2  
 **Date:** 2026-11-28  
 **Status:** Consolidated decision register; no unresolved decision is silently approved by this document.  
 **Authority:** `DECISIONS_LOG.md`, `OPEN_QUESTIONS.md`, `R1_PRODUCT_SPECIFICATION.md`, `PHASE5_ALL_REQUIREMENTS_AUDIT.md`.
@@ -23,7 +23,7 @@ These questions affect existing R1 requirements. They must be resolved or explic
 
 | Question | Requirement(s) | Current proposal / known baseline | Closure needed | Blocks |
 |---|---|---|---|---|
-| Q-M03 | GS-GRN-011 | Proposed: when Scan is near zero, hold the last valid rate/size | Confirm exact zero/epsilon behavior, state retention and reset conditions | Granular engine acceptance |
+| Q-M03 | GS-GRN-011 | **Approved — DEC-043:** retain last valid Rate/Size inside the near-zero Scan region; resume normal calculation outside it | Specify and validate epsilon, initialization and reset conditions; no numeric threshold approved | Granular engine acceptance details (not product semantics) |
 | Q-M04 | GS-GRN-009 | Proposed: one-shot acts as kill/stop; three scan modes | Define mode count and exact Bounce/Wrap/Kill/Stop transitions | Scan behavior tests |
 | Q-M09 | GS-GRN-018, GS-ARC-008 | Proposed: energy-preserving 1/√density normalization beyond a reference density; benchmark level matching requires measurement | Choose the product law and separate deterministic correctness from any benchmark loudness target | Grain normalization and mix/headroom tests |
 | Q-M14 | GS-GRN-014 | Proposed trigger values: Off / On / Legato | Define each trigger's start/retrigger/legato behavior | Grain-trigger tests |
