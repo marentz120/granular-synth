@@ -67,7 +67,7 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-046 | R1 grain-count normalization uses an inverse-square-root law: per-grain gain scales as 1/√N relative to the single-grain reference, where N is the active grain count in the applicable normalization domain. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. Resolves the normalization-law choice in Q-M09. The exact counting domain, transition smoothing, ON/OFF unity/reference behavior, and four-layer peak/headroom oracle remain technical/acceptance details; this is not a limiter or a guarantee against all clipping. Benchmark loudness matching requires separate authorized measurement. |
 
-## Decision record template
+| DEC-047 | In Granular Scan mode Kill, when the scan reaches its terminal sample-region boundary, stop spawning grains and immediately terminate all currently active grains in that layer; do not wrap or bounce. Kill is a layer-local scan-boundary behavior and does not itself issue a global Panic or change the instrument transport state. | **Approved** | Product behavior decision made under the owner's explicit instruction to follow the assistant's recommendations for subsequent project decisions (2026-11-28). Recommended to make Kill deterministic and clearly distinct from One-Shot (DEC-044), which lets active grains finish. This defines Kill at the scan boundary only; explicit Stop/Panic command semantics and their cross-layer scope remain separately specified. |\n\n## Decision record template
 - ID and date:
 - Decision and status:
 - Context:
