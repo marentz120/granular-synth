@@ -167,11 +167,11 @@ These shared test families supplement the requirement-level backlog above. They 
 
 | Test family | Candidate fixture / assertions | Requirement and dependency |
 |---|---|---|
-| AU absolute event time | Valid/invalid block sample-time anchor; signed AU event times; immediate scheduling; negative host sample time; exact offsets 0 and final sample; future/stale handling without clamping | GS-MID-001…008; GS-PLT-003 |
-| VST3 discrete event time | Block-relative offsets; busIndex/channel; source-local order; Note On before Note Expression; missing noteId; event-list ordering | GS-MID-001…008; DEC-038 |
+| AU absolute event time | Valid/invalid block sample-time anchor; signed AU event times; immediate scheduling; negative host sample time; exact offsets 0 and final sample; future/stale handling without clamping | GS-MID-001/002/003/005/006; GS-PLT-003 |
+| VST3 discrete event time | Block-relative offsets; busIndex/channel; source-local order; Note On before Note Expression; missing noteId; event-list ordering | GS-MID-001/002/003/005/006; DEC-038 |
 | AU/VST3 automation equivalence | AU step/ramp and non-rampable behavior; AU declared range/unit conversion; VST3 normalized [0,1] queue points, omitted initial point, previous-block anchor, constant-slope continuation and two-point jumps; compare canonical values | GS-MOD-005; GS-SEQ-009; Q-T12/Q-T13 |
 | MPE identity bridge | VST3 noteId versus AU cable/member-channel lifecycle; overlapping notes, same-pitch retrigger, note-off and channel reuse; per-note pitch/pressure/timbre and 48-semitone pitch range | GS-MID-002; GS-MOD-004; DEC-038; AR-03…AR-05 |
-| Transport validity and discontinuity | Null/failed context; independent field validity; tempo/time-signature change; stop/start; seek; cycle range and loop wrap | GS-SEQ-001…012; DEC-039; Q-P09 |
+| Transport validity and discontinuity | Null/failed context; independent field validity; tempo/time-signature change; stop/start; seek; cycle range and loop wrap | GS-SEQ-001…012; GS-MID-007; DEC-039; Q-P09 |
 | Intra-block cycle transition | Compare host that splits at cycle boundary with host that does not; verify explicit unknown/insufficient intra-block timeline when no reliable transition is supplied | GS-SEQ-001…012; host-specific prototype gate |
 | VST3 parameter flush | No audio buses with parameter updates; no audio scratch access, frame counter, sequencer or transport advance | GS-PLT-003; GS-NFR-001 |
 | Same-offset cross-source batch | Host automation, MIDI mapping, sequencer lock and UI write at identical sample offset; prove deterministic batch capture without asserting a winner | AR-01; GS-MOD-005; GS-SEQ-009 |
