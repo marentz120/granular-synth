@@ -835,3 +835,11 @@ AU identity is derived from cable, zone, member channel and note lifecycle. Zone
 The VST3 adapter must declare only supported Note Expression types through INoteExpressionController. Tuning is the candidate standard type for pitch. Pressure and Timbre require an explicit standard/custom type mapping; do not equate Pressure with Expression or Timbre with Brightness without a reviewed semantic contract.
 
 All identity tables, member-channel groups and fan-out lists are bounded, preallocated and generation-checked. Numeric capacities and overload policy remain Phase 5 gates. See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md and open questions AR-03…AR-05.
+
+## 17. MPE event normalization and lifecycle fixtures — 2026-11-28
+
+The shared-core MPE boundary is refined by PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. It distinguishes channelized MPE identity, scoped by ingress namespace (AU virtual cable, VST3 event bus or Standalone input port), zone, member channel and lease generation, from explicit VST3 Note Expression identity keyed by event-bus index plus valid noteId.
+
+Both paths normalize to SourceNoteIdentity and then to one NoteInstanceId per matching layer under DEC-034. The normalized trace preserves sample offset, source-local order, ingress path, identity quality, expression dimension/value and generation-safe identity. It must not synthesize note IDs, merge ingress namespaces or silently turn unavailable per-note identity into channel-wide expression.
+
+The fixture catalogue covers missing/duplicate/stale IDs, shared-channel behavior, same-pitch ambiguity, channel reuse, namespace/zone isolation, layer fan-out, semantic endpoints, block boundaries, Panic and bounded exhaustion. AR-03 (AU matching/sustain/reconfiguration), AR-04 (Pressure/Timbre type mapping) and AR-05 (public pitch metadata/conversion) remain open. No host codec, capacity, pass threshold, formal test ID or ABI is selected.
