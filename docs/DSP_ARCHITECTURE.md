@@ -297,7 +297,7 @@ Granular engines: each new grain takes the next chord note per arp mode (up, dow
 
 | Class | Examples | Applied |
 |---|---|---|
-| **Spawn-sampled** | position, spray, pitch, pitch spray, pan, pan spray, direction, size, window snapshot | Read once when a grain is born. Naturally zipper-free. |
+| **Spawn-sampled** | position, spray, pitch, pitch spray, pan, pan spray, direction, size, window snapshot | Read once when a grain is born. Naturally zipper-free. Pan-spray distribution semantics are defined by DEC-053; this note does not approve a specific random-number generator or DSP implementation. |
 | **Grain-continuous** | pitch when Local pitch OFF, global pan of running grains (optional) | Updated per control sub-block, smoothed |
 | **Voice-continuous** | filter cutoff/res, amp, sub-osc level | Smoothed per sample / sub-block |
 
