@@ -56,7 +56,7 @@ The detailed candidate test intent, evidence and dependency for each row remain 
 | GS-GRN-012 | Window functions | PowAR and Raised Cosine variants match approved numerical reference vectors for sides/tilt/curve/AM settings. | Numerical tolerance gate |
 | GS-GRN-013 | Active-grain window transition | Window changes/modulation do not create a discontinuity in already-playing grains under the approved measurement method. | GS-NFR-003 threshold gate |
 | GS-GRN-014 | Grain clock division | Straight/triplet/dotted divisions schedule events at the expected positions on a deterministic transport timeline. | IF-08/clock authority gate |
-| GS-GRN-015 | Spawn modes | Gradual, Direct, Direct-reset and Recycle produce the specified state transitions and reset/recycle boundaries. | Specification gate |
+| GS-GRN-015 | Spawn modes | DEC-049: Gradual builds from empty; Direct starts with a full target-density cloud; Direct Reset starts full with initial positions constrained to Spray; Recycle reuses a valid prior same-layer grain set and falls back to Gradual when unavailable. | Exact count/rounding, scheduler phase, randomization distribution and reusable-state mapping gate |
 | GS-GRN-016 | Local pitch | ON retains the grain's birth pitch after later note changes; OFF follows the specified live-pitch behavior. | Designable |
 | GS-GRN-017 | Grain stealing | OFF preserves the configured pool behavior; active mode selects/retire grains according to the approved policy without an audible discontinuity. | AR-02 gate |
 | GS-GRN-014 | Grain Key Trigger | Off produces no key-triggered spawn; On triggers on each accepted Note On; Legato triggers only on zero-to-nonzero held-note transition. Note Off/voice-release and grain clock behavior remain independent. | Event-order and held-note lifecycle gate |
@@ -270,7 +270,7 @@ A test with a missing expected result, unpinned fixture or unresolved behavior i
 | Q-M14 | GS-GRN-014 | Trigger semantics approved by DEC-048; verify zero/nonzero held-note transitions, overlapping Note Ons, Note Off independence and grain-clock independence. |
 | Q-M09 | GS-GRN-018; GS-ARC-008 | Normalization law approved by DEC-046 (1/√N); define counting domain/smoothing and the default four-layer headroom oracle. Density-17 benchmark matching requires authorized reference measurement. |
 | Q-M14 / Q-M16 | GS-GRN-014 | Confirm the R1 Off/On/Legato trigger semantics and define Voice Sync behavior without assuming that benchmark labels are equivalent. |
-| Q-M17 | GS-GRN-015 | Define the four spawn-mode state transitions, reset points and recycle behavior before writing expected-result assertions. |
+| Q-M17 | GS-GRN-015 | Product semantics approved by DEC-049. Finalize deterministic oracles for initial cloud count/rounding, scheduler phase, Spray position bounds, Recycle source-state validity/mapping and Gradual fallback. |
 | Q-M18 | GS-VOI-006 | Reconcile the stated 0.1 ms minimum envelope stage with the still-proposed benchmark ambiguity; keep the R1 requirement and source question consistent. |
 | Q-I07 | GS-VOI-008 | Confirm the R1 filter-mode inventory and exact relationship between LPF/HPF modes, routing, slopes and bypass; do not infer an undocumented SVF mode list. |
 | Q-I08 | GS-GRN-006 | Define the centre-weighted pan-spray distribution mathematically and specify seeded statistical tolerance alongside the uniform mode. |
