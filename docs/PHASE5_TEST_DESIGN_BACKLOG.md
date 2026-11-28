@@ -148,7 +148,7 @@ The earlier 47/77 count was understated because shorthand references in the acce
 | AR-02 | GS-ARC-002, GS-ARC-003, GS-ARC-004, GS-GRN-017, GS-VOI-001 | Resolve deterministic voice/grain overload policy; keep voice stealing distinct from global grain-budget reclamation. |
 | Q-T07 | GS-ARC-004, GS-GRN-020, GS-SMG-019, GS-UI-005, GS-NFR-002, GS-NFR-009 | Establish reference hardware and obtain explicit benchmark authorization before numeric performance thresholds or claims. |
 | Q-T12 | GS-NFR-006, GS-MOD-005, GS-UI-002, GS-UI-007 | Approve stable host parameter-ID/exposure scheme before freezing parameter registry coverage. |
-| Q-M03 / Q-M04 | GS-GRN-009/011 | Define scan modes and the ratio-mode behavior at scan = 0; current proposals are not approved test oracles. |
+| Q-M03 / Q-M04 | GS-GRN-009/011 | Q-M03 behavior is approved by DEC-043. Q-M04 One-Shot is approved by DEC-044: finish the current scan cycle, stop spawning new grains, and let active grains finish their envelopes. Remaining Scan mode count/transitions require a product decision before final test oracle. |
 | Q-M09 | GS-GRN-018, GS-ARC-008 | Define the grain-count normalization law and the default four-layer headroom oracle; numeric matching requires an authorized reference measurement. |
 | Q-M14 / Q-M16 | GS-GRN-014 | Confirm Off/On/Legato grain-trigger semantics and define Voice Sync behavior without assuming benchmark label equivalence. |
 | Q-M17 | GS-GRN-015 | Define the four spawn-mode state transitions, reset points and recycle behavior. |
