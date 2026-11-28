@@ -100,7 +100,7 @@ The mapping preserves the current 12 IF contracts. The IF column is copied from 
 | GS-SEQ-011 | ISequencerFillController::setIntensity/trigger; ISequencerMuteController::setLayerMute/setStepMute | IF-03, IF-08, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-SEQ-012 | ISequencerEditService::beginDraft/commitAtBarBoundary/undo/redo | IF-03, IF-08, IF-09 | אין AC מפורש — Phase 5: להוסיף AC או rationale | — |
 | GS-MID-001 | IMidiEventRouter::routeHostEvents/routeDeviceEvent; ILayerMidiChannelMap::matches | IF-01, IF-08, IF-09 | AC-MID-001 | — |
-| GS-MID-002 | IMpeDecoder::decode; IVoice::applyPerNotePitch/pressure/timbre | IF-01, IF-08, IF-09 | AC-MID-002 | DEC-038 מאושרת: pitch bend per-note בטווח 48 semitones. |
+| GS-MID-002 | IMpeDecoder::decode; SourceNoteIdentity; NoteInstanceId; IMpeNoteIdentityAdapter; IVST3NoteExpressionAdapter; IPerNoteExpressionRouter | IF-01, IF-03, IF-09 | AC-MID-002 | DEC-038 remains the approved 48-semitone per-note range; AU lifecycle AR-03, VST3 type mapping AR-04 and public range metadata AR-05 remain open. |
 | GS-MID-003 | IMidiLearnService::bind; IControllerMap::apply; IParameterRegistry::find | IF-01, IF-08, IF-09 | AC-MID-003, AC-MID-004 | — |
 | GS-MID-005 | IProgramChangeRouter::recallMappedProgram; IPerformanceBank::lookup | IF-01, IF-08, IF-09 | AC-MID-005 | DEC-033 מאושרת: Program Change רק למיפוי מפורש ב-active bank. |
 | GS-MID-006 | IMidiChannelModeHandler::apply; IVoiceAllocator::allNotesOff/allSoundOff; IParameterRuntime::resetControllers | IF-01, IF-08, IF-09 | AC-MID-006 | — |
@@ -292,9 +292,12 @@ The following candidate symbols refine existing requirement mappings. They are n
 - `TimedEvent::ParameterChange` is a step only; automation ramps use `ParameterAutomationCurve`.
 - VST3 relative position -1 is an automation continuity anchor, not a discrete event offset.
 - AU absolute sample time must be converted with checked signed arithmetic; VST3 event offsets are block-relative.
-- VST3 note IDs and AU MPE member-channel lifecycle are different native identities; both map to an internal `NoteInstanceId`.
+- VST3 note IDs and AU MPE member-channel lifecycle are different native identities. Both map to a SourceNoteIdentity, then to one layer-local NoteInstanceId per receiving layer under DEC-034.
 - `TransportSnapshot` must carry field validity; missing host context is not a default-valued snapshot.
 - `HostProcessKind::ParameterFlush` is not a zero-frame audio render.
-- AR-01 writer precedence, Q-T12 canonical parameter IDs, Q-T13 smoothing, AU MPE retrigger mapping and host loop-wrap behavior remain open.
+- AR-01 writer precedence, Q-T12 canonical parameter IDs, Q-T13 smoothing, AU MPE matching/channel reuse (AR-03), VST3 Pressure/Timbre type mapping (AR-04), DEC-038 public range metadata (AR-05) and host loop-wrap behavior remain open.
 
 See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for the evidence-backed format comparison and planned test families.
+
+
+MPE identity and lifecycle details, including bounded source-note identity, layer fan-out and format-specific retirement, are specified in PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md. The 124-row inventory and 53/124 acceptance-link baseline are unchanged.
