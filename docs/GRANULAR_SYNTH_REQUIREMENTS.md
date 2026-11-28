@@ -213,7 +213,7 @@ Requirement IDs: `GS-<AREA>-<NNN>`. "Source" refers to feature-map IDs.
 | GS-VOI-007 | Envelope loop modes. | L2 | ENV-05 [UNV] |
 | GS-VOI-008 | LPF and HPF per voice, 0–20 kHz, resonance, slopes 6/12/18/24 dB/oct, routing (LP / LP+HP / HP) and bypass. | R1 | FLT-01, FLT-02, FLT-04 |
 | GS-VOI-009 | Filter key tracking. | R1 | FLT-05 |
-| GS-VOI-010 | Sub-oscillator per voice: −1/−2 octave, level, poly balance, quantize option. | R1 | SUB-01, SUB-02 |
+| GS-VOI-010 | Fixed-sine sub-oscillator per voice: −1/−2 octave, level, poly balance, quantize option; no R1 waveform selector (DEC-054). | R1 | SUB-01, SUB-02 |
 
 ### 3.10 Sample management & recording (SMG)
 
