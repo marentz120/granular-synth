@@ -1,6 +1,6 @@
 # Phase 3 R1 API Symbol Traceability
 
-**Version:** 0.3 — render-capacity and logical input routing symbols added, 2026-11-27  
+**Version:** 0.4 — cross-format event, automation and transport symbols added, 2026-11-28  
 **Status:** Proposed class/API-symbol traceability; no implementation, ABI or public API approval.  
 **Baseline:** docs/GRANULAR_SYNTH_REQUIREMENTS.md R1-tier rows, DEC-041, docs/R1_ACCEPTANCE_CRITERIA.md, and candidate symbols in docs/PHASE3_API_AND_SIGNAL_FLOW_SPECIFICATION.md §14.  
 **Branch baseline:** Phase 3 architecture branch; this document is documentation-only.
@@ -271,3 +271,30 @@ This supplement connects the VST3 instrument audit to the R1 traceability invent
 - The crosswalk does not change the 124-row requirement inventory or its 53/124 acceptance-link count. A candidate API symbol is not an acceptance criterion or passing test.
 
 See `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md` for the evidence register and host test matrix.
+
+
+## 8. Cross-format event and transport adapter symbol crosswalk
+
+The following candidate symbols refine existing requirement mappings. They are not implemented APIs, acceptance IDs or evidence of host support.
+
+| Requirement area | AU surface | VST3 surface | Candidate shared-core symbols | Validation obligation |
+|---|---|---|---|---|
+| GS-MID-001…006 | `AUMIDIEvent.eventSampleTime/cable/data`; AU render-event list | `Event.sampleOffset/busIndex`, Note On/Off payloads | `TimedEvent`, `EventSourceOrder`, `IHostEventAdapter` | Absolute-to-block conversion, channel/cable mapping, source-local order, boundary offsets |
+| GS-MID-007/008; DEC-038 | MIDI 1.0 MPE member-channel messages and AU MPE capability | `NoteExpressionValueEvent.noteId` | `NoteInstanceId`, `IMpeNoteIdentityAdapter` | Correct per-note identity, ±48 semitone mapping, missing-ID/ambiguous lifecycle behavior |
+| GS-MOD-005; GS-SEQ-009 | `AUParameterEvent.rampDurationSampleFrames` | `IParameterChanges`, `IParamValueQueue` points | `ParameterAutomationCurve`, `AutomationCurvePoint`, `IParameterWriterPolicy` | Step/ramp equivalence, implicit prior value, previous-block anchor, jump encoding, AR-01 collision |
+| GS-SEQ-001…012; DEC-039 | `AUHostMusicalContextBlock`, `AUHostTransportStateBlock` | `ProcessContext`, `IProcessContextRequirements` | `TransportSnapshot`, `TransportFieldValidity`, `ITransport` | Missing field validity, tempo, seek, cycle wrap, start/continue/stop and authority |
+| GS-PLT-003; GS-NFR-001 | AU render callback and AU scheduling ingress | `IAudioProcessor::process`, zero-bus parameter flush | `HostProcessKind`, `HostProcessEnvelope` | Flush does not access audio scratch or advance time; bounded callback ingress |
+| GS-PLT-004; GS-NFR-006 | AU block/sample-time sequence | VST3 `ProcessData.numSamples` and sample offsets | `EventBatch`, `RenderCapacity` | Same fixture across variable block partitions preserves sample positions and deterministic result |
+
+### 8.1 Mapping constraints
+
+- The existing 124/124 requirement-to-symbol inventory and 53/124 acceptance-link count are unchanged.
+- `TimedEvent::ParameterChange` is a step only; automation ramps use `ParameterAutomationCurve`.
+- VST3 relative position -1 is an automation continuity anchor, not a discrete event offset.
+- AU absolute sample time must be converted with checked signed arithmetic; VST3 event offsets are block-relative.
+- VST3 note IDs and AU MPE member-channel lifecycle are different native identities; both map to an internal `NoteInstanceId`.
+- `TransportSnapshot` must carry field validity; missing host context is not a default-valued snapshot.
+- `HostProcessKind::ParameterFlush` is not a zero-frame audio render.
+- AR-01 writer precedence, Q-T12 canonical parameter IDs, Q-T13 smoothing, AU MPE retrigger mapping and host loop-wrap behavior remain open.
+
+See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for the evidence-backed format comparison and planned test families.
