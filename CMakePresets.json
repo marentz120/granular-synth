@@ -1,0 +1,83 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "GS_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "inherits": "base",
+      "displayName": "macOS Debug (host arch, framework-free)",
+      "description": "Debug build of the framework-free core and headless tests. No deployment target or Universal 2 commitment (Q-T03 open).",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "macos-release",
+      "inherits": "base",
+      "displayName": "macOS Release (host arch, framework-free)",
+      "description": "Release build of the framework-free core and headless tests. No deployment target or Universal 2 commitment (Q-T03 open).",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "ci-debug",
+      "inherits": "macos-debug",
+      "displayName": "CI Debug (warnings as errors)",
+      "cacheVariables": {
+        "GS_WERROR": "ON"
+      }
+    },
+    {
+      "name": "ci-release",
+      "inherits": "macos-release",
+      "displayName": "CI Release (warnings as errors)",
+      "cacheVariables": {
+        "GS_WERROR": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "macos-debug", "configurePreset": "macos-debug" },
+    { "name": "macos-release", "configurePreset": "macos-release" },
+    { "name": "ci-debug", "configurePreset": "ci-debug" },
+    { "name": "ci-release", "configurePreset": "ci-release" }
+  ],
+  "testPresets": [
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-debug",
+      "output": { "outputOnFailure": true },
+      "execution": { "stopOnFailure": false }
+    },
+    {
+      "name": "macos-release",
+      "configurePreset": "macos-release",
+      "output": { "outputOnFailure": true },
+      "execution": { "stopOnFailure": false }
+    },
+    {
+      "name": "ci-debug",
+      "configurePreset": "ci-debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "ci-release",
+      "configurePreset": "ci-release",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

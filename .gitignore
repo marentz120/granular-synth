@@ -1,0 +1,23 @@
+# Build output
+build/
+out/
+cmake-build-*/
+install/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+compile_commands.json
+Testing/
+
+# macOS
+.DS_Store
+*.dSYM/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*~
