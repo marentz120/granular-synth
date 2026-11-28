@@ -256,3 +256,16 @@ The dedicated [PHASE3_AU_VST3_HOST_PERSISTENCE_FEASIBILITY_AUDIT.md](PHASE3_AU_V
 - Bitwig hosting mode can change process isolation and memory profile; record it in any future host prototype.
 
 The peak-memory model must retain an explicit unknown host/stream staging term. Do not assign a numeric size, copy multiplier or callback deadline. Q-T15, Q-P09 and AR-06 remain open; DEC-025/DEC-042 are unchanged.
+
+## 13. State I/O scheduling and snapshot freshness — 2026-11-28
+
+The companion `PHASE3_STATE_IO_SCHEDULING_AND_PEAK_MEMORY_ADMISSION_AUDIT.md` refines the capture/transport boundary without changing the proposed container framing.
+
+- The immutable snapshot descriptor records a state generation and per-source committed-frame watermark. A stale descriptor cannot be reported as a successful DEC-025 document save.
+- Required recording and Freeze payloads are retained as one document-state transaction; partial lease acquisition or missing required chunks fails the transaction.
+- Rolling-ring readers require generation-checked retention leases or pre-reserved immutable copies. The writer continues into separate writable capacity and never waits.
+- Standalone serialization uses a non-render I/O worker. AU/VST3 state callbacks obey their actual host execution contract and cannot wait for render acknowledgement or disk I/O.
+- Save/restore/Freeze reservations share one physical-memory ledger. Pinned aliases are counted once as bytes but consume retention capacity; actual copies/materializations are counted separately.
+- Host callback freshness, callback context, AU Data materialization, VST3 stream progress, concurrency limits and numeric budgets remain Q-T15/Q-P09 validation gates.
+
+No container field layout, codec, checksum, maximum state size, callback deadline or owner-gated behavior is approved by this supplement.
