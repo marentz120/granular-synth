@@ -155,7 +155,7 @@ The precise container encoding (JSON manifest plus binary chunks is the candidat
 - All unsaved recording payloads required by DEC-025 are part of one save manifest transaction. The serializer must not mark the state complete if any required recording or Freeze chunk is absent, truncated or checksum-invalid.
 - Host state callbacks may impose synchronous API constraints. The adapter must follow the specific host callback contract; it may use a previously prepared immutable snapshot or a bounded capture/copy path, but must not wait for disk I/O, an audio-thread acknowledgement or global audio quiescence. If the required bounded snapshot is not ready within the host's permitted contract, return a documented save failure rather than omit audio.
 - Serialize large audio payloads as binary chunks; do not base64-encode them into JSON. Chunk order, lengths, format, sample rate, channel count, frame range, source generation and checksum are recorded in the manifest.
-- Write to a temporary/incomplete container and publish the final state only after all chunks and manifest have been written and verified. Use an atomic finalization mechanism where the host/container supports it; otherwise use a recoverable commit marker/version protocol. An interrupted save must leave either the prior valid state or a clearly detectable incomplete candidate, never a plausible-looking partial success.
+- For a plug-in-owned standalone preset/project file, write and verify a temporary candidate before platform-supported atomic replacement; the previous valid file remains authoritative until replacement succeeds. For a host-owned AU/VST3 state stream, the plug-in does not control rename, fsync, rollback or the host's project transaction. Emit a self-validating envelope with a completion marker, return stream failures, and reject incomplete state on restore; do not claim the host preserves its previous project unless that host behavior is documented and tested.
 - If embedded recordings exceed the defined size/time budget or the host cannot accept the payload, do not silently omit them. Return a documented failure or use a verified host-supported chunking strategy; notify the user and preserve the in-memory recording.
 
 **Restore**
@@ -167,6 +167,32 @@ The precise container encoding (JSON manifest plus binary chunks is the candidat
 - After successful publication, retire the previous runtime and release restore staging resources through the non-RT ownership path.
 
 The maximum embedded state size, compression policy, chunking strategy, capture deadline, host-specific synchronous callback handling and recovery UI remain unresolved until host prototypes and reference tests are complete.
+
+
+### 7.4 Container framing and host transport
+
+The canonical state payload is framework-independent. AU and VST3 adapters transport the same logical state through different host APIs; neither host API defines the product's internal container format.
+
+- AU exposes persistable dictionary snapshots through fullState (user-preset context) and fullStateForDocument (document context). The adapter must not persist transient stream formats. A property-list-compatible binary payload representation and the maximum payload size must be verified in each target host; the dictionary API does not prove arbitrary-size streaming.
+- VST3 component state carries the engine/document payload. Controller state is separate and should contain only controller/UI-specific state not already represented in component state. Restore ordering remains component setState, controller setComponentState, then controller setState.
+- VST3 IBStream uses int32 byte counts for read/write and int64 positions for seek/tell. Transfer large payloads in bounded slices, check actual bytes transferred, and handle short transfer, end-of-stream and zero progress. Do not require seeking for the core container.
+- IStreamAttributes is optional context metadata. Use it only as a hint for Project/Default/TrackPreset context; parsing must succeed or fail from the container itself.
+
+The proposed envelope is a fixed versioned header, a UTF-8 manifest, binary chunks and a completion footer. The manifest declares schema/minimum-reader versions, state scope, required features, stable parameter/layer state, external references, and a complete chunk directory. Each chunk declares identity, semantic type, required/optional status, stored/decoded lengths, encoding, integrity algorithm/digest and audio metadata where relevant. Exact byte layout, endianness, field widths and digest algorithm remain open under Q-T15.
+
+### 7.5 Schema migration
+
+Container-envelope version and product-state schema version are separate. Migrations are deterministic, ordered, metadata-first and off-thread. Validate framing and bounds before migration; reserve memory before decoding large payloads; retain the original state until the migrated candidate is fully validated and successfully committed. Unknown optional fields may be ignored under an explicit compatibility rule; unknown required features, unsupported future schemas and failed migrations must reject safely. Audio conversion is a separate off-thread operation with its own admission reservation. No automatic downgrade or destructive best-effort migration is permitted.
+
+### 7.6 Stream completion and failure semantics
+
+A host-owned state stream is not a plug-in-owned file. The plug-in cannot guarantee host-level atomic replacement or rollback. The container must therefore be self-validating and incomplete until its final completion marker is present. A short write, stream error or missing marker is a failed save, never a reduced successful state. For a standalone file owned by the application, temporary-file replacement may provide an atomic publication boundary, subject to the platform's actual same-volume replacement semantics.
+
+A restore validates header, manifest, required feature set, all chunk extents/lengths and integrity metadata before publishing anything. The active runtime is unchanged until one complete candidate graph is committed. On any pre-commit failure, retain the prior runtime and expose an explicit error/relink status.
+
+### 7.7 Scope and unresolved compatibility limits
+
+DEC-025 requires unsaved recordings in DAW document state; DEC-042 requires Freeze snapshots to persist with that state. Whether a user preset also embeds those payloads is not explicitly settled and must not be inferred from the AU API's user-preset property. Maximum embedded size, compression, chunk size, AU Data representation, host callback deadline and migration retention remain open. See PHASE3_STATE_CONTAINER_AND_MIGRATION_AUDIT.md.
 
 ## 8. Collect and relink
 
