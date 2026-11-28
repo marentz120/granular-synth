@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Phase 5 R1 Acceptance Test Design
 
-**Version:** 0.2  
+**Version:** 0.3  
 **Status:** Test-design proposal; owner/technical review required. No tests executed.  
 **Baseline branch:** `phase4/ui-ux-specification`  
 **Authority:** `R1_ACCEPTANCE_CRITERIA.md`, `PHASE5_TEST_DESIGN_BACKLOG.md`, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, approved DEC records, Phase 3 interface and architecture contracts, and Phase 4 UX proposals.
