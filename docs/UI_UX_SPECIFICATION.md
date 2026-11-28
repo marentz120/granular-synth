@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — UI/UX Specification
 
-**Version:** 0.1  
+**Version:** 0.2  
 **Status:** Phase 4 discovery draft — owner review required  
 **Authority:** Approved product behavior remains in `R1_PRODUCT_SPECIFICATION.md`, `LIVE_PERFORMANCE_SPECIFICATION.md` and `DECISIONS_LOG.md`. This document specifies presentation and interaction proposals only. It does not change DSP, product scope, architecture, or acceptance thresholds.
 
@@ -84,7 +84,7 @@ The fixed strip shows 16 step positions at all times. It is an overview/direct-a
 - Save/Draft/Undo/Redo follows R1 product specification.
 - Fill is latched globally across active layers and changes granular character, not rhythmic structure.
 
-The detailed event visualization and handling of more than 16 steps are open design work. The 16-step strip may page/scroll or show a moving window, but must preserve variable Pattern length without an arbitrary cap.
+The proposed 16-step viewport paging, event editing surface and playhead-follow behavior are specified in `PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md` and consolidated in `PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md`; these remain subject to owner review.
 
 ## 7. Modulation workspace
 
@@ -124,7 +124,7 @@ Proposed contract:
 - Long press is reserved for secondary actions; no essential operation may require it.
 - Exact acceleration/fine-adjustment curves are UI/engineering tuning, not decided here.
 
-The precise four-encoder assignment matrix per workspace remains a design deliverable. Essential live operations must also be independently mappable to generic MIDI controllers.
+The proposed four-encoder workspaces and R1 A–H engine banks are specified in `PHASE4_ENCODER_SEQUENCER_PERFORMANCE_UX.md`. Consolidated screen layouts for all six workspaces, the persistent action row, fixed sequencer strip, Library, Performance Bank/Set and MIDI mapping overlays are specified in `PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md`. Essential live operations must also be independently mappable to generic MIDI controllers.
 
 ## 11. Accessibility and performance safety
 
@@ -147,12 +147,10 @@ The precise four-encoder assignment matrix per workspace remains a design delive
 
 ## 13. Open design questions
 
-1. Exact four-encoder assignment/focus order for each workspace.
-2. Fixed sequencer strip behavior when Pattern length exceeds 16 steps.
-3. Persistent performance-action placement and touch target layout.
-4. Exact screen dimensions, resolution, aspect ratio and viewing distance.
-5. Whether Mix needs a compact four-layer overview while one layer remains selected.
-6. Detailed MIDI Learn editor and mapping conflict UX (see `MIDI_MAPPING_UX_SPECIFICATION.md`).
+1. Owner review of the proposed A–H engine banks and workspace encoder defaults.
+2. Owner review of the consolidated global frame and persistent performance-action placement.
+3. Exact screen dimensions, resolution, aspect ratio and viewing distance when display hardware is selected.
+4. Detailed MIDI Learn editor and mapping conflict UX (see `MIDI_MAPPING_UX_SPECIFICATION.md` and `PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md`).
 
 ## 14. Non-goals and constraints
 
@@ -164,4 +162,4 @@ This document does not approve a framework, public parameter IDs, DSP behavior, 
 - [ ] Validate every essential live action against LIVE_PERFORMANCE_SPECIFICATION.md.
 - [ ] Resolve open design questions or record explicit deferrals.
 - [ ] Map UI elements to 124 R1 requirements without treating candidate API symbols as approved interfaces.
-- [ ] Prepare screen-by-screen wireframes after review.
+- [ ] Review the screen-by-screen layouts in `PHASE4_CONSOLIDATED_SCREEN_LAYOUTS.md` and resolve the remaining owner UX gates.
