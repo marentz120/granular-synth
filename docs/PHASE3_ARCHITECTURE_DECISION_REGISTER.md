@@ -1,6 +1,6 @@
 # Phase 3 Architecture Decision Register
 
-**Version:** 0.2 — AU component validation gate refined  
+**Version:** 0.3 — AU and VST3 component validation gates refined  
 **Status:** Recommendations for owner review. None of the proposed technical decisions below is approved by this document.  
 **Authority:** `OPEN_QUESTIONS.md` v0.6, `DSP_ARCHITECTURE.md` v0.6 candidate, and the Phase 3 supporting specifications.
 
@@ -31,6 +31,7 @@
 | Topic | Recommendation | Gate |
 |---|---|---|
 | VST3 live input | Instrument with optional stereo input bus; master stereo output plus four optional stereo layer outputs | Host prototype and Q-P09 matrix |
+| VST3 instrument identity and event routing | One instrument-classified component; candidate `Instrument|Synth|Sampler`; one 16-channel event bus with internal layer fan-out; full-band audio input bus type remains open | Verify category discovery, raw audio source routing, MPE Note Expression, five outputs, bus activation and save/reopen in each Q-P09 VST3 host; see `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md` |
 | AU component strategy | Retain `aumu` as first validation candidate; test full-band input on the instrument component. If it fails DEC-020, test `aufm` against the complete MIDI/MPE/instrument workflow; dual only for distinct proven workflows | Logic plus at least one additional target AU host; full-band source path, Note On/Off, MPE, five outputs, automation and state/reopen evidence; see `PHASE3_AU_COMPONENT_STRATEGY_AUDIT.md` |
 | Shared engine | One framework-independent engine/state implementation for Standalone, AU and VST3 | Q-T02 |
 | RT workers | Do not enable in R1 absent measured need | Q-T08 |
@@ -58,6 +59,7 @@ The following are architecture/product decisions that should not be silently com
 3. Parameter ID and host-exposure contract (Q-T12), irreversible once public automation is shipped.
 4. Freeze semantics are approved as Source Snapshot (DEC-042); numeric memory limits, capture duration and crossfade remain engineering gates.
 5. AU component strategy and host-visible bus topology (Q-P06), subject to host validation.
+6. VST3 instrument category, live-input bus type, simple-mode support and host-visible Unit/routing metadata, subject to host validation; see `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md`.
 
 Other numeric values remain conditional on measurement and must not be approved by document wording alone.
 
