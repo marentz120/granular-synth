@@ -72,7 +72,7 @@ The detailed candidate test intent, evidence and dependency for each row remain 
 | GS-VOI-003 | Glide | 0 and 2000 ms endpoints and Always mode produce the specified pitch trajectories across note transitions. | Trajectory tolerance gate |
 | GS-VOI-004 | Velocity response | 0–100% sensitivity and the approved velocity curve produce the specified response at endpoints and representative intermediate values. | Curve/default gate |
 | GS-VOI-005 | Pitch bend / transpose | Channel pitch bend and transpose combine according to the approved mapping at range endpoints; channel and MPE per-note ranges are tested separately. | Mapping contract gate |
-| GS-VOI-006 | ADSR | Four envelopes expose approved stage ranges (0.1 ms–45 s); stage curves, bipolar amount and inversion match numerical/timing oracles. | Timing tolerance gate |
+| GS-VOI-006 | ADSR | Four envelopes expose 0.1 ms–45 s for every time-valued stage; no zero-duration stage exists and values below minimum resolve to 0.1 ms. Stage curves, bipolar amount and inversion match numerical/timing oracles. Sustain is level-only. | Host/MIDI mapping and timing tolerance gate |
 | GS-VOI-008 | Filter chain | LPF/HPF ranges, resonance, 6/12/18/24 dB slopes, bypass and LPF→HPF order match approved response references. | Response tolerance gate |
 | GS-VOI-009 | Key tracking | Note changes produce the approved cutoff-tracking response across the specified note range. | Curve/range specification gate |
 | GS-VOI-010 | Sub-oscillator | −1/−2 octave, level, poly balance and quantize behavior match the canonical pitch model. | Shared pitch-contract gate |
@@ -270,7 +270,7 @@ A test with a missing expected result, unpinned fixture or unresolved behavior i
 | Q-M09 | GS-GRN-018; GS-ARC-008 | Normalization law approved by DEC-046 (1/√N); define counting domain/smoothing and the default four-layer headroom oracle. Density-17 benchmark matching requires authorized reference measurement. |
 | Q-M16 | GS-GRN-014 | Voice Sync behavior approved by DEC-050; verify shared phase/new-voice join in ON, independent per-voice phase in OFF, active-mode toggle behavior and host/transport arbitration. Benchmark label equivalence is not assumed. |
 | Q-M17 | GS-GRN-015 | Product semantics approved by DEC-049. Finalize deterministic oracles for initial cloud count/rounding, scheduler phase, Spray position bounds, Recycle source-state validity/mapping and Gradual fallback. |
-| Q-M18 | GS-VOI-006 | Reconcile the stated 0.1 ms minimum envelope stage with the still-proposed benchmark ambiguity; keep the R1 requirement and source question consistent. |
+| Q-M18 | GS-VOI-006 | Product minimum approved by DEC-051; verify 0.1 ms lower bound, 45 s upper bound, below-minimum clamping, and no zero-duration stage. |
 | Q-I07 | GS-VOI-008 | Confirm the R1 filter-mode inventory and exact relationship between LPF/HPF modes, routing, slopes and bypass; do not infer an undocumented SVF mode list. |
 | Q-I08 | GS-GRN-006 | Define the centre-weighted pan-spray distribution mathematically and specify seeded statistical tolerance alongside the uniform mode. |
 | Q-I12 | GS-VOI-010 | Decide the R1 sub-oscillator waveform/default or explicitly narrow the requirement so the test oracle is unambiguous. |
