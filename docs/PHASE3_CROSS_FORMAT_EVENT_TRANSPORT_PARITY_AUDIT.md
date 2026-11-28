@@ -157,7 +157,7 @@ These are test-design obligations, not new AC IDs or passing results.
 | Test family | Candidate scenarios | Requirements / decisions |
 |---|---|---|
 | Absolute-to-block event conversion | AU signed sample times; valid timestamp flags; immediate scheduling; negative sample time; block start/end; stale/future events; no clamping | GS-MID-001…008; GS-PLT-003 |
-| VST3 event ordering | Event sample offsets, event bus, source-local order, Note On before Note Expression, invalid/missing note ID, block boundaries | GS-MID-001…008; DEC-038 |
+| VST3 event ordering | Event sample offsets, event bus, source-local order, Note On before Note Expression, invalid/missing note ID, block boundaries | GS-MID-001/002/003/005/006; DEC-038 |
 | Automation curve equivalence | AU zero-duration step and ramp; non-rampable parameter; VST3 implicit start point, previous-block anchor, linear points, two-point jump, empty queue across constant blocks | GS-MOD-005; GS-SEQ-009; Q-T12/Q-T13 |
 | MPE identity | Overlapping notes, same-pitch retrigger, member-channel reuse, Note Off, missing ID/zone, per-note pitch/pressure/timbre and 48-semitone range | GS-MID-002; GS-MOD-004; DEC-038; AR-03…AR-05 |
 | Transport validity | Missing/null context, callback failure, independent field validity, tempo/time-signature changes, stop/start, seek, cycle start/end | GS-SEQ-001…012; DEC-039 |
