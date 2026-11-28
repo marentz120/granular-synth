@@ -1,6 +1,8 @@
 # Open Questions
 
-**Version:** 1.0 (Q-M04 Scan mode count resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+**Version:** 1.1 (Q-M09 grain normalization law resolved, 2026-11-28). Product decisions delegated by the owner to ChatGPT as product manager are recorded as Approved in DECISIONS_LOG.md; technical, legal and evidence questions remain open until their relevant gate.
+
+**Change summary (v1.0 → v1.1):** Q-M09 normalization law is answered by DEC-046: per-grain gain follows 1/√N relative to the single-grain reference. The active-grain counting domain, smoothing, ON/OFF reference details and headroom oracle remain technical/acceptance gates; benchmark matching still requires measurement.
 
 **Change summary (v0.9 → v1.0):** Q-M04 mode count is answered by DEC-045: exactly three Scan modes (Bounce, Wrap, Kill); One-Shot is a separate behavior governed by DEC-044. Exact Kill behavior and Stop/Panic transitions remain open.\n\n**Change summary (v0.8 → v0.9):** Q-M04 One-Shot subdecision is answered by DEC-044: complete the current scan cycle, stop spawning new grains, and let existing grains finish their envelopes. The Scan mode count and exact Bounce/Wrap/Kill/Stop transitions remain open.
 
@@ -122,7 +124,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-M06 | Number of macros | 10 (p.23) vs 20 NRPNs (p.150) | Ten macros are R1; 20 are not required in R1 | **ANSWERED — DEC-036** |
 | Q-M07 | Mod source count (24/25/26) | p.78, p.157–158, p.163 | Use enumerated source table (25 + None) as reference | **RESOLVED-EVIDENCE** |
 | Q-M08 | Mod destination count (140/149/150) | p.23, p.76, p.78, p.158–161 | Use enumerated destination table (149) as benchmark reference; GRANULAR SYNTH implements only destinations for R1 parameters | **RESOLVED-EVIDENCE** |
-| Q-M09 | Grain-count normalization law | Only "max volume at density 17" (p.33) | Energy-preserving 1/√density beyond d0; match level at density 17 by measurement | OPEN |
+| Q-M09 | Grain-count normalization law | Only "max volume at density 17" (p.33) | **Law answered — DEC-046:** per-grain gain = 1/√N relative to the single-grain reference. Define N counting domain, smoothing and ON/OFF reference details; validate four-layer headroom. Density-17 benchmark matching requires authorized measurement. | PARTIALLY ANSWERED — DEC-046; technical gates open |
 | Q-M10 | Tape chord: tracking head = first or lowest note | p.48 "TBV" | Lowest note (consistent with p.53 rule "lowest chord note matches the played note") | PROPOSED |
 | Q-M11 | LFO scope: per voice or per layer | p.79 "each layer has its own LFOs"; key sync Legato | Per-LFO Poly/Mono mode; default Mono (shared per-layer phase), Poly uses per-voice phase | **ANSWERED — DEC-024** |
 | Q-M12 | Patch spray / patch bias semantics | p.19 "grain counts boosted based on which part of the screen you focus on" | Deferred to L2; benchmark semantics remain unverified and are not an R1 dependency | **ANSWERED — DEC-029** (tier decision only; behavior research may continue for L2) |
