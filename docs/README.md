@@ -30,3 +30,5 @@ Referenced from `CLAUDE.md` ("Maintain the project documents listed in docs/READ
 
 - [PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md](PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md) — AU cable/member-channel versus VST3 noteId lifecycle, per-note expression mapping, bounded identity ownership and AR-03…AR-05 review gates; proposal only, no final matching or type mapping selected.
 - [PHASE3_MPE_HOST_COMPATIBILITY_EVIDENCE_AUDIT.md](PHASE3_MPE_HOST_COMPATIBILITY_EVIDENCE_AUDIT.md) — official Logic/Live/Bitwig/REAPER MPE host evidence, distinguishing channelized MIDI 1.0 MPE from VST3 Note Expression; evidence map and Phase 5 fixtures only, no host certified.
+
+- [PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md](PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md) — deterministic AU/VST3/Standalone MPE ingress, identity, expression, fan-out, release, channel-reuse and overload fixtures; Phase 5 test design only, with AR-03…AR-05 and host evidence gates open.
