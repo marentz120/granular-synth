@@ -1,28 +1,40 @@
-# GRANULAR SYNTH Requirements
+# GRANULAR SYNTH
 
-**Status:** Draft; subject to product-owner and architecture review.
+A professional sample-based granular instrument for macOS, designed for studio sound design and live performance.
 
-## 1. Product targets
-- REQ-PLAT-001: Target macOS.
-- REQ-PLAT-002: Provide a standalone application.
-- REQ-PLAT-003: AU and VST3 are proposed plug-in formats, pending technical validation.
+## Current project status
 
-## 2. Audio engine requirements
-- REQ-AUD-001: Audio processing must be real-time safe.
-- REQ-AUD-002: The audio callback must avoid blocking I/O, unpredictable waits, and routine heap allocation.
-- REQ-AUD-003: Engine resource limits and overload behavior must be explicit and testable.
-- REQ-AUD-004: Parameter changes must avoid audible zipper noise and discontinuities where applicable.
-- REQ-AUD-005: Output must remain stable at supported sample rates and buffer sizes, to be specified during architecture and QA planning.
+**Product scope and R1 release tiers are approved. Architecture, UI/UX and acceptance testing are still in review/planning. Production implementation has not started.**
 
-## 3. Instrument requirements — pending reference analysis
-Detailed requirements for granular synthesis, sample management, layers, voices, modulation, sequencing, effects, MIDI, presets, and alternate engines will be derived from the GR-MEGA manual and owner decisions. Do not assume parity or numeric limits before verification.
+- 168 requirement rows: 124 R1, 27 L2, 9 L3 and 8 optional.
+- R1 formats: standalone macOS application, AU and VST3.
+- R1 engine scope: Granular and Sampler, across four independent layers.
+- R1 also includes a central performance sequencer, live audio input, Freeze, recording and generic MIDI-controller operation.
+- The primary functional benchmark is Tasty Chips GR-MEGA. It is a behavior reference only; do not copy proprietary firmware, source code, artwork or protected trade dress.
 
-## 4. Quality attributes
-- QA-001: Prevent audio dropouts, clicks, and denormal-related performance problems.
-- QA-002: Make DSP components independently testable.
-- QA-003: Preserve consistent parameter meaning across standalone and plug-in builds.
-- QA-004: Provide reproducible builds and automated tests.
-- QA-005: Measure CPU, memory, latency, and voice/grain capacity under defined test conditions.
+## Quality requirements
 
-## 5. Requirement traceability
-Each detailed requirement must have a unique ID, source/evidence classification, priority, rationale, dependencies, and acceptance criteria.
+- Real-time-safe audio processing: no blocking I/O, unpredictable waits or routine heap allocation in the audio callback.
+- Explicit bounded resource limits and deterministic overload behavior.
+- Parameter smoothing where needed to avoid clicks and zipper noise.
+- Safe off-thread sample preparation and ownership transfer.
+- Consistent parameter/state behavior across standalone, AU and VST3.
+- Reproducible tests and measured CPU, memory, latency and voice/grain capacity under approved conditions.
+
+## Requirement and test status
+
+- All 124 R1 requirements are mapped to proposed architecture modules/interfaces, candidate API symbols and proposed UI surfaces or internal handling.
+- 49 R1 requirements have direct acceptance-criteria links; 4 more have cross-domain release-gate links.
+- 71 R1 requirements still need an explicit acceptance link or documented cross-cutting rationale. A Phase 5 test-design blueprint covers those 71, but no tests have been executed.
+- Technical values such as minimum macOS, supported sample rates/buffer sizes, parameter IDs, global grain budget and host certification remain gated by the relevant architecture decisions.
+
+## Source of truth
+
+- `CLAUDE.md` — project rules, authorization and workflow.
+- `docs/README.md` — complete documentation index.
+- `docs/GRANULAR_SYNTH_REQUIREMENTS.md` — canonical 168-row requirement inventory and approved primary tiers.
+- `docs/DECISIONS_LOG.md` — approved and proposed decisions.
+- `docs/OPEN_QUESTIONS.md` — unresolved product, technical, evidence and legal questions.
+- `docs/PHASE5_ALL_REQUIREMENTS_AUDIT.md` — latest complete requirements and readiness audit.
+
+**Current work is documentation and planning only.** Do not implement production DSP, plugin/UI code, host prototypes or benchmarks, and do not merge a pull request or create a release without explicit owner authorization.
