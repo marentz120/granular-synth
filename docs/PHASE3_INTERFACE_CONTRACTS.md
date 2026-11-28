@@ -149,7 +149,8 @@ The format adapters preserve host semantics and normalize only the representatio
 
 - AU absolute sample-time events and VST3 block-relative event offsets become validated discrete events in the shared block domain.
 - AU parameter ramps and VST3 per-parameter automation queues become parameter curves, not flattened step events. AUValue uses the AU parameter's declared range/unit; VST3 ParamValue is normalized [0,1]. Resolve each host ID to the canonical parameter ID and convert through the immutable parameter descriptor. The VST3 previous-block anchor at relative position -1 remains signed continuity metadata.
-- VST3 Note Expression preserves `noteId`; AU MPE maps cable/member-channel and note lifecycle to an internal note instance. Missing/ambiguous identity is explicit and never downgraded silently to channel-wide pitch bend.
+- AU MPE and host-delivered MIDI 1.0 MPE in VST3 are channelized paths: normalize cable/event-bus, negotiated zone, member channel and note lifecycle into a source identity. Ableton Live's documented VST3 MPE mode uses this path; do not assume it supplies a VST3 `noteId`.
+- VST3 Note Expression is a separate path keyed by event-bus index plus valid `noteId`. A VST3 host may supply Note Expression, channelized MIDI 1.0 MPE, or a host/mode-specific combination; the adapter contract must record which path is observed. Missing/ambiguous identity is explicit and never downgraded silently to channel-wide pitch bend.
 - AU musical-context and transport-state callbacks have independent success/field validity. VST3 ProcessContext is optional and per-field state flags are authoritative. The normalized transport snapshot carries validity rather than guessed zero/default values.
 - One transport snapshot is shared by the four layers and central sequencer. Valid host transport is the plugin authority; Standalone selects one authority. MIDI Clock is not a second plugin master.
 - A VST3 no-audio-bus parameter flush is a control-only call and does not advance audio, transport or sequencer time.
@@ -162,8 +163,9 @@ See `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` for API evidence, cand
 ### 3.8 MPE source-note identity and layer fan-out — IF-09 / IF-03
 
 - IF-09 carries a SourceNoteIdentity separate from the layer-local NoteInstanceId. One input note may fan out to multiple matching layers under DEC-034; each layer voice keeps the same source identity and its own voice identity.
-- VST3 identity is event-bus index plus valid noteId. A missing ID (-1), duplicate live key or stale Note Expression is explicit; it must not be aliased to another note.
-- AU identity is cable + known zone + member channel + note lifecycle. A member channel is an expression scope, not necessarily a unique note. If notes share a member channel, the same member-channel expression applies to all active notes in that group.
+- AU MPE identity is cable + known zone + member channel + note lifecycle. A member channel is an expression scope, not necessarily a unique note. If notes share a member channel, the same member-channel expression applies to all active notes in that group.
+- A VST3 plug-in may receive MIDI 1.0 MPE channel/member-channel events on its event bus; normalize this through a VST3 MPE-channel adapter and preserve the same shared-channel semantics.
+- VST3 Note Expression identity is event-bus index plus valid noteId. A missing ID (-1), duplicate live key or stale Note Expression is explicit; it must not be aliased to another note. This path is independent of channelized MPE and may be absent in a given host/mode.
 - A released AU voice must not receive expression from a later member-channel lease. Snapshot its last expression and detach it at the approved lifecycle boundary; exact Note Off matching, sustain and zone-reconfiguration rules remain AR-03.
 - VST3 Note Expression identity may remain valid through the voice release. Retire the mapping only when the associated voice lifecycle is complete.
 - Per-note pitch, pressure and timbre remain separate semantic dimensions. VST3 Pressure/Timbre type IDs and public range metadata remain AR-04/AR-05.
