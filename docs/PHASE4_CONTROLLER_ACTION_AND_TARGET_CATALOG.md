@@ -1,6 +1,6 @@
 # GRANULAR SYNTH — Controller Action & Target Catalogue
 
-**Version:** 0.1  
+**Version:** 0.2  
 **Status:** Phase 4 UX proposal — owner review required  
 **Scope:** UI-level controller target names, scopes, action classes and performance workflows. Documentation only.  
 **Authority:** `LIVE_PERFORMANCE_SPECIFICATION.md`, `R1_PRODUCT_SPECIFICATION.md`, `GRANULAR_SYNTH_REQUIREMENTS.md`, `MIDI_MAPPING_UX_SPECIFICATION.md`, and approved DEC-015…DEC-042. This catalogue does not define MIDI wire format, parameter IDs, implementation APIs or Phase 5 acceptance thresholds.
@@ -55,7 +55,6 @@ Names below are human-readable target labels, not stable IDs or MIDI assignments
 | Freeze | Freeze L1, L2, L3, L4; Freeze All; Thaw L1…L4; Thaw All | Toggle / command | Explicit layer or global |
 | Transport | Start; Stop; Continue where supported by the approved transport model | Command | Global |
 | Pattern navigation | Previous Pattern; Next Pattern; Select/Recall Pattern; Pattern Chain Start/Stop; Previous/Next Chain Item | Navigation / command | Global |
-| Performance Set | Previous/Next Item; Select/Recall Item | Navigation / command | Global |
 | Sequencer viewport | Previous/Next 16-step window; Select step; Go to step; Follow Playhead On/Off | Navigation / selection / toggle | Active Pattern |
 | Step/event editing | Select previous/next event; select event index; add event; remove selected event; assign selected event to Layer L1–L4 | Selection / command | Active Pattern / selected step |
 | Event values | Event Velocity; Event Pitch; eligible event parameter-lock values | Continuous parameter | Selected event |
