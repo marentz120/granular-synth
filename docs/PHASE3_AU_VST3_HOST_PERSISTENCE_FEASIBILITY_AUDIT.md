@@ -216,10 +216,10 @@ Checked 2026-11-28.
 
 The [Cross-Host State Callback & Snapshot Freshness Evidence Matrix](PHASE3_CROSS_HOST_STATE_CALLBACK_AND_SNAPSHOT_FRESHNESS_EVIDENCE_MATRIX.md) adds the following distinctions:
 
-- AU's dictionary properties have no reviewed public callback-thread, deadline or explicit getter-failure contract. Optional \`nil\` is not proven to abort a host project save. This is especially important because DEC-025 forbids silently omitting required unsaved recording payloads.
+- AU's dictionary properties have no reviewed public callback-thread, deadline or explicit getter-failure contract. Optional `nil` is not proven to abort a host project save. This is especially important because DEC-025 forbids silently omitting required unsaved recording payloads.
 - VST3 component state calls are annotated UI-thread and permitted while Processing. Processing may continue concurrently; the component must serialize an immutable generation rather than mutable render-owned state.
 - Steinberg's developer-forum clarification warns that offline get/set-state may execute on the process thread. This is supplemental evidence, not a guarantee for Logic, Live, Bitwig or REAPER.
 - The reviewed host guides do not publish exact AU/VST3 state-callback threads or failure propagation. Project persistence and an opaque binary state block do not prove callback freshness or save rollback.
 - A cross-source capture token must be coherent across every required recording/Freeze source. The serializer rejects stale descriptors and never substitutes an older snapshot.
 
-The AU nil-result path and VST3 host reaction to non-success \`tresult\` remain Q-T15/Q-P09 prototype gates. No callback timing, maximum payload, copy count or host certification is approved.
+The AU nil-result path and VST3 host reaction to non-success `tresult` remain Q-T15/Q-P09 prototype gates. No callback timing, maximum payload, copy count or host certification is approved.
