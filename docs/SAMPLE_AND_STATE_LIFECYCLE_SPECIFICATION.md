@@ -219,3 +219,15 @@ Numeric capture duration, memory budget, copy strategy, crossfade duration and s
 The tap is fixed for a recording take and stored in recording metadata. The UI must label the source clearly (Layer Stem or Master Mix). A muted layer remains recordable as a stem; the master naturally reflects the mute/solo mix. Recording continues independently during Freeze per DEC-042.
 
 Validation must inject distinct test signals into each layer, toggle fader/mute/solo during capture, and compare captured stems/master against the corresponding graph nodes. No tap may read an uncommitted recording region.
+
+## 11. MPE identity, reset and restore lifecycle — 2026-11-28
+
+See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md.
+
+- Persist under DEC-025/DEC-042: patch/layer state, external references, required unsaved recording buffers and Freeze snapshot audio.
+- Do not persist SourceNoteIdentity, NoteInstanceId, AU active channel leases, VST3 event-bus/noteId lookup, host event pointers, active voice handles, transport snapshots, stream formats or render scratch.
+- Save does not clear live MPE identities. Restore prepares the complete candidate off RT, reserves old-plus-new peak memory and publishes one transaction at a safe render boundary.
+- Failed validation, memory admission or publication preserves prior active state. Successful restore advances RuntimeStateEpoch and rejects old internal queued events.
+- AU fullState/fullStateForDocument and VST3 component/controller state have distinct persistence semantics; host callback limits remain prototype gates.
+
+AR-06 remains open: owner must choose whether voices already sounding at state-restore commit terminate or finish as non-addressable tails under the old immutable runtime generation.

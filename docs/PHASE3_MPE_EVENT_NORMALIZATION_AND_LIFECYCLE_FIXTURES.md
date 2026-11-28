@@ -183,3 +183,26 @@ The 124-row requirement inventory and 53/124 acceptance-link baseline are unchan
 The fixture design is ready for review when stable invariants are accepted, AR-03…AR-05 remain explicitly gated where necessary, shared-core fixtures do not depend on raw host SDK types, and later Phase 5 work assigns formal AC/test IDs and evidence retention. No test is reported as passed until executed and recorded.
 
 **Boundary:** documentation and test design only. No DSP, Plugin Shell, host prototype, benchmark, framework selection, parameter-ID freeze or PR merge is authorized.
+
+## 9. Reset, state-restore and host-lifecycle fixtures
+
+These extend §§3–5. They define expected invariants, not results.
+
+| Fixture | Input / transition | Required assertion | Gate |
+|---|---|---|---|
+| CC 121 controller reset | Active notes on one member channel; send Reset All Controllers | Controller values reset to eventual project defaults; note identities/layer associations remain valid; other namespaces unchanged | Canonical defaults; AR-04 |
+| CC 123 with sustain | Notes active, sustain on, All Notes Off, then sustain off | Release deferred while hold is active; identity not retired before voice completion | AR-03 |
+| CC 120 scoped sound-off | Active notes on two channels/namespaces; send All Sound Off on one channel | Only validated channel scope is silenced/retired; other notes remain; Freeze/recording unchanged | Zone-role evidence |
+| Panic under load | Active identities and full bounded command/event storage | Reserved recovery completes without allocation, blocking or stale-handle alias | AR-02 |
+| Zone/cable reconfiguration | Active notes, zone change, member-channel reuse | Old lease is stale; new events cannot mutate old tails; active-note release/termination remains gated | AR-03 |
+| AU render reset | Active MPE notes, AU reset, then new Note On/Expression | Transient identities invalidated; persistent patch, recordings and Freeze remain intact | AU host timing |
+| VST3 processing stop/start | setProcessing(false), no intervening process, then true and next process | Reset is lock-free/allocation-free; next generation has no stale note/voice binding | Host call sequence |
+| VST3 state restore while processing | Component setState while active; controller receives component then controller state | Candidate staged; atomic safe-point commit; no duplicate host parameter writes | AR-06/Q-P09 |
+| AU preset/document restore | fullState/fullStateForDocument round-trip with DEC-025 recording and Freeze | Stream formats and transient MPE IDs are not restored; required unsaved audio remains present | AU host prototype |
+| Save with held notes | Save while notes/release tails exist; reopen in new instance | No host noteId, channel lease or active voice is resurrected | DEC-025 |
+| Stale event across restore | Queue event at epoch N; commit N+1; consume old record | Old internal event rejected and counted | RuntimeStateEpoch |
+| External note-key reuse | Restore barrier, host reuses noteId/member channel, late expression arrives | Record host ordering/lifetime; do not claim internal generation repairs missing host provenance | Q-P09/AR-06 |
+| Corrupt restore/admission failure | Invalid manifest/checksum/length or insufficient memory | Restore fails; previous state and identity map remain intact; no partial publication | DEC-025/Q-T15 |
+| Device disconnect/reconnect | Active notes; input namespace reconnects with same channel numbers | Namespace generation changes; stale device events cannot resolve to new notes | Standalone host/device test |
+
+CC 121 does not clear note identity; CC 123 respects sustain; CC 120 is channel-scoped; internal Panic is separate. No formal AC IDs, capacities, thresholds or passing results are created. AR-03…AR-06 and Q-P09 remain open.

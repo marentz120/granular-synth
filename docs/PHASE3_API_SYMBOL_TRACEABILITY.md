@@ -317,3 +317,18 @@ The detailed scenario and evidence catalogue is PHASE3_MPE_EVENT_NORMALIZATION_A
 | AR-03…AR-05 / Q-P09 | Decision-gated AU matching/channel reuse, VST3 Pressure/Timbre type discovery, pitch metadata/conversion and host-specific event traces |
 
 For channelized MPE, the MpeChannelKey namespace includes the ingress domain: AU virtual cable, VST3 event bus or Standalone input port/device. Explicit VST3 Note Expression continues to use event-bus index plus valid noteId. This fixture catalogue creates no AC IDs or formal test IDs and does not change the 124-row inventory or 53/124 acceptance-link count.
+
+## 10. Reset and restore cross-cutting traceability supplement
+
+This adds lifecycle coverage to existing rows; it does not add a requirement or alter the 124-row inventory.
+
+| Requirement / decision | Candidate API boundary | Additional Phase 5 assertion |
+|---|---|---|
+| GS-MID-002 / GS-MOD-004 | ResetReason, ResetRequest, SourceNoteIdentity, NoteInstanceId, IngressNamespaceGeneration | CC 121 preserves note identity; CC 123 respects sustain; CC 120 is scoped; stale expression is rejected |
+| DEC-034 | IPerNoteExpressionRouter plus RuntimeStateEpoch | Old source identity cannot route into a new layer voice; new matching layers still receive events exactly once |
+| DEC-025 | IStateRestoreCoordinator, RestoreTransaction, immutable state manifest | Active note maps are not serialized; unsaved recordings are embedded; failed restore preserves prior state |
+| DEC-042 | Freeze snapshot state plus ResetReason | Reset/Panic/CC 120 do not thaw or erase Source Snapshot |
+| GS-NFR-001 | Bounded reset publication and generation validation | No render allocation, blocking, unbounded clear or final destruction |
+| Q-P09 / AR-06 | AU/VST3 host lifecycle adapters | Host note-key lifetime, state callback order and audible old-voice policy are evidenced, not inferred |
+
+The three generation domains are separate. This is candidate traceability, not an ABI commitment. The 124-row inventory and 53/124 acceptance-link baseline remain unchanged.

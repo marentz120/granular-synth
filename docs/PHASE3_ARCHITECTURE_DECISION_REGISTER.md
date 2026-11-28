@@ -87,3 +87,11 @@ The current DSP proposal's former `threshold·k` expression is not a usable form
 | AR-05 | Public AU/VST3 metadata and exact conversion for DEC-038's 48-semitone per-note range | Preserve the existing project interpretation; convert through explicit signed semitone units and host-specific normalized domains | Confirm DEC-038 wording against MPE 1.1 default and test minimum, center and maximum in target hosts | OPEN — metadata/conversion not frozen |
 
 These questions refine GS-MID-002 and DEC-038 without changing product scope. See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md. No implementation or benchmark is authorized by these proposals.
+
+## 7. State-restore voice lifecycle question
+
+| ID | Question | Candidate direction | Evidence required | Status |
+|---|---|---|---|---|
+| AR-06 | When state restore commits while notes/voices are active, terminate old voices at commit or let them finish as non-addressable tails under the old immutable runtime generation? | Never persist or rebind old host-note identities; make audible old-voice treatment an explicit owner choice | Owner decision, then fixtures for held notes, release tails, reused VST3 noteId/member channel and controller synchronization | OPEN — owner decision required |
+
+AR-06 changes audible behavior and cannot be inferred from DEC-025. No behavior is selected by this register.

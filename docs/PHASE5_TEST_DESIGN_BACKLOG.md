@@ -225,3 +225,18 @@ Cross-host assertions:
 The broad MPE families in §§6–7 are refined by PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. It supplies deterministic symbolic sequences for VST3 valid/missing/duplicate/reused note IDs; channelized shared-member-channel expression; same-pitch ambiguity; member-channel reuse; cable/event-bus/zone isolation; DEC-034 fan-out; semantic endpoints; event ordering; Panic and bounded identity exhaustion.
 
 The catalogue distinguishes **Invariant verified**, **Invariant failed**, **Decision-gated** and **Host-unverified** outcomes. It creates no formal test IDs or passing results. AR-03…AR-05, Q-P09, exact capacities, formal AC grouping and host execution remain open.
+
+## 9. MPE reset, state restore and host lifecycle
+
+| Requirement / decision | Candidate test-design intent | Evidence | Gate |
+|---|---|---|---|
+| GS-MID-002 | CC 121 resets controller state without clearing identities; CC 123 requests release and respects sustain; CC 120 terminates only addressed channel scope | Deterministic MIDI fixtures and identity/voice snapshots | MPE reset defaults; AR-03/AR-04 |
+| GS-MID-002 / DEC-034 | Zone/cable/event-bus/device reconfiguration invalidates only affected ingress generation; old tails never follow a new lease | Event trace and generation snapshots | AR-03; Q-P09 |
+| DEC-025 | Save excludes transient note IDs/active maps while embedding required unsaved recordings | State manifest and round-trip | Q-T15; host callback limits |
+| DEC-025 / DEC-042 | Valid restore is atomic and preserves Freeze/recordings; invalid restore preserves previous state | State round-trip, corruption and memory-admission fixtures | Q-T15; host prototype |
+| GS-NFR-001 | AU reset and VST3 processing stop/start invalidate stale identities without render allocation/blocking/destruction | RT instrumentation and lifecycle trace | AU caller context; VST3 call sequence |
+| DEC-025 / AR-06 | Restore with held notes/release tails cannot alias old identities into new state; verify selected audible tail policy | Host state-restore tests with noteId/member-channel reuse | AR-06 owner decision; Q-P09 |
+| DEC-025 | VST3 component state precedes controller component-state and controller-specific state; no duplicate host writes | Processor/controller state trace | Steinberg persistence sequence |
+| DEC-042 | CC 120/Panic and host reset do not thaw Freeze or erase snapshot | Freeze/recording state round-trip | DEC-042; recorder behavior across deactivation remains host validation |
+
+No formal AC IDs, test IDs, capacities, pass thresholds or results are created. No benchmark or host prototype is authorized by this backlog.

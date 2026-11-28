@@ -335,3 +335,19 @@ The detailed scenario catalogue is PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_
 - Offline shared-core fixtures do not certify host delivery. Host-specific raw event traces require a separately authorized prototype.
 
 No queue capacity, identity-table size, overload priority, lock-free algorithm or host callback behavior is frozen here.
+
+## 13. Reset, restore and generation ownership — 2026-11-28
+
+- RuntimeStateEpoch changes only when a complete persistent state restore commits.
+- IngressNamespaceGeneration changes for one AU cable, VST3 event bus, Standalone MIDI input or negotiated MPE zone.
+- RenderConfigurationGeneration changes with sample rate, maximum block, bus arrangement or render workspace.
+
+Do not collapse these into one counter. Stale records are rejected before identity lookup.
+
+Host callbacks/non-RT coordinators publish bounded ResetRequest/RestoreTransaction records; they never clear render-owned maps directly. Render owns active identity tables, ingress leases and voice associations. CC 121 changes controller state only; CC 123 requests release and may be held by sustain; CC 120 is scoped sound termination; Panic is a separate reserved recovery path. Equivalent resets may be coalesced only when scope and semantics match.
+
+Parse, validate, migrate, prepare assets/recordings and reserve memory off RT. Candidate state is immutable before publication; publish one transaction at a safe point. Failed restore leaves prior runtime/identity state authoritative. After commit, old identity handles cannot bind into the new epoch. VST3 controller synchronization follows processor-first component-state order.
+
+VST3 setProcessing(false) may run on UI or processing thread and must remain light, lock-free and allocation-free. AU reset caller-thread behavior remains host validation. Retire old graph/assets off RT only after all readers/voices/grains release them.
+
+Restore admission counts old graph + candidate graph + embedded recording/Freeze chunks + staging + pending retirement. Generation wrap must never alias a live handle; quiesce/reinitialize off RT or reject admission. See PHASE3_MPE_RESET_STATE_RESTORE_AND_HOST_LIFECYCLE_AUDIT.md. AR-06 remains open.
