@@ -77,6 +77,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-051 | Every time-valued stage of the four R1 ADSR envelopes has a product range of 0.1 ms to 45 s. R1 has no zero-duration envelope stage; any incoming or automated value below the minimum resolves to 0.1 ms. Sustain remains a level, not a time stage. | **Approved** | Product behavior decision made under the owner's explicit instruction to follow the assistant's recommendations for subsequent project decisions (2026-11-28). Resolves Q-M18 in favor of the explicit R1 requirement and envelope specification over the conflicting 0 ms MIDI-table endpoint. The exact host/MIDI parameter mapping and timing tolerance remain technical/acceptance details. The 0.1 ms floor is not a universal click-free guarantee. |
 
+| DEC-052 | R1 exposes two per-voice filter functions only: LPF and HPF. The voice filter chain is ordered LPF → HPF; selectable routing is LPF only, LPF+HPF, or HPF only, with a chain bypass that leaves parameter settings intact. Each filter independently supports 6, 12, 18 or 24 dB/oct slopes and a resonance control. No additional filter response modes (including notch, band-pass or peak) are part of R1. | **Approved** | Product behavior decision made under the owner's explicit instruction to follow the assistant's recommendations for subsequent project decisions (2026-11-28). Resolves the R1 mode-scope question Q-I07 using the explicit GS-VOI-008 requirements while avoiding an unsupported expansion from benchmark topology references. Filter topology, resonance range/curve and DSP realization remain technical decisions. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
