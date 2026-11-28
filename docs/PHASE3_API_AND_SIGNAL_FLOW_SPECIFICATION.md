@@ -808,3 +808,26 @@ Use an internal `NoteInstanceId`:
 The merge key is first the validated sample offset, then source-local order within each source. Events from different sources at the same offset form a batch; a total cross-source priority is deliberately not specified. Host automation, MIDI mapping, sequencer parameter locks and UI writes that collide on one parameter remain subject to AR-01's future writer matrix.
 
 The adapter performs bounded validation/merge using preallocated storage. No host pointer, SDK interface, dynamic sort buffer or callback-owned event list is retained after the callback. Exact event/automation capacities and overflow policy remain Phase 5 gates.
+
+
+## 16. MPE note identity and lifecycle — 2026-11-28
+
+The candidate API catalogue now distinguishes:
+- SourceNoteIdentity: one incoming logical note before layer fan-out.
+- NoteInstanceId: one layer-local voice created from that source note.
+- MpeChannelKey: cable, negotiated zone, member channel and generation-checked channel lease.
+- Vst3HostNoteKey: event bus index plus valid host noteId.
+- NoteIdentityQuality: Exact, SharedChannel, Missing, Ambiguous or Stale.
+- IMpeNoteIdentityAdapter: AU member-channel lifecycle and zone mapping.
+- IVST3NoteExpressionAdapter: VST3 noteId and Note Expression type translation.
+- IPerNoteExpressionRouter: fan-out of one source-note expression update to its associated layer voices.
+
+A shared input note can create multiple NoteInstanceIds under DEC-034; the source identity links those voices so per-note expression is applied once to each matching layer voice. A shared AU member channel is not a unique note identity: expression applies to every active note in that channel group.
+
+VST3 identity is keyed by event bus and valid noteId. Missing noteId (-1), duplicate live IDs and stale expression events are explicit failure states. Retain a VST3 mapping through voice release because Note Expression may arrive after Note Off while the voice is still released.
+
+AU identity is derived from cable, zone, member channel and note lifecycle. Zone state is per cable. Ambiguous same-pitch Note Off matching must be reported, not resolved by an undocumented FIFO/LIFO guess. A released voice must not follow a later channel reuse; the candidate is to snapshot expression at Note Off and detach it from the active member-channel group.
+
+The VST3 adapter must declare only supported Note Expression types through INoteExpressionController. Tuning is the candidate standard type for pitch. Pressure and Timbre require an explicit standard/custom type mapping; do not equate Pressure with Expression or Timbre with Brightness without a reviewed semantic contract.
+
+All identity tables, member-channel groups and fan-out lists are bounded, preallocated and generation-checked. Numeric capacities and overload policy remain Phase 5 gates. See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md and open questions AR-03…AR-05.
