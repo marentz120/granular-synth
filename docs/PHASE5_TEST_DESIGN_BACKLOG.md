@@ -178,3 +178,23 @@ These shared test families supplement the requirement-level backlog above. They 
 | Variable-block partition parity | Render the same event/automation fixture using different legal block partitions; compare absolute event positions, curve continuity and deterministic output | GS-PLT-003/004; GS-NFR-006 |
 
 **Design restrictions:** no numeric event capacity, timing tolerance, overflow recovery or host version is set here. No benchmark is authorized. Formal AC grouping and pass/fail thresholds remain Phase 5 work.
+
+
+## 6. MPE note identity and lifecycle supplements
+
+These test families refine the earlier MPE identity bridge row. They do not add AC IDs, set numeric capacities or claim host support.
+
+| Test family | Candidate fixture / assertions | Requirement and dependency |
+|---|---|---|
+| VST3 note-ID admission | Valid ID, -1, duplicate active ID, stale event, ID reuse only after prior lifecycle ends | GS-MID-002; AR-04 |
+| VST3 Note Expression lifecycle | Expression before Note On, after Note On, after Note Off during release, after voice completion | GS-MID-002; GS-VOI-001…010 |
+| VST3 type discovery | INoteExpressionController declarations per event bus/channel; standard/custom Pressure and Timbre alternatives | GS-MID-002; AR-04; Q-P09 |
+| AU cable and zone isolation | Multiple cables, lower/upper zones, missing/invalid zone configuration and zone reconfiguration | GS-MID-002; AR-03 |
+| AU member-channel sharing | Multiple active notes on one member channel; expression reaches every active note in that group and no other cable/channel | GS-MID-002; DEC-034 |
+| AU same-pitch Note Off | Repeated same-pitch Note On on one member channel, unmatched Note Off and ambiguous match reporting | GS-MID-002; AR-03 |
+| AU channel reuse and sustain | Note Off, release tail/sustain, member-channel reuse and proof that old tails do not follow new expression | GS-MID-002; AR-03 |
+| Cross-layer expression fan-out | One source note routed to multiple matching layers; each layer voice receives one expression update | GS-MID-001/002; DEC-034 |
+| Expression conversion | Pitch-bend minimum/center/maximum; pressure and CC74 endpoints; VST3 normalized-value conversion | GS-MID-002; DEC-038; AR-05 |
+| Bounded identity overload | Identity-table saturation, event overflow, stale-generation rejection, panic under overload and no render allocation | GS-MID-002; GS-NFR-001; AR-02 |
+
+Formal AC grouping, pass/fail wording, exact capacity and host-version matrix remain Phase 5 work. No benchmark is authorized.
