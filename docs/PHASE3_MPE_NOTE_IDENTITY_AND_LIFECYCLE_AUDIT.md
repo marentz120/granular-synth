@@ -47,7 +47,7 @@ The shared core should distinguish a source note from the voices created when th
 |---|---|---|
 | SourceNoteIdentity | One logical incoming note from a host/device source, independent of layer fan-out | From accepted Note On until the source note is no longer expression-addressable |
 | NoteInstanceId | One layer-local voice instance created from a SourceNoteIdentity | From layer voice allocation until voice retirement |
-| MpeChannelKey | Cable + negotiated zone + member channel + channel-lease generation | While that member-channel assignment is active |
+| MpeChannelKey | Ingress namespace (AU virtual cable, VST3 event bus, or Standalone input port/device) + negotiated zone + member channel + channel-lease generation | While that member-channel assignment is active |
 | Vst3HostNoteKey | Event-bus index + valid host noteId | While the host note ID is valid for the note lifecycle |
 | NoteIdentityQuality | Exact, SharedChannel, Missing, Ambiguous or Stale | Attached to the normalized event/identity record |
 
@@ -215,3 +215,11 @@ Therefore:
 4. Preserve DEC-038's ±48-semitone product range, but record each host's configured pitch-bend range and verify endpoint conversion.
 
 No host support, component strategy, event-type mapping, matching policy or product decision is approved by this supplement. AR-03…AR-05 and Q-P06/Q-P09 remain open.
+
+## 13. Fixture refinement and ingress namespace — 2026-11-28
+
+The detailed deterministic scenario catalogue is PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. It separates stable identity/fan-out invariants from AR-03…AR-05 decision-gated assertions and host-unverified evidence.
+
+MpeChannelKey is scoped by an ingress namespace as well as zone, member channel and lease generation. The namespace is the AU virtual cable, VST3 event-bus index, or Standalone input-port/device identity. This is required because the same numeric MIDI channel can exist simultaneously on different cables, ports or event buses. The separate VST3 Note Expression key remains (eventBusIndex, valid noteId).
+
+This clarification changes no product semantics and does not select same-pitch Note Off matching, a channel-reuse boundary, VST3 Pressure/Timbre type IDs or public pitch metadata.
