@@ -169,7 +169,7 @@ These shared test families supplement the requirement-level backlog above. They 
 |---|---|---|
 | AU absolute event time | Valid/invalid block sample-time anchor; signed AU event times; immediate scheduling; negative host sample time; exact offsets 0 and final sample; future/stale handling without clamping | GS-MID-001…008; GS-PLT-003 |
 | VST3 discrete event time | Block-relative offsets; busIndex/channel; source-local order; Note On before Note Expression; missing noteId; event-list ordering | GS-MID-001…008; DEC-038 |
-| AU/VST3 automation equivalence | AU step/ramp and non-rampable behavior; VST3 linear queue points, omitted initial point, previous-block anchor, constant-slope continuation and two-point jumps | GS-MOD-005; GS-SEQ-009; Q-T12/Q-T13 |
+| AU/VST3 automation equivalence | AU step/ramp and non-rampable behavior; AU declared range/unit conversion; VST3 normalized [0,1] queue points, omitted initial point, previous-block anchor, constant-slope continuation and two-point jumps; compare canonical values | GS-MOD-005; GS-SEQ-009; Q-T12/Q-T13 |
 | MPE identity bridge | VST3 noteId versus AU cable/member-channel lifecycle; overlapping notes, same-pitch retrigger, note-off and channel reuse; ±48-semitone per-note pitch | GS-MID-007/008; DEC-038; AU note-retrigger mapping open |
 | Transport validity and discontinuity | Null/failed context; independent field validity; tempo/time-signature change; stop/start; seek; cycle range and loop wrap | GS-SEQ-001…012; DEC-039; Q-P09 |
 | Intra-block cycle transition | Compare host that splits at cycle boundary with host that does not; verify explicit unknown/insufficient intra-block timeline when no reliable transition is supplied | GS-SEQ-001…012; host-specific prototype gate |
