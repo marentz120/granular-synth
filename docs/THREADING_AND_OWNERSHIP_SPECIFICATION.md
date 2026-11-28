@@ -320,3 +320,18 @@ The MPE identity audit adds stateful note routing to the existing bounded event 
 - Panic and All Sound Off clear active mappings using bounded operations; they never wait for a worker.
 
 See PHASE3_MPE_NOTE_IDENTITY_AND_LIFECYCLE_AUDIT.md. This section defines ownership and RT constraints, not numeric capacities or a final Note Off matching policy.
+
+## 12. MPE fixture execution and observation boundaries
+
+The detailed scenario catalogue is PHASE3_MPE_EVENT_NORMALIZATION_AND_LIFECYCLE_FIXTURES.md. Its execution model preserves the ownership rules in §§10–11:
+
+- Host callbacks copy only bounded event fields. AU/VST3 event pointers, SDK interfaces and callback-owned lists are never retained.
+- The render domain solely owns active SourceNoteIdentity records, channelized-MPE groups, VST3 Note Expression lookup and layer-local NoteInstanceId associations.
+- AU scheduling and other multi-producer ingress publish copied records through the documented bounded topology; they do not mutate render-owned identity maps.
+- Test observers consume immutable snapshots at explicit block boundaries, not live mutable tables.
+- Identity lookup, generation validation, channel-group broadcast, DEC-034 fan-out and retirement use preallocated bounded storage. No allocation, deallocation, lock wait, logging or final destruction is allowed on render.
+- Saturation fixtures verify counted exhaustion without identity alias or silent expression-scope changes. Exact capacity and recovery remain Phase 5/AR-02 gates.
+- Panic and All Sound Off cleanup is bounded and does not wait for a worker. All Notes Off remains a distinct lifecycle operation.
+- Offline shared-core fixtures do not certify host delivery. Host-specific raw event traces require a separately authorized prototype.
+
+No queue capacity, identity-table size, overload priority, lock-free algorithm or host callback behavior is frozen here.
