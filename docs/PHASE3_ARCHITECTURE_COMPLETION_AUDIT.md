@@ -1,6 +1,6 @@
 # Phase 3 Architecture Completion Audit
 
-**Version:** 0.6 — AU and VST3 component evidence gates added  
+**Version:** 0.7 — cross-format event and transport parity audit added  
 **Status:** Investigation and gap audit only. No architecture decision, product-scope change, benchmark code, DSP implementation or release authorization is approved by this document.  
 **Baseline:** `main` after Phase 2 merge commit `8229c15d457c05eb85f2d93093ad9ee418b9842a`.  
 **Reviewed:** `DEVELOPMENT_ROADMAP.md` v0.2, `DSP_ARCHITECTURE.md` v0.4, `OPEN_QUESTIONS.md` v0.6, `R1_PRODUCT_SPECIFICATION.md` v1.1, `GRANULAR_SYNTH_REQUIREMENTS.md` v1.0, and the current Sampler, MIDI and Audio/I/O domain specifications.
@@ -413,3 +413,24 @@ The new `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md` establishes the following ev
 - Simple mode, `Fx|Instrument`, per-layer VST3 Units and input/output routing metadata are not claimed.
 
 The API model is capable of expressing the proposed topology, but this is not host evidence. No VST3 host prototype, SDK integration, DSP code or benchmark was performed. Q-P09 exact versions, live-input routing, MPE delivery, output activation and save/reopen remain blockers.
+
+
+## Cross-format event, automation and transport parity audit — 2026-11-28
+
+The new `PHASE3_CROSS_FORMAT_EVENT_TRANSPORT_PARITY_AUDIT.md` compares Apple AU and Steinberg VST3 event, parameter-automation and transport APIs and defines a candidate shared-core normalization boundary.
+
+Key findings:
+- AU uses absolute sample-time event timestamps and parameter ramps with a duration; VST3 uses block-relative discrete-event offsets and separate per-parameter automation queues describing piecewise-linear curves.
+- VST3's documented relative position -1 is a previous-block continuity anchor. It must not enter the unsigned discrete-event offset path.
+- VST3 Note Expression uses explicit note IDs. AU MPE arrives through MIDI 1.0 cable/member-channel and note lifecycle, requiring an explicit internal note-identity adapter and a still-open retrigger policy.
+- AU musical-context and transport-state callbacks are independently optional. VST3 ProcessContext fields require per-field validity flags and SDK 3.7+ context requirements.
+- VST3 hosts are not required to split every processing block at a cycle jump; intra-block loop-wrap accuracy therefore remains host-specific.
+- VST3 parameter flush without audio buses is a control-only path, not an audio block or transport tick.
+
+The audit adds a normalized `ParameterAutomationCurve`, field-valid `TransportSnapshot`, internal `NoteInstanceId` and explicit `HostProcessKind` proposal. It preserves AR-01, Q-T12/Q-T13, Q-P09 and host transport fallback as open gates.
+
+Product consistency check: DEC-017/019/020/026/031/034/038/039 remain unchanged. The four layers still share one transport and sequencer; MPE remains per-note at ±48 semitones; valid host transport remains authoritative in plugin contexts.
+
+The Phase 5 backlog now contains cross-format test families for AU/VST3 event-time conversion, automation curve equivalence, MPE identity, transport validity/cycle jumps, parameter flush, same-offset batches and variable-block partition parity. These are test-design proposals only; no new AC IDs, numeric thresholds or test results were created.
+
+No host prototype, code, DSP, Plugin Shell, benchmark, product-scope change or merge was performed. API documentation establishes representational capability, not host parity.
