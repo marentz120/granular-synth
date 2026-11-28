@@ -61,6 +61,8 @@ Statuses: **Proposed**, **Approved**, **Rejected**, **Superseded**.
 
 | DEC-043 | When the Granular Scan value enters the defined near-zero region, retain the last valid Rate and Size values; do not reset them or calculate through a zero/undefined Scan value. Resume normal calculation when Scan exits that region. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. The epsilon threshold, initialization behavior and exact state-reset conditions remain technical/acceptance details to specify; no numeric threshold is approved here. Resolves Q-M03. |
 
+| DEC-044 | Granular One-Shot completes its current scan cycle, then stops spawning new grains; grains already spawned continue playing through their existing envelopes and are not forcibly terminated by the One-Shot boundary. | **Approved** | Product behavior decision under the owner's explicit product-management delegation, confirmed by the owner on 2026-11-28. Resolves the One-Shot subdecision within Q-M04. Scan mode count and exact Bounce/Wrap/Kill/Stop transitions remain open. |
+
 ## Decision record template
 - ID and date:
 - Decision and status:
