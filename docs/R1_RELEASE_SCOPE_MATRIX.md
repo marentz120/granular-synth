@@ -32,8 +32,8 @@
 
 ## Exit review checklist
 
-- [ ] Every GS requirement row has one explicit tier and traceable source; no "Pending" tier remains.
-- [ ] Approved product decisions and remaining technical/evidence questions are visibly separated.
-- [ ] Requirement totals reconcile with the source inventory.
-- [ ] No row contradicts DEC-015…DEC-041 or R1_PRODUCT_SPECIFICATION.md.
-- [ ] Owner reviews and approves the Phase 2 PR; merge remains an owner gate.
+- [x] Every GS requirement row has one explicit primary tier; no "Pending" tier remains. Optional rows without a benchmark source are explicitly marked OPT.
+- [x] Approved product decisions and remaining technical/evidence questions are visibly separated.
+- [x] Requirement totals reconcile with the 168-row source inventory (124 R1 / 27 L2 / 9 L3 / 8 OPT).
+- [x] The R1 scope matrix is reconciled with DEC-015…DEC-042 and R1_PRODUCT_SPECIFICATION.md.
+- [ ] Owner approval/merge of the Phase 2 PR remains an owner gate.
