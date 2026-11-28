@@ -100,7 +100,7 @@ These answers establish the product baseline; they do **not** close Phase 2, app
 | Q-T12 | Parameter ID scheme and host exposure | Expose all (~1,000+) · curated subset | Expose all, stable string IDs, grouped per layer, macros first | Long automation lists vs. no "missing parameter" complaints. **Irreversible after first release.** | PROPOSED |
 | Q-T13 | Control-rate size for modulation | 8 / 16 / 32 / 64 samples | 16 (≤ 0.36 ms @ 44.1 kHz) | CPU vs modulation resolution; audio-class targets are interpolated anyway | PROPOSED |
 | Q-T14 | Interpolation default for granular | Linear (benchmark) · cubic Hermite · sinc | Cubic Hermite default, selectable | ~2× cost vs benchmark | PROPOSED |
-| Q-T15 | Preset file format | JSON · binary · JSON + binary sample chunks | JSON (human-readable, diffable) + external/embedded WAV | Size vs. transparency | PROPOSED |
+| Q-T15 | Preset/state container and migration | Binary · JSON manifest + binary chunks · host-native opaque state | Versioned JSON manifest + binary audio chunks; external library references; embed unsaved recording/Freeze payloads in DAW document state per DEC-025/042. Exact payload encoding, compression, host mapping, user-preset scope and migration policy remain open. | Transparency vs. payload size, host limits and compatibility | PROPOSED |
 | Q-T16 | Audio file decoding | AudioToolbox only · libsndfile/dr_libs | AudioToolbox primary, portable fallback | Platform lock-in vs. dependency | PROPOSED |
 | Q-T17 | Supported sample rates, buffer sizes, latency (REQ-AUD-005) | 44.1–48 kHz only · 44.1–96 · 44.1–192 kHz; buffers 32–2048 · 16–4096 | 44.1–192 kHz, 16–4096 frames, variable block size; 0 added latency except spectral | Wider range = more test matrix | PROPOSED |
 
