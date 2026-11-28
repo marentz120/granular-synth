@@ -114,8 +114,8 @@ The product uses related concepts across Granular and Sampler (Scan, Pitch, Spra
 
 | Artifact | Required content | Gate |
 |---|---|---|
-| Advanced Granular UI reachability table | Every R1 Granular candidate mapped to a named touch/context surface and controller target or justified exclusion | Phase 4 owner review |
-| Shared Voice target catalogue | Glide, velocity, pitch, four envelopes, LPF/HPF, key tracking and sub-osc controls with explicit scope | Phase 4 owner review + Q-T12 |
+| Advanced Granular UI reachability table | `ADVANCED_GRANULAR_CONTROL_REACHABILITY.md` maps R1 Granular candidates to proposed touch/context, encoder, MIDI Learn and modulation surfaces | Prepared v0.1; Phase 4 owner review remains open |
+| Shared Voice target catalogue | `SHARED_VOICE_CONTROL_REACHABILITY.md` maps Glide, velocity, pitch, four envelopes, LPF/HPF, key tracking and sub-osc controls | Prepared v0.1; owner review and Q-T12 remain open |
 | Sampler settings/reachability update | Interpolation selection/presentation and explicit Loop Release / Env Pile-up MIDI target disposition | Phase 4 owner review; interpolation details remain technical |
 | Parameter descriptor registry | Stable IDs, type, unit, range, default, scope, engine applicability, update class, automation/modulation/MIDI flags and state version | Q-T12 approval |
 | Cross-surface coverage report | Registry-to-touch, encoder, MIDI Learn, modulation, host automation and persistence reconciliation | After registry exists |
