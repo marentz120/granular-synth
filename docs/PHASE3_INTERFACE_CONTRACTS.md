@@ -148,7 +148,7 @@ Detailed equations, assumptions, conditional examples and planned tests are in `
 The format adapters preserve host semantics and normalize only the representation:
 
 - AU absolute sample-time events and VST3 block-relative event offsets become validated discrete events in the shared block domain.
-- AU parameter ramps and VST3 per-parameter automation queues become parameter curves, not flattened step events. The VST3 previous-block anchor at relative position -1 remains signed continuity metadata.
+- AU parameter ramps and VST3 per-parameter automation queues become parameter curves, not flattened step events. AUValue uses the AU parameter's declared range/unit; VST3 ParamValue is normalized [0,1]. Resolve each host ID to the canonical parameter ID and convert through the immutable parameter descriptor. The VST3 previous-block anchor at relative position -1 remains signed continuity metadata.
 - VST3 Note Expression preserves `noteId`; AU MPE maps cable/member-channel and note lifecycle to an internal note instance. Missing/ambiguous identity is explicit and never downgraded silently to channel-wide pitch bend.
 - AU musical-context and transport-state callbacks have independent success/field validity. VST3 ProcessContext is optional and per-field state flags are authoritative. The normalized transport snapshot carries validity rather than guessed zero/default values.
 - One transport snapshot is shared by the four layers and central sequencer. Valid host transport is the plugin authority; Standalone selects one authority. MIDI Clock is not a second plugin master.
