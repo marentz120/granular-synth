@@ -246,4 +246,28 @@ See `PHASE5_TEST_DESIGN_BACKLOG.md` for the requirement-level Phase 5 planning b
 
 ## 6. Exit meaning
 
-This document closes only the candidate symbol assignment subtask for the 124 R1 rows. It does not close API design, method signature review, host adapter validation, test design, implementation readiness, acceptance coverage, CI, DSP implementation or release readiness. The next useful work is to complete the 71-row Phase 5 test-design backlog without inventing product behavior, then review the AU/VST3 callback and bus contracts against official host constraints once the relevant SDK/format choices are approved.
+This document closes only the candidate symbol assignment subtask for the 124 R1 rows. It does not close API design, method signature review, host adapter validation, test design, implementation readiness, acceptance coverage, CI, DSP implementation or release readiness. The 71-row Phase 5 test-design backlog remains a separate acceptance-design task. The AU and VST3 component/bus audits now refine the host-adapter boundary; the next implementation-readiness evidence must come from owner-authorized host prototypes, not from symbol mapping alone.
+
+
+## 7. VST3 host-adapter symbol crosswalk (candidate)
+
+This supplement connects the VST3 instrument audit to the R1 traceability inventory. SDK names below are official VST3 surfaces; project adapter names are candidate boundaries, not approved C++ ABI or implemented classes.
+
+| R1 requirement area | Official VST3 surface | Candidate project boundary | Validation obligation |
+|---|---|---|---|
+| GS-PLT-001…004 | `IComponent`, `IAudioProcessor`, `IEditController`, plug-in class subcategories | `IVST3ProcessorAdapter::initialize/setupProcessing/process`; `IVST3ControllerAdapter`; `VST3FactoryMetadata::subCategories` | Instrument discovery; processor operation without controller; lifecycle and format identity |
+| GS-ARC-006 | `AudioEffect::addAudioOutput`, `IComponent::activateBus`, `ProcessData::outputs/numOutputs` | `IVST3BusTopology::declareMasterOutput/declareLayerOutput`; `IVST3BusView::resolveOutput` | Main master + four layer outputs; active, inactive, omitted and reactivated buses; no duplicate summing |
+| GS-ARC-007 | `AudioEffect::addAudioInput`, `ProcessData::inputs/numInputs` | `IVST3BusView::resolveLiveInput`; `IAudioRoutingGraph::sumDryLiveInputToMaster` | Raw full-band input reaches layer source; parallel dry path reaches master exactly once |
+| GS-MID-001…008 | `AudioEffect::addEventInput`, VST3 `Event`/event list, `INoteExpressionController`, `NoteExpressionValueEvent` | `IVST3EventAdapter::translateEvent`; `ILayerMidiRouter::routeByChannel`; `IMpeNoteExpressionAdapter::translateNoteExpression` | Sample-offset preservation; DEC-034 same-channel fan-out; Note ID and ±48-semitone MPE mapping |
+| GS-NFR-007 | VST3 host checker/validator and target-host APIs | `VST3HostValidationMatrix::validateHostCell` | Record exact host/build/OS/architecture, bus map, MPE, state and reproducible evidence |
+
+### 7.1 Important mapping constraints
+
+- A single 16-channel event bus is the baseline candidate; do not assign one event bus per product layer without a demonstrated host need.
+- `kInstrumentSynthSampler` is a category candidate only. The final subcategory is a host-discovery decision.
+- The live-input bus type (`kMain` or `kAux`) is unresolved. The validation criterion is raw source audio, not the bus label.
+- `kDefaultActive` is a request only. The host's actual per-call bus list and buffer validity remain authoritative.
+- Do not mark MPE covered by a channel-wide pitch-bend path. Per-note Note Expression and note-ID association are required for DEC-038.
+- The crosswalk does not change the 124-row requirement inventory or its 53/124 acceptance-link count. A candidate API symbol is not an acceptance criterion or passing test.
+
+See `PHASE3_VST3_INSTRUMENT_COMPONENT_AUDIT.md` for the evidence register and host test matrix.
